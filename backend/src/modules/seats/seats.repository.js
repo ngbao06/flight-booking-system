@@ -1,0 +1,1 @@
+// seats.repository.js

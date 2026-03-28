@@ -1,0 +1,1 @@
+// loyalty.repository.js
