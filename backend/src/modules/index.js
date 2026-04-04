@@ -1,14 +1,27 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-module.exports = (app) => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const loadModules = async (app) => {
     const modulesPath = __dirname;
 
-    fs.readdirSync(modulesPath).forEach((moduleName) => {
-        const routePath = path.join(modulesPath, moduleName, `${moduleName}.routes.js`);
+    const modules = fs.readdirSync(modulesPath);
+
+    for (const moduleName of modules) {
+        const routePath = path.join(
+            modulesPath,
+            moduleName,
+            `${moduleName}.routes.js`
+        );
+
         if (fs.existsSync(routePath)) {
-            const routes = require(routePath);
-            app.use(`/api/${moduleName}`, routes);
+            const routes = await import(routePath);
+            app.use(`/api/${moduleName}`, routes.default);
         }
-    });
+    }
 };
+
+export default loadModules;
