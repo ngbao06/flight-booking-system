@@ -1,15 +1,16 @@
-const express = require('express');
-const app = express();
+import express from 'express';
+import errorMiddleware from './common/middlewares/error.middleware.js';
+import loadModules from './modules/index.js';
 
-const errorMiddleware = require('./middlewares/error.middleware');
+const app = express();
 
 // Middlewares
 app.use(express.json());
 
-// Load routes from modules
-require('./modules')(app);
+// Routes
+loadModules(app);
 
-// Error handler
+// Error handler (luôn cuối)
 app.use(errorMiddleware);
 
-module.exports = app;
+export default app;

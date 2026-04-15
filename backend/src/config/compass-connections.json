@@ -1,0 +1,25 @@
+{
+  "type": "Compass Connections",
+  "version": {
+    "$numberInt": "1"
+  },
+  "connections": [
+    {
+      "id": "aa260839-0242-4ccc-bc7e-482d21d8b174",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1774861524118"
+        }
+      },
+      "favorite": {
+        "name": "NgBaoo",
+        "color": "color3"
+      },
+      "savedConnectionType": "favorite",
+      "connectionOptions": {
+        "connectionString": "mongodb://localhost:27017/",
+        "oidc": {}
+      }
+    }
+  ]
+}
