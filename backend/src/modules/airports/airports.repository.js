@@ -7,6 +7,7 @@ class AirportsRepository {
 
         const [result] = await query(`
             INSERT INTO Airports (iata_code, name, city, region)
+            VALUES (?, ?, ?, ?)
             `, [iataCode, name, city, region]);
 
         return result.affectedRows > 0;
@@ -25,7 +26,7 @@ class AirportsRepository {
             }
         }
 
-        if (fields === 0) return false;
+        if (fields.length === 0) return false;
 
         values.push(id);
 
@@ -53,7 +54,7 @@ class AirportsRepository {
             SELECT 1 FROM Airports WHERE id = ?
             `, [id]);
 
-        return result.affectedRows > 0;
+        return result.length > 0;
     }
 
     // bool

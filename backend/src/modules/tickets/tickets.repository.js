@@ -73,12 +73,31 @@ class TicketsRepository {
         return result.affectedRows > 0;
     }
 
+    static async deleteTicket(id) {
+        const [result] = await query(`
+            UPDATE Tickets
+            SET status = 'CANCELED'
+            WHERE id = ?
+            `, [id]);
+
+        return result.affectedRows > 0;
+    }
+
     static async getAll() {
         const [result] = await query(`
             SELECT * FROM Tickets
             `);
 
         return result.length > 0 ? result : null;
+    }
+
+    static async getById(id) {
+        const [result] = await query(`
+            SELECT * FROM Tickets
+            WHERE id = ?
+            `, [id]);
+
+        return result.length > 0 ? result[0] : null;
     }
 
     static async getByTicketNumber(ticketNumber) {

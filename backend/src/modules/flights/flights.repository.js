@@ -192,6 +192,61 @@ class FlightRepository {
 
         return result.length > 0 ? result[0] : null;
     }
+
+    static async getFlightsComplex(filter) {
+        let sql = "SELECT * FROM Flights WHERE is_deleted = 0";
+
+        const params = [];
+
+        if (filter.flightNumber) {
+            sql += " AND flight_number = ?";
+            params.push(filter.flightNumber);
+        }
+
+        if (filter.planeId) {
+            sql += " AND plane_id = ?";
+            params.push(filter.planeId);
+        }
+
+        if (filter.airlineId) {
+            sql += " AND airline_id = ?";
+            params.push(filter.airlineId);
+        }
+    
+        if (filter.departureAirportId) {
+            sql += " AND departure_airport_id = ?";
+            params.push(filter.departureAirportId);
+        }
+        
+        if (filter.arrivalAirportId) {
+            sql += " AND arrival_airport_id = ?";
+            params.push(filter.arrivalAirportId);
+        }
+
+        if (filter.departureTime) {
+            sql += " AND departure_time = ?";
+            params.push(filter.departureTime);
+        }
+
+        if (filter.arrivalTime) {
+            sql += " AND DATE_FORMAT(arrival_time, '%Y-%m-%d %H:%i') = DATE_FORMAT(?, '%Y-%m-%d %H:%i')";
+            params.push(filter.arrivalTime);
+        }
+
+        if (filter.status) {
+            sql += " AND status = ?";
+            params.push(filter.status);
+        }
+
+        const [result] = await query(sql, params);
+
+        console.log(sql);
+        console.log(params);
+        console.log(result);
+        
+
+        return result.length > 0 ? result : null;
+    }
 }
 
 export default FlightRepository;

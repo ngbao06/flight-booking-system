@@ -25,7 +25,7 @@ class UserRepository {
             }
         }
 
-        if (fields === 0) return false;
+        if (fields.length === 0) return false;
 
         values.push(id);
 
@@ -91,7 +91,7 @@ class UserRepository {
             SELECT 1 FROM Users WHERE id = ?
             `, [id]);
 
-        return result.affectedRows > 0;
+        return result.length > 0;
     }
 }
 

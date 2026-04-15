@@ -46,8 +46,9 @@ class BookingRepository {
 
         values.push(id);
         
+        let result;
         try{
-            const [result] = await query(`
+            [result] = await query(`
                 UPDATE Bookings
                 SET ${fields.join(", ")}
                 WHERE id = ?
@@ -57,6 +58,16 @@ class BookingRepository {
             console.log(error.message);
             return false;
         }
+        return result.affectedRows > 0;
+    }
+
+    static async deleteBooking(id) {
+        const [result] = await query(`
+            UPDATE Bookings
+            SET status = 'CANCELED'
+            WHERE id = ?
+            `, [id]);
+
         return result.affectedRows > 0;
     }
     

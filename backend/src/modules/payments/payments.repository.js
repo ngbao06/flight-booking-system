@@ -38,8 +38,9 @@ class PaymentsRepository {
 
         values.push(id);
 
+        let result;
         try{
-            const [result] = await query(`
+            [result] = await query(`
                 UPDATE Payments
                 SET ${fields.join(", ")}
                 WHERE id = ?
@@ -49,6 +50,16 @@ class PaymentsRepository {
             console.log(error.message);
             return false;
         }
+        return result.affectedRows > 0;
+    }
+
+    static async deletePayment(id) {
+        const [result] = await query(`
+            UPDATE Payments
+            SET status = 'CANCELED'
+            WHERE id = ?
+            `, [id]);
+
         return result.affectedRows > 0;
     }
     
