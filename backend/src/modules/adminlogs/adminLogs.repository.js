@@ -1,5 +1,6 @@
 // src/modules/logs/adminLog.repository.js
-import { getMongo } from "../../database/mongodb/conn";
+import { getMongo } from "../../database/mongodb/conn.js";
+import ActivityLog from "../../database/mongodb/schemas/activity_logs.js";
 
 class AdminLogRepository {
     constructor() {
@@ -9,41 +10,34 @@ class AdminLogRepository {
     // Lưu Log (Trigger từ EventBus)
     async insertLog(logPayload) {
         try {
-            const database = await getMongo();
-            const collection = database.collection(this.collectionName);
-            
-            // Thêm timestamp thủ công vì không dùng Mongoose
-            const document = {
-                ...logPayload,
-                createdAt: new Date()
-            };
 
-            const result = await collection.insertOne(document);
+            const log = new ActivityLog(logPayload);
+            const result = await log.save();
             return result;
+
         } catch (error) {
+
             console.error('[AdminLogRepo] Error inserting log:', error);
-            throw error;
+
         }
     }
 
     // Lấy Log (Cho Controller/Admin UI)
     async getLogs(filters = {}, page = 1, limit = 20) {
         try {
-            const database = await connectDB();
-            const collection = database.collection(this.collectionName);
             
             const skip = (page - 1) * limit;
             
             // Thực hiện query thuần MongoDB
-            const logs = await collection.find(filters)
+            const logs = await ActivityLog.find(filters)
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)
-                .toArray();
+                .lean();
 
-            const total = await collection.countDocuments(filters);
+            const total = await ActivityLog.countDocuments(filters);
 
-            return { data: logs, total, page, limit };
+            return { data: logs, total, totalPages: Math.ceil(total / limit), currentPage, limit };
         } catch (error) {
             console.error('[AdminLogRepo] Error fetching logs:', error);
             throw error;

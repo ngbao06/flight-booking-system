@@ -1,26 +1,65 @@
 // src/modules/logs/logs.subscriber.js
-import eventBus, { Events } from '../../core/eventBus.js';
-import NoSQL_LogRepo from './logs.repository.js';
+import eventBus, { Events } from '../../common/utils/eventsBus.js';
+import AdminLogRepository from './adminLogs.repository.js';
+import { getDiff } from '../../common/utils/diff.js';
 
-export const setupLogSubscribers = () => {
-    
-    eventBus.on(Events.FLIGHT_UPDATED, async (payload) => {
+const initAdminLogsListener = () => {
+    eventBus.on('CREATE_EVENT', async (data) => {
         try {
-            // Nhận data và lưu vào MongoDB
-            await NoSQL_LogRepo.insertLog(payload);
-            console.log(`[Log_MongoDB] Đã lưu log cho sự kiện: ${Events.FLIGHT_UPDATED}`);
+            const { new_data, ...info } = data;
+            
+            await AdminLogRepository.insertLog({
+                ...info,
+                user_id: data.user_id || 0, // Sau này bạn lấy từ req.user
+                role: data.role || 'ADMIN',
+                new_data: new_data
+            });
+            
         } catch (error) {
-            // CỰC KỲ QUAN TRỌNG: Phải có try/catch ở đây. 
-            // Vì nó chạy ngầm (async), nếu lỗi sẽ làm crash toàn bộ Node.js App.
-            console.error('[Log_MongoDB] Lỗi khi lưu log:', error);
+            console.error('❌ MongoDB Logging Error:', error);
+        }    
+    });
+
+    eventBus.on('UPDATE_EVENT', async (data) => {
+        try {
+            const { old_data, new_data, ...info } = data;
+
+            // Chỉ lấy ra các trường thực sự thay đổi
+            const { old_changes, new_changes } = getDiff(old_data, new_data);
+
+            // Nếu không có gì thay đổi thì không cần lưu log
+            if (Object.keys(new_changes).length === 0) return;
+
+            await AdminLogRepository.insertLog({
+                ...info,
+                user_id: data.user_id || 0, // Sau này bạn lấy từ req.user
+                role: data.role || 'ADMIN',
+                old_data: old_changes,
+                new_data: new_changes
+            });
+
+            console.log(`✅ Logged update for ${info.module} ID: ${info.id}`);
+        } catch (error) {
+            console.error('❌ MongoDB Logging Error:', error);
         }
     });
 
-    eventBus.on(Events.BOOKING_SUCCESS, async (payload) => {
+    eventBus.on('DELETE_EVENT', async (data) => {
         try {
-            await NoSQL_LogRepo.insertLog({ ...payload, type: 'TRANSACTION' });
+            const { delete_data, ...info } = data;
+
+            await AdminLogRepository.insertLog({
+                ...info,
+                user_id: data.user_id || 0, 
+                role: data.role || 'ADMIN',
+                delete_data: delete_data
+            });
+
+            console.log(`✅ Logged update for ${info.module} ID: ${info.id}`);
         } catch (error) {
-            console.error('[Log_MongoDB] Lỗi khi lưu log booking:', error);
+            console.error('❌ MongoDB Logging Error:', error);
         }
     });
 };
+
+export default initAdminLogsListener;
