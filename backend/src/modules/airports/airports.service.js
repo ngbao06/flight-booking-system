@@ -1,4 +1,8 @@
 import AirportsRepository from "./airports.repository.js";
+import eventBus, { Events } from "../../common/utils/eventsBus.js";
+
+
+const MODULE_NAME = "airports";
 
 class AirportsService {
     static async createAirport(payload) {
@@ -19,6 +23,13 @@ class AirportsService {
                 message: "Failed to create airport"
             };
         }
+
+        eventBus.emit(Events.CREATE_EVENT, {
+			module: MODULE_NAME,
+			action: 'CREATE',
+			new_data: payload,
+			user_id: 12321311
+		});
 
         const airport = await AirportsRepository.getByIataCode(payload.iataCode);
         return {
@@ -154,6 +165,15 @@ class AirportsService {
             };
         }
 
+        eventBus.emit(Events.UPDATE_EVENT, {
+            module: MODULE_NAME,
+            action: 'UPDATE',
+            id: id,
+            old_data: existed,
+            new_data: payload,
+            user_id: 12321311
+        });
+        
         const airport = await AirportsRepository.getById(id);
         return {
             ok: true,
@@ -182,6 +202,14 @@ class AirportsService {
             };
         }
 
+        eventBus.emit(Events.DELETE_EVENT, {
+			module: MODULE_NAME,
+			action: 'DELETE',
+			id: id,
+			old_data: existed,
+			user_id: 12321311
+		});
+
         return {
             ok: true,
             statusCode: 200,
@@ -207,13 +235,22 @@ class AirportsService {
                 message: "Failed to lock airport"
             };
         }
+        
+        const newData = await AirportsRepository.getById(id);
 
-        const airport = await AirportsRepository.getById(id);
+        eventBus.emit(Events.UPDATE_EVENT, {
+            module: MODULE_NAME,
+            action: 'LOCK',
+            id: id,
+            old_data: existed,
+            new_data: newData,
+            user_id: 12321311
+        });
+
         return {
             ok: true,
             statusCode: 200,
-            message: "Airport locked successfully",
-            data: airport
+            message: "Airport locked successfully"
         };
     }
 
@@ -236,12 +273,21 @@ class AirportsService {
             };
         }
 
-        const airport = await AirportsRepository.getById(id);
+        const newData = await AirportsRepository.getById(id);
+
+        eventBus.emit(Events.UPDATE_EVENT, {
+            module: MODULE_NAME,
+            action: 'UNLOCK',
+            id: id,
+            old_data: existed,
+            new_data: newData,
+            user_id: 12321311
+        });
+
         return {
             ok: true,
             statusCode: 200,
-            message: "Airport unlocked successfully",
-            data: airport
+            message: "Airport unlocked successfully"
         };
     }
 }

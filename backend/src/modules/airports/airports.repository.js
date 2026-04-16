@@ -1,4 +1,5 @@
 import { query } from "../../database/mysql/conn.js";
+import eventBus, { Events } from "../../common/utils/eventsBus.js";
 
 class AirportsRepository {
     // bool
@@ -15,7 +16,7 @@ class AirportsRepository {
 
     // bool
     static async updateAirport(id, airport) {
-        const allowedFields = [`name`, `city`];
+        const allowedFields = [`name`, `city`, `status`];
         const fields = [];
         const values = [];
 

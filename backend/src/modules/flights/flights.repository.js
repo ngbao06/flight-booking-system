@@ -82,17 +82,7 @@ class FlightRepository {
 
         return result.affectedRows > 0;
     }
-    
-    // list
-    static async getAll() {
-        const [result] = await query(`
-            SELECT * FROM Flights
-            WHERE is_deleted = 0
-            `);
 
-        return result.length > 0 ? result : null;
-    }
-    
     // object
     static async getById(id) {
         const [result] = await query(`
@@ -102,97 +92,8 @@ class FlightRepository {
 
         return result.length > 0 ? result[0] : null;
     }
-    
-    // object
-    static async getByFlightNumber(flightNumber) {
-        const [result] = await query(`
-            SELECT * FROM Flights
-            WHERE is_deleted = 0 AND flight_number = ?
-            `, [flightNumber]);
 
-        return result.length > 0 ? result[0] : null;
-    }
-    
-    // list
-    static async getByPlaneId(planeId) {
-        const [result] = await query(`
-            SELECT * FROM Flights
-            WHERE is_deleted = 0 AND plane_id = ?
-            `, [planeId]);
-
-        return result.length > 0 ? result : null;
-    }
-    
-    // list
-    static async getByAirlineId(airlineId) {
-        const [result] = await query(`
-            SELECT * FROM Flights
-            WHERE is_deleted = 0 AND airline_id = ?
-            `, [airlineId]);
-
-        return result.length > 0 ? result : null;
-    }
-    
-    // list
-    static async getByDepartureAirport(departureAirport) {
-        const [result] = await query(`
-            SELECT * FROM Flights
-            WHERE is_deleted = 0 AND departure_airport_id = ?
-            `, [departureAirport]);
-
-        return result.length > 0 ? result : null;
-    }
-    
-    // list
-    static async getByArrivalAirport(arrivalAirport) {
-        const [result] = await query(`
-            SELECT * FROM Flights
-            WHERE is_deleted = 0 AND arrival_airport_id = ?
-            `, [arrivalAirport]);
-
-        return result.length > 0 ? result : null;
-    }
-    
-    // list
-    static async getByDepartureTime(departureTime) {
-        const [result] = await query(`
-            SELECT * FROM Flights
-            WHERE is_deleted = 0 AND DATE(departure_time) = DATE(?)
-            `, [departureTime]);
-
-        return result.length > 0 ? result : null;
-    }
-    
-    // list
-    static async getByArrivalTime(arrivalTime) {
-        const [result] = await query(`
-            SELECT * FROM Flights
-            WHERE is_deleted = 0 AND DATE(arrival_time) = DATE(?)
-            `, [arrivalTime]);
-
-        return result.length > 0 ? result : null;
-    }
-    
-    // list
-    static async getByStatus(status) {
-        const [result] = await query(`
-            SELECT * FROM Flights
-            WHERE is_deleted = 0 AND status = ?
-            `, [status]);
-
-        return result.length > 0 ? result : null;
-    }
-    
-    // object
-    static async getStatusOfFlight(flightId) {
-        const [result] = await query(`
-            SELECT status FROM Flights
-            WHERE is_deleted = 0 AND id = ?
-            `, [flightId]);
-
-        return result.length > 0 ? result[0] : null;
-    }
-
+    // get all hoặc có filter
     static async getFlightsComplex(filter) {
         let sql = "SELECT * FROM Flights WHERE is_deleted = 0";
 
