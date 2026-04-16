@@ -12,21 +12,23 @@ const ActivityLogSchema = new mongoose.Schema(
             required: true,
             enum: ['ADMIN', 'GATE_AGENT', 'PASSENGER'] 
         },
+        module: {
+            type: String, 
+            required: true
+        },
         action: { 
             type: String, 
-            required: true,
-            enum: ['LOGIN', 'LOGOUT', 'SEARCH_FLIGHT', 'BOOKING_INIT', 'PAYMENT_SUCCESS']
+            required: true
         },
-        details: {
+        old_data: {
             type: mongoose.Schema.Types.Mixed, 
             default: {}
         },
-        device_info: {
-            browser: String,
-            os: String,
-            ip_address: String
+        new_data: {
+            type: mongoose.Schema.Types.Mixed, 
+            default: {}
         },
-        timestamp: { 
+        createdAt: { 
             type: Date, 
             default: Date.now,
             index: { expires: '180d' }
