@@ -114,6 +114,7 @@ class FlightsService {
 	}
 
 	static async updateFlight(id, payload) {
+		console.log(payload.reason || null);
 		const existed = await FlightsRepository.getById(id);
 		if (!existed) {
 			return {
@@ -136,7 +137,6 @@ class FlightsService {
 
 		const updated = await FlightsRepository.updateFlight(id, payload);
 		if (updated) {
-
 			await clearListCache(MODULE_NAME, id);
 
 			eventBus.emit(Events.UPDATE_EVENT, {
@@ -147,7 +147,18 @@ class FlightsService {
                 new_data: payload,
 				user_id: 12321311
             });
-
+			
+			if (payload.reason) {
+				console.log("emit")
+				eventBus.emit(Events.FLIGHT_UPDATED, {
+					flight_id: id,
+					status: payload.status,
+					old_data: existed,
+					new_data: payload,
+					reason: payload.reason,
+					updated_by: "52400101"
+				});
+			}
 		} 
 		else {
 			return {

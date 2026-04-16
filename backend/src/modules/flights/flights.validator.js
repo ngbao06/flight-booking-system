@@ -42,7 +42,8 @@ const updateFlightSchema = Joi.object({
 	distance: Joi.number().positive(),
 	departureTime: Joi.date().iso(),
 	arrivalTime: Joi.date().iso(),
-	status: Joi.string().trim().min(1).max(50)
+	status: Joi.string().trim().min(1).max(50),
+	reason: Joi.string().trim().min(1).max(255)
 }).min(1);
 
 const flightIdParamSchema = Joi.object({
@@ -58,7 +59,8 @@ const listFlightsQuerySchema = Joi.object({
 	arrivalAirportId: Joi.number().integer().positive(),
 	departureTime: Joi.date().iso(),
 	arrivalTime: Joi.date().iso(),
-	status: Joi.string().trim().min(1).max(50)
+	status: Joi.string().trim().min(1).max(50),
+	reason: Joi.string().trim().min(1).max(255)
 });
 
 export const validateCreateFlight = validate(createFlightSchema, "body");

@@ -1,26 +1,29 @@
 // src/modules/logs/adminLog.repository.js
-import { getMongo } from "../../database/mongodb/conn.js";
-import ActivityLog from "../../database/mongodb/schemas/activity_logs.js";
+import ActivityLog      from "../../database/mongodb/schemas/activity_logs.js";
+import FlightUpdateLog  from "../../database/mongodb/schemas/flight_update_logs.js";
+
 
 class AdminLogRepository {
-    constructor() {
-        this.collectionName = 'activity_logs';
-    }
-
     // Lưu Log (Trigger từ EventBus)
-    async insertLog(logPayload) {
+    async insertActivityLog(logPayload) {
         try {
-
             const log = new ActivityLog(logPayload);
             const result = await log.save();
             return result;
-
         } catch (error) {
-
             console.error('[AdminLogRepo] Error inserting log:', error);
-
         }
     }
+
+    async insertFlightLog(logPayload) {
+        try {
+            const log = new FlightUpdateLog(logPayload);
+            const result = await log.save();
+            return result;
+        } catch (error) {
+            console.error('[FlightUpdateLog] Error inserting log:', error);
+        }
+    } 
 
     // Lấy Log (Cho Controller/Admin UI)
     async getLogs(filters = {}, page = 1, limit = 20) {

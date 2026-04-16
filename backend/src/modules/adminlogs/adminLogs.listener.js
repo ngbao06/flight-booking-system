@@ -8,19 +8,19 @@ const initAdminLogsListener = () => {
         try {
             const { new_data, ...info } = data;
             
-            await AdminLogRepository.insertLog({
+            await AdminLogRepository.insertActivityLog({
                 ...info,
                 user_id: data.user_id || 0, // Sau này bạn lấy từ req.user
                 role: data.role || 'ADMIN',
                 new_data: new_data
             });
-            
+
         } catch (error) {
             console.error('❌ MongoDB Logging Error:', error);
         }    
     });
 
-    eventBus.on('UPDATE_EVENT', async (data) => {
+    eventBus.on(Events.UPDATE_EVENT, async (data) => {
         try {
             const { old_data, new_data, ...info } = data;
 
@@ -30,7 +30,7 @@ const initAdminLogsListener = () => {
             // Nếu không có gì thay đổi thì không cần lưu log
             if (Object.keys(new_changes).length === 0) return;
 
-            await AdminLogRepository.insertLog({
+            await AdminLogRepository.insertActivityLog({
                 ...info,
                 user_id: data.user_id || 0, // Sau này bạn lấy từ req.user
                 role: data.role || 'ADMIN',
@@ -48,7 +48,7 @@ const initAdminLogsListener = () => {
         try {
             const { delete_data, ...info } = data;
 
-            await AdminLogRepository.insertLog({
+            await AdminLogRepository.insertActivityLog({
                 ...info,
                 user_id: data.user_id || 0, 
                 role: data.role || 'ADMIN',
@@ -57,6 +57,29 @@ const initAdminLogsListener = () => {
 
             console.log(`✅ Logged update for ${info.module} ID: ${info.id}`);
         } catch (error) {
+            console.error('❌ MongoDB Logging Error:', error);
+        }
+    });
+
+    eventBus.on(Events.FLIGHT_UPDATED, async (data) => {
+        try {
+            const { old_data, new_data, ...info } = data;
+
+            const { old_changes, new_changes } = getDiff(old_data, new_data);
+
+            // Nếu không có gì thay đổi thì không cần lưu log
+            if (Object.keys(new_changes).length === 0) return;
+
+            await AdminLogRepository.insertFlightLog({
+                ...info,
+                role: data.role || 'ADMIN',
+                old_data: old_changes,
+                new_data: new_changes
+            });
+
+            console.log(`✅ Logged update for update ID: ${data.id}`);
+        }
+        catch (error) {
             console.error('❌ MongoDB Logging Error:', error);
         }
     });
