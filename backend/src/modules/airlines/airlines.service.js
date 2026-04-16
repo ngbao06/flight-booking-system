@@ -106,7 +106,7 @@ class AirlinesService {
 			};
 		}
 
-		eventBus.emit(Events.CREATE_EVENT, {
+		eventBus.emit(Events.UPDATE_EVENT, {
 			module: MODULE_NAME,
 			action: 'UPDATE',
 			id: id,
@@ -141,7 +141,7 @@ class AirlinesService {
 			};
 		}
 
-		eventBus.emit(Events.CREATE_EVENT, {
+		eventBus.emit(Events.UPDATE_EVENT, {
 			module: MODULE_NAME,
 			action: 'DELETE',
 			id: id,
