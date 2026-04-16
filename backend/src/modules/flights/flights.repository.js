@@ -240,11 +240,6 @@ class FlightRepository {
 
         const [result] = await query(sql, params);
 
-        console.log(sql);
-        console.log(params);
-        console.log(result);
-        
-
         return result.length > 0 ? result : null;
     }
 }

@@ -1,6 +1,7 @@
-import FlightsRepository from "./flights.repository.js";
-import redisClient from "../../config/redis.config.js";
-import clearListCache from "../../common/utils/clearCache.js";
+import FlightsRepository 		from "./flights.repository.js";
+import redisClient 				from "../../config/redis.config.js";
+import clearListCache 			from "../../common/utils/clearCache.js";
+import eventBus , { Events } 	from "../../common/utils/eventsBus.js";
 
 const TTL_id = 900; // 1h
 const TTL_list = 300; // 5p
@@ -28,6 +29,14 @@ class FlightsService {
 
 		await clearListCache(MODULE_NAME);
 
+		eventBus.emit(Events.CREATE_EVENT, {
+			module: MODULE_NAME,
+			action: 'CREATE',
+			new_data: payload,
+			user_id: 12321311
+		});
+
+
 		return {
 			ok: true,
 			statusCode: 201,
@@ -49,48 +58,17 @@ class FlightsService {
 			}
 		}
 
-		// const {
-		// 	flightNumber,
-		// 	planeId,
-		// 	airlineId,
-		// 	departureAirportId,
-		// 	arrivalAirportId,
-		// 	departureTime,
-		// 	arrivalTime,
-		// 	status
-		// } = filters;
-
-		// let flights;
-		// if (flightNumber) {
-		// 	flight = await FlightsRepository.getByFlightNumber(flightNumber);
-		// }
-		// else if (planeId !== undefined) {
-		// 	flights = await FlightsRepository.getByPlaneId(planeId);
-		// }
-		// else if (airlineId !== undefined) {
-		// 	flights = await FlightsRepository.getByAirlineId(airlineId);
-		// }
-		// else if (departureAirportId !== undefined) {
-		// 	flights = await FlightsRepository.getByDepartureAirport(departureAirportId);
-		// }
-		// else if (arrivalAirportId !== undefined) {
-		// 	flights = await FlightsRepository.getByArrivalAirport(arrivalAirportId);
-		// }
-		// else if (departureTime) {
-		// 	flights = await FlightsRepository.getByDepartureTime(departureTime);
-		// }
-		// else if (arrivalTime) {
-		// 	flights = await FlightsRepository.getByArrivalTime(arrivalTime);
-		// }
-		// else if (status) {
-		// 	flights = await FlightsRepository.getByStatus(status);
-		// }
-		// else flights = await FlightsRepository.getAll();
-
 		const flights = await FlightsRepository.getFlightsComplex(filters);
 
 		if (flights) {
 			await redisClient.set(cacheKey, JSON.stringify(flights), { EX: TTL_list });
+		}
+		else {
+			return {
+				ok: false,
+				statusCode: 404,
+				message: "Flights not found"
+			}
 		}
 
 		return {
@@ -157,7 +135,21 @@ class FlightsService {
 		}
 
 		const updated = await FlightsRepository.updateFlight(id, payload);
-		if (!updated) {
+		if (updated) {
+
+			await clearListCache(MODULE_NAME, id);
+
+			eventBus.emit(Events.UPDATE_EVENT, {
+                module: MODULE_NAME,
+                action: 'UPDATE',
+				id: id,
+				old_data: existed,
+                new_data: payload,
+				user_id: 12321311
+            });
+
+		} 
+		else {
 			return {
 				ok: false,
 				statusCode: 500,
@@ -174,9 +166,7 @@ class FlightsService {
 
 	static async deleteFlight(id) {
 		// xoa cache neu co
-		const cacheKey = `${MODULE_NAME}:${id}`;
-		await redisClient.del(cacheKey);
-		await clearListCache(MODULE_NAME);
+		await clearListCache(MODULE_NAME, id);
 
 		const existed = await FlightsRepository.getById(id);
 		if (!existed) {
@@ -195,6 +185,14 @@ class FlightsService {
 				message: "Failed to delete flight"
 			};
 		}
+
+		eventBus.emit(Events.DELETE_EVENT, {
+			module: MODULE_NAME,
+			action: 'DELETE',
+			id: id,
+			delete_data: existed,
+			user_id: 12321311
+		});
 
 		return {
 			ok: true,
