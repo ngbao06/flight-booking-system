@@ -16,7 +16,7 @@ const validate = (schema, source) => (req, res, next) => {
 		});
 	}
 
-	Object.assign(req[source], value)
+	req[source] = value;
 	return next();
 };
 

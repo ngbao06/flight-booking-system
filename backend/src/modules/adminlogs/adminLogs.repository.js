@@ -1,28 +1,15 @@
 // src/modules/logs/adminLog.repository.js
-import { MongoClient } from 'mongodb';
-
-// Giả sử bạn có file config hoặc biến môi trường
-const url = process.env.MONGO_URL || 'mongodb://localhost:27017';
-const dbName = process.env.DB_NAME;
-let db;
-
-// Kết nối Single Instance
-const connectDB = async () => {
-    if (db) return db;
-    const client = await MongoClient.connect(url);
-    db = client.db(dbName);
-    return db;
-};
+import { getMongo } from "../../database/mongodb/conn";
 
 class AdminLogRepository {
     constructor() {
-        this.collectionName = 'admin_logs';
+        this.collectionName = 'activity_logs';
     }
 
     // Lưu Log (Trigger từ EventBus)
     async insertLog(logPayload) {
         try {
-            const database = await connectDB();
+            const database = await getMongo();
             const collection = database.collection(this.collectionName);
             
             // Thêm timestamp thủ công vì không dùng Mongoose

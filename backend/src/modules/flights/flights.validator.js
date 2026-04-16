@@ -14,7 +14,7 @@ const validate = (schema, source) => (req, res, next) => {
 		});
 	}
 
-	Object.assign(req[source], value);
+	req[source] = value;
 	return next();
 };
 
@@ -27,7 +27,7 @@ const createFlightSchema = Joi.object({
 	distance: Joi.number().positive().required(),
 	departureTime: Joi.date().iso().required(),
 	arrivalTime: Joi.date().iso().required(),
-	status: Joi.string().trim().min(1).max(50)
+	status: Joi.string().trim().min(1).max(50).default("WAITING")
 });
 
 const updateFlightSchema = Joi.object({
