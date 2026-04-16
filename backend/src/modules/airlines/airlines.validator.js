@@ -16,7 +16,10 @@ const validate = (schema, source) => (req, res, next) => {
 		});
 	}
 
-	req[source] = value;
+	Object.keys(req[source]).forEach(key => delete req[source][key]);
+
+	// Đổ dữ liệu đã validate (value) vào lại
+	Object.assign(req[source], value);
 	return next();
 };
 
@@ -35,7 +38,7 @@ const airlineIdParamSchema = Joi.object({
 });
 
 const listAirlinesQuerySchema = Joi.object({
-	id: Joi.number().integer().positive(),
+	id:   Joi.number().integer().positive(),
 	code: Joi.string().trim().uppercase().pattern(codePattern),
 	name: Joi.string().trim().min(1).max(255)
 });

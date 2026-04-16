@@ -90,6 +90,30 @@ class AirlinesRepository {
         return result.length > 0 ? result : null;
     }
 
+    static async getAirlinesComplex(filters) {
+        let sql = "SELECT * FROM Airlines WHERE is_deleted = 0";
+        
+        const params = [];
+
+        if (filters.code) {
+            sql += " AND code = ?";
+            params.push(filters.code);
+        }
+
+        if (filters.name) {
+            sql += " AND name = ?";
+            params.push(filters.name);
+        }
+
+        if (filters.status) {
+            sql += " AND status = ?";
+            params.push(filters.status);
+        }
+
+        const [result] = await query(sql, params);
+
+        return result.length > 0 ? result : null;
+    }
 }
 
 export default AirlinesRepository;

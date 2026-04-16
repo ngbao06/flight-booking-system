@@ -1,4 +1,7 @@
 import AirlinesRepository from "./airlines.repository.js";
+import eventBus , { Events } 	from "../../common/utils/eventsBus.js";
+
+const MODULE_NAME = 'airlines';
 
 class AirlinesService {
 	static async createAirline(payload) {
@@ -20,6 +23,13 @@ class AirlinesService {
 			};
 		}
 
+		eventBus.emit(Events.CREATE_EVENT, {
+			module: MODULE_NAME,
+			action: 'CREATE',
+			new_data: payload,
+			user_id: 12321311
+		});
+
 		const airline = await AirlinesRepository.getAirlineByCode(payload.code);
 		return {
 			ok: true,
@@ -30,55 +40,16 @@ class AirlinesService {
 	}
 
 	static async getAirlines(filters = {}) {
-		const { id, code, name } = filters;
-
-		if (id !== undefined) {
-			const airline = await AirlinesRepository.getAirlineById(Number(id));
-			if (!airline) {
-				return {
-					ok: false,
-					statusCode: 404,
-					message: "Airline not found"
-				};
-			}
-
+		const airlines = await AirlinesRepository.getAirlinesComplex(filters);
+		
+		if (!airlines) {
 			return {
-				ok: true,
-				statusCode: 200,
-				message: "Airline fetched successfully",
-				data: airline
+				ok: false,
+				statusCode: 404,
+				message: "Airline not found"
 			};
 		}
 
-		if (code) {
-			const airline = await AirlinesRepository.getAirlineByCode(code);
-			if (!airline) {
-				return {
-					ok: false,
-					statusCode: 404,
-					message: "Airline not found"
-				};
-			}
-
-			return {
-				ok: true,
-				statusCode: 200,
-				message: "Airline fetched successfully",
-				data: airline
-			};
-		}
-
-		if (name) {
-			const airlines = await AirlinesRepository.getAirlineByName(name);
-			return {
-				ok: true,
-				statusCode: 200,
-				message: "Airlines fetched successfully",
-				data: airlines || []
-			};
-		}
-
-		const airlines = await AirlinesRepository.getAllAirline();
 		return {
 			ok: true,
 			statusCode: 200,
@@ -135,12 +106,19 @@ class AirlinesService {
 			};
 		}
 
-		const airline = await AirlinesRepository.getAirlineById(id);
+		eventBus.emit(Events.CREATE_EVENT, {
+			module: MODULE_NAME,
+			action: 'UPDATE',
+			id: id,
+			old_data: existed,
+			new_data: payload,
+			user_id: 12321311
+		});
+
 		return {
 			ok: true,
 			statusCode: 200,
-			message: "Airline updated successfully",
-			data: airline
+			message: "Airline updated successfully"
 		};
 	}
 
@@ -162,6 +140,14 @@ class AirlinesService {
 				message: "Failed to delete airline"
 			};
 		}
+
+		eventBus.emit(Events.CREATE_EVENT, {
+			module: MODULE_NAME,
+			action: 'DELETE',
+			id: id,
+			old_data: existed,
+			user_id: 12321311
+		});
 
 		return {
 			ok: true,
