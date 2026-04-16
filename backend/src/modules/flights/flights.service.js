@@ -201,7 +201,7 @@ class FlightsService {
 			module: MODULE_NAME,
 			action: 'DELETE',
 			id: id,
-			delete_data: existed,
+			old_data: existed,
 			user_id: 12321311
 		});
 
