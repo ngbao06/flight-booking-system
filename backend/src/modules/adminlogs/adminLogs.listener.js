@@ -4,7 +4,8 @@ import AdminLogRepository from './adminLogs.repository.js';
 import { getDiff } from '../../common/utils/diff.js';
 
 const initAdminLogsListener = () => {
-    eventBus.on('CREATE_EVENT', async (data) => {
+    // bắt sự kiện cập nhật chung
+    eventBus.on(Events.CREATE_EVENT, async (data) => {
         try {
             const { new_data, ...info } = data;
             
@@ -44,7 +45,7 @@ const initAdminLogsListener = () => {
         }
     });
 
-    eventBus.on('DELETE_EVENT', async (data) => {
+    eventBus.on(Events.DELETE_EVENT, async (data) => {
         try {
             const { delete_data, ...info } = data;
 
@@ -61,6 +62,7 @@ const initAdminLogsListener = () => {
         }
     });
 
+    // bắt sự kiện thay đổi thông tin chuyến bay cụ thể
     eventBus.on(Events.FLIGHT_UPDATED, async (data) => {
         try {
             const { old_data, new_data, ...info } = data;
@@ -81,6 +83,43 @@ const initAdminLogsListener = () => {
         }
         catch (error) {
             console.error('❌ MongoDB Logging Error:', error);
+        }
+    });
+
+    // bắt sự kiện đổi điểm nâng hạng ghế
+    eventBus.on(Events.LOYALTY_EXCHANGE, async (data) => {
+        try {
+            const { old_data, new_data, ...info } = data;
+
+            const { old_changes, new_changes } = getDiff(old_data, new_data);
+
+            if (Object.keys(new_changes).length === 0) return;
+
+            await AdminLogRepository.insertLoyaltyLog({
+                ...info,
+                old_data: old_changes,
+                new_data: new_changes
+            });
+        } catch (error) {
+            console.log('❌ MongoDB Logging Error:', error)
+        }
+    });
+
+    // bắt sự kiện nhận loyalty points sau khi hoàn thành thanh toán đặt vé
+    eventBus.on(Events.PAYMENT_SUCCESS, async (data) => {
+        try {
+            const { passengerId, bookingId, miles_traveled } = data;
+    
+            await AdminLogRepository.insertLoyaltyLog({
+                passenger_id: passengerId,
+                action: 'LOYALTY_GAINED',
+                miles_traveled: miles_traveled,
+                description: `Points received from booking #${bookingId}`
+            });
+            
+            console.log(`[LoyaltyModule] Logged earned points for passenger ${passengerId}`);
+        } catch (error) {
+            console.error("[LoyaltyModule] Failed to log earned points:", error);
         }
     });
 };

@@ -1,6 +1,7 @@
 // src/modules/logs/adminLog.repository.js
 import ActivityLog      from "../../database/mongodb/schemas/activity_logs.js";
 import FlightUpdateLog  from "../../database/mongodb/schemas/flight_update_logs.js";
+import LoyaltyLog       from "../../database/mongodb/schemas/loyalty_logs.js";
 
 
 class AdminLogRepository {
@@ -24,6 +25,16 @@ class AdminLogRepository {
             console.error('[FlightUpdateLog] Error inserting log:', error);
         }
     } 
+
+    async insertLoyaltyLog(logPayload) {
+        try {
+            const log = new LoyaltyLog(logPayload);
+            const result = await log.save();
+            return result;
+        } catch (error) {
+            console.error('[LoyaltyLog] Error inserting log:', error);
+        }
+    }
 
     // Lấy Log (Cho Controller/Admin UI)
     async getLogs(filters = {}, page = 1, limit = 20) {

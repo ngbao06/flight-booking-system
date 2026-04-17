@@ -6,12 +6,31 @@ class LoyaltyRepository {
     static async exchangePoints(passengerId, amount) {
         try {
             await query(`CALL proc_exchange_points(?, ?)`, [passengerId, amount]);
-            return true;
+            return { ok: true };
         } catch (error) {
-            console.log(error.message);
-            return false;
+            return {
+                ok: false,
+                statusCode: 500,
+                message: error.message
+            };
         }
     }
+
+    static async getLoyaltyByPassenger(passengerId) {
+        const [result] = await query(`SELECT * FROM loyalty WHERE passenger_id = ?`, [passengerId]);
+        return result.length > 0 ? result[0] : null;
+    }
+
+    /*
+    * trg_update_loyalty_after_payment: trigger tự động cộng điểm khi hoàn thành chặng bay
+    *   "ECONOMY" :  80% dặm bay
+    *   "BUSINESS": 130% dặm bay
+    *   "FIRST"   : 200% dặm bay
+    */
+
+    /*
+    *   trg_after_insert_user: trigger tự động tạo loyalty khi khách hàng tạo tài khoản
+    */
 }
 
 export default LoyaltyRepository;

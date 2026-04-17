@@ -15,6 +15,10 @@ export const Events = {
     // thay đổi thông tin chuyến bay: địa điểm đến, status (delayed, cancel,...). Cần reason
     FLIGHT_UPDATED:   'FLIGHT_UPDATED',
 
+    // Loyalty
+    LOYALTY_EXCHANGE: 'LOYALTY_EXCHANGE',
+    LOYALTY_GAINED:   'LOYALTY_GAINED',
+
     AIRLINE_UPDATED:  'AIRLINE_UPDATED',
 
     PLANE_UPDATED:    'PLANE_UPDATE',
@@ -37,7 +41,11 @@ export const Events = {
     TICKETS_REFUNDED: 'TICKETS_REFUNDED',
 
 
+    // Payments
     PAYMENT_FAILED:   'PAYMENT_FAILED',
+    PAYMENT_SUCCESS:  'PAYMENT_SUCCESS',
+    PAYMENT_REFUNDED: 'PAYMENT_REFUNDED',
+
 
     SYSTEM_ERROR:     'SYSTEM_ERROR'
 
