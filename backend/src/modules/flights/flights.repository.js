@@ -93,6 +93,15 @@ class FlightRepository {
         return result.length > 0 ? result[0] : null;
     }
 
+    static async getByFlightNumber(flightNumber) {
+        const [result] = await query(`
+            SELECT * FROM Flights
+            WHERE is_deleted = 0 AND flight_number = ?
+            `, [flightNumber]);
+
+        return result.length > 0 ? result[0] : null;
+    }
+
     // get all hoặc có filter
     static async getFlightsComplex(filter) {
         let sql = "SELECT * FROM Flights WHERE is_deleted = 0";
