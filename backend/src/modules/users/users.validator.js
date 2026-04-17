@@ -14,19 +14,44 @@ const validate = (schema, source) => (req, res, next) => {
 		});
 	}
 
-	req[source] = value;
+	Object.keys(req[source]).forEach(key => delete req[source][key]);
+
+	// Đổ dữ liệu đã validate (value) vào lại
+	Object.assign(req[source], value);
 	return next();
 };
 
 const createUserSchema = Joi.object({
+	// MySQL
 	username: Joi.string().trim().min(3).max(255).required(),
 	password: Joi.string().trim().min(6).max(255).required(),
-	role: Joi.string().trim().min(2).max(50)
+	role    : Joi.string().trim().required().default('PASSENGER'),
+
+	// MongoDB
+	full_name: 		 Joi.string().trim(),
+    email: 			 Joi.string().email().lowercase(),
+    phone: 			 Joi.string().trim(),
+    address: 		 Joi.string(),
+    passport_number: Joi.string().uppercase(),
+	expire_date: 	 Joi.date(),
+    nationality: 	 Joi.string(),
+	meal: 			 Joi.string().default('Standard'),
+	seat_position: 	 Joi.string().default('none')
 });
 
 const updateUserSchema = Joi.object({
 	username: Joi.string().trim().min(3).max(255),
-	password: Joi.string().trim().min(6).max(255)
+	password: Joi.string().trim().min(6).max(255),
+
+	full_name: 		 Joi.string().trim(),
+    email: 			 Joi.string().email().lowercase(),
+    phone: 			 Joi.string().trim(),
+    address: 		 Joi.string(),
+    passport_number: Joi.string().uppercase(),
+	expire_date: 	 Joi.date(),
+    nationality: 	 Joi.string(),
+	meal: 			 Joi.string().default('Standard'),
+	seat_position: 	 Joi.string().default('none')
 }).min(1);
 
 const userIdParamSchema = Joi.object({
@@ -34,13 +59,13 @@ const userIdParamSchema = Joi.object({
 });
 
 const listUsersQuerySchema = Joi.object({
-	id: Joi.number().integer().positive(),
+	id		: Joi.number().integer().positive(),
 	username: Joi.string().trim().min(1).max(255),
-	role: Joi.string().trim().min(1).max(50)
+	role	: Joi.string().trim().min(1).max(50).uppercase()
 });
 
-export const validateCreateUser = validate(createUserSchema, "body");
-export const validateUpdateUser = validate(updateUserSchema, "body");
-export const validateUserIdParam = validate(userIdParamSchema, "params");
+export const validateCreateUser     = validate(createUserSchema, "body");
+export const validateUpdateUser     = validate(updateUserSchema, "body");
+export const validateUserIdParam    = validate(userIdParamSchema, "params");
 export const validateListUsersQuery = validate(listUsersQuerySchema, "query");
 // users.validator.js
