@@ -1,11 +1,11 @@
 import { Router } from "express";
-import PlaneController from "./plane.controller.js";
+import PlaneController from "./planes.controller.js";
 import {
 	validateCreatePlane,
 	validateListPlanesQuery,
 	validatePlaneIdParam,
 	validateUpdatePlane
-} from "./plane.validator.js";
+} from "./planes.validator.js";
 
 const router = Router();
 

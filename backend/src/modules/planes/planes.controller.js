@@ -1,4 +1,4 @@
-import PlaneService from "./plane.service.js";
+import PlaneService from "./planes.service.js";
 
 const sendResult = (res, result) => {
 	const statusCode = result?.statusCode || 500;

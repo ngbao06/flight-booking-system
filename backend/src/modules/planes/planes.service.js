@@ -1,4 +1,7 @@
-import PlaneRepository from "./plane.repository.js";
+import PlaneRepository from "./planes.repository.js";
+import eventBus , { Events } 	from "../../common/utils/eventsBus.js";
+
+const MODULE_NAME = "planes";
 
 class PlaneService {
 	static async createPlane(payload) {
@@ -11,6 +14,13 @@ class PlaneService {
 			};
 		}
 
+		eventBus.emit(Events.CREATE_EVENT, {
+			module: MODULE_NAME,
+			action: 'CREATE',
+			new_data: payload,
+			user_id: 12321311
+		});
+
 		return {
 			ok: true,
 			statusCode: 201,
@@ -20,67 +30,16 @@ class PlaneService {
 	}
 
 	static async getPlanes(filters = {}) {
-		const { id, airlineId, model, totalSeats, status } = filters;
+		const planes = await PlaneRepository.getPlaneComplex(filters);
 
-		if (id !== undefined) {
-			const plane = await PlaneRepository.getById(Number(id));
-			if (!plane) {
-				return {
-					ok: false,
-					statusCode: 404,
-					message: "Plane not found"
-				};
-			}
-
+		if (!planes) {
 			return {
-				ok: true,
-				statusCode: 200,
-				message: "Plane fetched successfully",
-				data: plane
+				ok: false,
+				statusCode: 404,
+				message: "Planes not found"
 			};
 		}
 
-		if (airlineId !== undefined) {
-			const planes = await PlaneRepository.getByAirline(airlineId);
-			return {
-				ok: true,
-				statusCode: 200,
-				message: "Planes fetched successfully",
-				data: planes || []
-			};
-		}
-
-		if (model) {
-			const planes = await PlaneRepository.getByModel(model);
-			return {
-				ok: true,
-				statusCode: 200,
-				message: "Planes fetched successfully",
-				data: planes || []
-			};
-		}
-
-		if (totalSeats !== undefined) {
-			const planes = await PlaneRepository.getByTotalSeats(totalSeats);
-			return {
-				ok: true,
-				statusCode: 200,
-				message: "Planes fetched successfully",
-				data: planes || []
-			};
-		}
-
-		if (status) {
-			const planes = await PlaneRepository.getByStatus(status);
-			return {
-				ok: true,
-				statusCode: 200,
-				message: "Planes fetched successfully",
-				data: planes || []
-			};
-		}
-
-		const planes = await PlaneRepository.getAll();
 		return {
 			ok: true,
 			statusCode: 200,
@@ -126,6 +85,15 @@ class PlaneService {
 			};
 		}
 
+		eventBus.emit(Events.UPDATE_EVENT, {
+			module: MODULE_NAME,
+			action: 'UPDATE',
+			id: id,
+			old_data: existed,
+			new_data: payload,
+			user_id: 12321311
+		});
+
 		const plane = await PlaneRepository.getById(id);
 		return {
 			ok: true,
@@ -154,6 +122,14 @@ class PlaneService {
 			};
 		}
 
+		eventBus.emit(Events.DELETE_EVENT, {
+			module: MODULE_NAME,
+			action: 'DELETE',
+			id: id,
+			old_data: existed,
+			user_id: 12321311
+		});
+		
 		return {
 			ok: true,
 			statusCode: 200,
