@@ -15,12 +15,15 @@
   "dependencies": {
     "@elastic/elasticsearch": "^9.3.4",
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "express-session": "^1.18.2",
     "joi": "^18.1.2",
     "mongodb": "^7.1.0",
     "mongoose": "^9.3.3",
     "mysql2": "^3.20.0",
+    "nodemailer": "^7.0.10",
     "redis": "^5.12.1"
   },
   "devDependencies": {
