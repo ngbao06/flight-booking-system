@@ -24,7 +24,7 @@ class UserRepository {
         } catch (error) {
             console.log(error.message);
             return false;
-        }s
+        }
     }
 
     static async updateUser(id, user) {
