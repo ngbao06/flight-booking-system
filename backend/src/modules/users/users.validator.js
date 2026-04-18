@@ -25,16 +25,16 @@ const createUserSchema = Joi.object({
 	// MySQL
 	username: Joi.string().trim().min(3).max(255).required(),
 	password: Joi.string().trim().min(6).max(255).required(),
-	role    : Joi.string().trim().required().default('PASSENGER'),
+	role    : Joi.string().trim().required().default('PASSENGER').uppercase(),
 
 	// MongoDB
-	full_name: 		 Joi.string().trim().required(),
-    email: 			 Joi.string().email().lowercase().required(),
-    phone: 			 Joi.string().trim().required(),
-    address: 		 Joi.string().required(),
-    passport_number: Joi.string().uppercase().required(),
-	expire_date: 	 Joi.date().required(),
-    nationality: 	 Joi.string().required(),
+	full_name: 		 Joi.string().trim(),
+    email: 			 Joi.string().email().lowercase(),
+    phone: 			 Joi.string().trim(),
+    address: 		 Joi.string(),
+    passport_number: Joi.string().uppercase(),
+	expire_date: 	 Joi.date(),
+    nationality: 	 Joi.string(),
 	meal: 			 Joi.string().default('Standard'),
 	seat_position: 	 Joi.string().default('none')
 });

@@ -5,6 +5,7 @@ import session from 'express-session';
 import errorMiddleware from './common/middlewares/error.middleware.js';
 import loadModules from './modules/index.js';
 import initAdminLogsListener from './modules/adminlogs/adminLogs.listener.js'
+import cors from 'cors';
 
 dotenv.config({ path: '.env' });
 
@@ -30,6 +31,10 @@ app.use(
 		}
 	})
 );
+app.use(cors({
+    origin: process.env.FRONTEND_URL, 
+    credentials: true 
+}));
 
 // Routes
 loadModules(app);

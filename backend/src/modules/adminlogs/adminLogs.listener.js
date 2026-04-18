@@ -16,6 +16,8 @@ const initAdminLogsListener = () => {
                 new_data: new_data
             });
 
+            console.log("logged");
+
         } catch (error) {
             console.error('❌ MongoDB Logging Error:', error);
         }    
@@ -62,7 +64,7 @@ const initAdminLogsListener = () => {
         }
     });
 
-    // bắt sự kiện thay đổi thông tin chuyến bay cụ thể
+    // bắt sự kiện thay đổi thông tin chuyến bay cụ thể (thay đổi điểm đến, giờ khởi hành, delay, reason)
     eventBus.on(Events.FLIGHT_UPDATED, async (data) => {
         try {
             const { old_data, new_data, ...info } = data;

@@ -35,6 +35,7 @@ class UsersService {
 			};
 		}
 
+		// TODO: tạo tk thành công nhưng khi đã đăng nhập vào sẽ hỏi các thông tin profile và vài thông tin cần required
 		// Lưu vào MongoDB
 		const profile = {
 			_id: userId,
