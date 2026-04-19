@@ -47,16 +47,6 @@ class PaymentsController {
 			return next(error);
 		}
 	}
-
-	static async deletePayment(req, res, next) {
-		try {
-			const id = Number(req.params.id);
-			const result = await PaymentsService.deletePayment(id);
-			return sendResult(res, result);
-		} catch (error) {
-			return next(error);
-		}
-	}
 }
 
 export default PaymentsController;

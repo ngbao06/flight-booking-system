@@ -13,7 +13,6 @@ router.get("/", validateListBookingsQuery, BookingController.getBookings);
 router.get("/:id", validateBookingIdParam, BookingController.getBookingById);
 router.post("/", validateCreateBooking, BookingController.createBooking);
 router.patch("/:id", validateBookingIdParam, validateUpdateBooking, BookingController.updateBooking);
-router.delete("/:id", validateBookingIdParam, BookingController.deleteBooking);
 
 export default router;
 // booking.routes.js

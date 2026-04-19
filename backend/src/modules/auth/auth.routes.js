@@ -32,7 +32,7 @@ router.post(
 	AuthController.requestResetPassword
 );
 router.post(
-	"/password/reset-confirm",
+	"/password/reset-confirm", // frontend lấy token và password mới gửi tới
 	validateConfirmResetPassword,
 	AuthController.confirmResetPassword
 );

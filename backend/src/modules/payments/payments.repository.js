@@ -17,10 +17,6 @@ class PaymentsRepository {
     // to-log
     static async updatePayment(id, payment) {
         const allowedFields = {
-            bookingId: "booking_id",
-            transactionId: "transaction_id",
-            amount: "amount",
-            paymentMethod: "payment_method",
             status: "status"
         };
 
@@ -50,16 +46,6 @@ class PaymentsRepository {
             console.log(error.message);
             return false;
         }
-        return result.affectedRows > 0;
-    }
-
-    static async deletePayment(id) {
-        const [result] = await query(`
-            UPDATE Payments
-            SET status = 'CANCELED'
-            WHERE id = ?
-            `, [id]);
-
         return result.affectedRows > 0;
     }
     

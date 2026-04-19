@@ -48,15 +48,6 @@ class BookingController {
 		}
 	}
 
-	static async deleteBooking(req, res, next) {
-		try {
-			const id = Number(req.params.id);
-			const result = await BookingService.deleteBooking(id);
-			return sendResult(res, result);
-		} catch (error) {
-			return next(error);
-		}
-	}
 }
 
 export default BookingController;

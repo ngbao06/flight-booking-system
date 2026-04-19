@@ -175,32 +175,6 @@ class PaymentsService {
 			data: payment
 		};
 	}
-
-	static async deletePayment(id) {
-		const existed = await PaymentsRepository.getById(id);
-		if (!existed) {
-			return {
-				ok: false,
-				statusCode: 404,
-				message: "Payment not found"
-			};
-		}
-
-		const deleted = await PaymentsRepository.deletePayment(id);
-		if (!deleted) {
-			return {
-				ok: false,
-				statusCode: 500,
-				message: "Failed to delete payment"
-			};
-		}
-
-		return {
-			ok: true,
-			statusCode: 200,
-			message: "Payment deleted successfully"
-		};
-	}
 }
 
 export default PaymentsService;

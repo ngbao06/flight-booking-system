@@ -26,9 +26,6 @@ class BookingRepository {
     // to-log
     static async updateBooking(id, booking) {
         const allowedFields = {
-            flightId: "flight_id",
-            bookingDate: "booking_date",
-            totalAmount: "total_amount",
             status: "status"
         };
 
@@ -61,16 +58,6 @@ class BookingRepository {
         return result.affectedRows > 0;
     }
 
-    static async deleteBooking(id) {
-        const [result] = await query(`
-            UPDATE Bookings
-            SET status = 'CANCELED'
-            WHERE id = ?
-            `, [id]);
-
-        return result.affectedRows > 0;
-    }
-    
     //
     static async getAll() {
         const [result] = await query(`

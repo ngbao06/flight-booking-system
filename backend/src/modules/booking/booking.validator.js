@@ -14,7 +14,11 @@ const validate = (schema, source) => (req, res, next) => {
 		});
 	}
 
-	req[source] = value;
+	Object.keys(req[source]).forEach(key => delete req[source][key]);
+
+	// Đổ dữ liệu đã validate (value) vào lại
+	Object.assign(req[source], value);
+	
 	return next();
 };
 
@@ -26,9 +30,6 @@ const createBookingSchema = Joi.object({
 });
 
 const updateBookingSchema = Joi.object({
-	flightId: Joi.number().integer().positive(),
-	bookingDate: Joi.date().iso(),
-	totalAmount: Joi.number().positive(),
 	status: Joi.string().trim().min(1).max(50)
 }).min(1);
 

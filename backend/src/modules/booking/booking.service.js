@@ -137,32 +137,6 @@ class BookingService {
 			data: booking
 		};
 	}
-
-	static async deleteBooking(id) {
-		const existed = await BookingRepository.getById(id);
-		if (!existed) {
-			return {
-				ok: false,
-				statusCode: 404,
-				message: "Booking not found"
-			};
-		}
-
-		const deleted = await BookingRepository.deleteBooking(id);
-		if (!deleted) {
-			return {
-				ok: false,
-				statusCode: 500,
-				message: "Failed to delete booking"
-			};
-		}
-
-		return {
-			ok: true,
-			statusCode: 200,
-			message: "Booking deleted successfully"
-		};
-	}
 }
 
 export default BookingService;

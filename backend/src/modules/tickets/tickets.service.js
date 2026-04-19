@@ -203,32 +203,6 @@ class TicketsService {
 			data: ticket || existed
 		};
 	}
-
-	static async deleteTicket(id) {
-		const existed = await TicketsRepository.getById(id);
-		if (!existed) {
-			return {
-				ok: false,
-				statusCode: 404,
-				message: "Ticket not found"
-			};
-		}
-
-		const deleted = await TicketsRepository.deleteTicket(id);
-		if (!deleted) {
-			return {
-				ok: false,
-				statusCode: 500,
-				message: "Failed to delete ticket"
-			};
-		}
-
-		return {
-			ok: true,
-			statusCode: 200,
-			message: "Ticket deleted successfully"
-		};
-	}
 }
 
 export default TicketsService;

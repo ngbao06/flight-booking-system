@@ -14,7 +14,10 @@ const validate = (schema, source) => (req, res, next) => {
 		});
 	}
 
-	req[source] = value;
+	Object.keys(req[source]).forEach(key => delete req[source][key]);
+
+	// Đổ dữ liệu đã validate (value) vào lại
+	Object.assign(req[source], value);
 	return next();
 };
 

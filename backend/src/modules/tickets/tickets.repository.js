@@ -73,16 +73,6 @@ class TicketsRepository {
         return result.affectedRows > 0;
     }
 
-    static async deleteTicket(id) {
-        const [result] = await query(`
-            UPDATE Tickets
-            SET status = 'CANCELED'
-            WHERE id = ?
-            `, [id]);
-
-        return result.affectedRows > 0;
-    }
-
     static async getAll() {
         const [result] = await query(`
             SELECT * FROM Tickets

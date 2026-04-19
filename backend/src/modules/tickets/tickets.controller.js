@@ -47,16 +47,6 @@ class TicketsController {
 			return next(error);
 		}
 	}
-
-	static async deleteTicket(req, res, next) {
-		try {
-			const id = Number(req.params.id);
-			const result = await TicketsService.deleteTicket(id);
-			return sendResult(res, result);
-		} catch (error) {
-			return next(error);
-		}
-	}
 }
 
 export default TicketsController;

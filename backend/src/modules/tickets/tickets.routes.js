@@ -13,7 +13,6 @@ router.get("/", validateListTicketsQuery, TicketsController.getTickets);
 router.get("/:id", validateTicketIdParam, TicketsController.getTicketById);
 router.post("/", validateCreateTicket, TicketsController.createTicket);
 router.patch("/:id", validateTicketIdParam, validateUpdateTicket, TicketsController.updateTicket);
-router.delete("/:id", validateTicketIdParam, TicketsController.deleteTicket);
 
 export default router;
 // tickets.routes.js
