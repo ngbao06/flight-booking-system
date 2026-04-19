@@ -21,6 +21,22 @@ class LoyaltyRepository {
         return result.length > 0 ? result[0] : null;
     }
 
+    // Add points back to passenger (for compensation/refund)
+    static async addPoints(passengerId, amount) {
+        try {
+            const [result] = await query(`
+                UPDATE loyalty
+                SET points_balance = points_balance + ?
+                WHERE passenger_id = ?
+                `, [amount, passengerId]);
+
+            return result.affectedRows > 0;
+        } catch (error) {
+            console.error('Error adding loyalty points:', error);
+            return false;
+        }
+    }
+
     /*
     * trg_update_loyalty_after_payment: trigger tự động cộng điểm khi hoàn thành chặng bay
     *   "ECONOMY" :  80% dặm bay

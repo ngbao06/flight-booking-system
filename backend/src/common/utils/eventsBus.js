@@ -19,36 +19,32 @@ export const Events = {
     LOYALTY_EXCHANGE: 'LOYALTY_EXCHANGE',
     LOYALTY_GAINED:   'LOYALTY_GAINED',
 
-    AIRLINE_UPDATED:  'AIRLINE_UPDATED',
-
-    PLANE_UPDATED:    'PLANE_UPDATE',
-
-    SEAT_CANCELLED:   'SEAT_CANCELLED',
-    SEAT_RESERVED:    'SEAT_RESERVED',
-    SEAT_PAID:        'SEAT_PAID',
-
-    USER_REGISTERED:  'USER_REGISTERED',
-    USER_LOGIN:       'USER_LOGIN',
-    USER_LOGOUT:      'USER_LOGOUT',
-    USER_UPDATED:     'USER_UPDATED',
-    USER_DELETED:     'USER_DELETED',
-
-    BOOKING_SUCCESS:  'BOOKING_SUCCESS',
-    BOOKING_FAILED:   'BOOKING_FAILED',
-
-    TICKETS_CREATED:  'TICKETS_CREATED',
-    TICKETS_PAID:     'TICKETS_PAID',
-    TICKETS_REFUNDED: 'TICKETS_REFUNDED',
-
-
-    // Payments
-    PAYMENT_FAILED:   'PAYMENT_FAILED',
-    PAYMENT_SUCCESS:  'PAYMENT_SUCCESS',
-    PAYMENT_REFUNDED: 'PAYMENT_REFUNDED',
-
-
-    SYSTEM_ERROR:     'SYSTEM_ERROR'
-
+    // Booking events
+    BOOKING_CREATED: 'booking:created',
+	AWAITING_SEAT_SELECTION: 'booking:awaiting_seat_selection',
+	
+	// Seat events
+	SEAT_SELECTED: 'seat:selected',
+	AWAITING_LOYALTY_POINTS: 'booking:awaiting_loyalty_points',
+	
+	// Loyalty events
+	LOYALTY_EXCHANGE: 'loyalty:exchange',
+	LOYALTY_REFUND: 'loyalty:refund',
+	AWAITING_PAYMENT: 'booking:awaiting_payment',
+	
+	// Payment events
+	PAYMENT_COMPLETED: 'payment:completed',
+	PAYMENT_FAILED: 'payment:failed',
+	ISSUE_TICKET: 'booking:issue_ticket',
+	
+	// Ticket events
+	TICKET_ISSUED: 'ticket:issued',
+	LOG_BOOKING_COMPLETED: 'booking:log_completed',
+	
+	// Saga events
+	SAGA_ERROR: 'saga:error',
+	SAGA_COMPLETED: 'saga:completed',
+	BOOKING_ROLLBACK: 'booking:rollback'
 };
 
 export default eventBus;

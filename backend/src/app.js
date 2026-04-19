@@ -5,6 +5,7 @@ import session from 'express-session';
 import errorMiddleware from './common/middlewares/error.middleware.js';
 import loadModules from './modules/index.js';
 import initAdminLogsListener from './modules/adminlogs/adminLogs.listener.js'
+import initSagaOrchestration from './common/saga/sagaInit.js';
 import cors from 'cors';
 
 dotenv.config({ path: '.env' });
@@ -39,7 +40,9 @@ app.use(cors({
 // Routes
 loadModules(app);
 
-initAdminLogsListener();  
+// Initialize event listeners and saga orchestration
+initAdminLogsListener();
+initSagaOrchestration();
 
 // Error handler (luôn cuối)
 app.use(errorMiddleware);

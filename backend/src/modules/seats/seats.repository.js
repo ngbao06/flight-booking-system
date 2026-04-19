@@ -103,6 +103,19 @@ class SeatsRepository {
 
         return result.length > 0 ? result : null;
     }
+
+    // Get multiple seats by their IDs
+    static async getByIds(seatIds) {
+        if (!seatIds || seatIds.length === 0) return null;
+        
+        const placeholders = seatIds.map(() => '?').join(',');
+        const [result] = await query(`
+            SELECT * FROM Seats
+            WHERE id IN (${placeholders})
+            `, seatIds);
+
+        return result.length > 0 ? result : null;
+    }
 }
 
 export default SeatsRepository;
