@@ -7,6 +7,16 @@ Tat ca route duoc mount theo dang:
 
 Vi du module airlines se co prefix /api/airlines.
 
+## 0) Response 
+Tat ca response deu tra theo format:
+```
+{
+  success: 
+  message: 
+  data: (ket qua tra ve tu backend)
+}
+```
+
 ## 1) Airlines (/api/airlines)
 
 - GET /api/airlines
