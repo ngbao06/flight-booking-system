@@ -41,7 +41,9 @@ const airlineIdParamSchema = Joi.object({
 const listAirlinesQuerySchema = Joi.object({
 	id:   Joi.number().integer().positive(),
 	code: Joi.string().trim().uppercase().pattern(codePattern),
-	name: Joi.string().trim().min(1).max(255)
+	name: Joi.string().trim().min(1).max(255),
+	page: Joi.number().integer().positive(),
+	limit: Joi.number().integer().positive().max(1000)
 });
 
 export const validateCreateAirline = validate(createAirlineSchema, "body");

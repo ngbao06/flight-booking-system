@@ -1,5 +1,6 @@
 // airlines.repository.js
 import { query } from './../../database/mysql/conn.js'
+import { normalizePageLimit, paginateQuery } from '../../common/utils/pagination.js';
 
 class AirlinesRepository {
     // bool
@@ -91,26 +92,37 @@ class AirlinesRepository {
     }
 
     static async getAirlinesComplex(filters) {
-        let sql = "SELECT * FROM Airlines WHERE is_deleted = 0";
-        
+        let fromSql = "FROM Airlines WHERE is_deleted = 0";
         const params = [];
 
         if (filters.code) {
-            sql += " AND code = ?";
+            fromSql += " AND code = ?";
             params.push(filters.code);
         }
 
         if (filters.name) {
-            sql += " AND name = ?";
+            fromSql += " AND name = ?";
             params.push(filters.name);
         }
 
         if (filters.status) {
-            sql += " AND status = ?";
+            fromSql += " AND status = ?";
             params.push(filters.status);
         }
 
-        const [result] = await query(sql, params);
+        if (filters.page !== undefined || filters.limit !== undefined) {
+            const { page, limit } = normalizePageLimit(filters, 10, 1000);
+            return paginateQuery({
+                selectSql: "SELECT *",
+                fromSql,
+                params,
+                page,
+                limit,
+                orderBy: "ORDER BY id ASC"
+            });
+        }
+
+        const [result] = await query(`SELECT * ${fromSql}`, params);
 
         return result.length > 0 ? result : null;
     }

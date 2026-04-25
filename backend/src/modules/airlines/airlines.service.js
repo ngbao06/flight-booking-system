@@ -40,6 +40,19 @@ class AirlinesService {
 	}
 
 	static async getAirlines(filters = {}) {
+		const { page, limit } = filters;
+		if (page !== undefined || limit !== undefined) {
+			const result = await AirlinesRepository.getAirlinesComplex(filters);
+
+			return {
+				ok: true,
+				statusCode: 200,
+				message: "Airlines fetched successfully",
+				data: result.data || [],
+				pagination: result.pagination
+			};
+		}
+
 		const airlines = await AirlinesRepository.getAirlinesComplex(filters);
 		
 		if (!airlines) {
