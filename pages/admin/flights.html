@@ -1,0 +1,207 @@
+
+<!-- ══════════════════════════════════════════
+     HTML
+══════════════════════════════════════════ -->
+<div class="page-content" id="flights-page">
+  <div id="flights-alert"></div>
+ 
+  <div class="row g-3">
+ 
+    <!-- ── LEFT: table ── -->
+    <div class="col-lg-8">
+      <div class="fp-card h-100" style="position:relative;">
+        <div id="flights-table-loading" class="fp-loading" style="display:none;">
+          <div class="fp-spinner"></div>
+        </div>
+ 
+        <div class="fp-card-header">
+          <span class="fp-card-title"><i class="fa-solid fa-plane"></i> Danh sách chuyến bay</span>
+          <button class="fp-btn fp-btn-outline fp-btn-sm" id="flights-refresh-btn">
+            <i class="fa-solid fa-rotate-right"></i> Làm mới
+          </button>
+        </div>
+ 
+        <div class="table-responsive">
+          <table class="table fp-table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Mã chuyến</th>
+                <th>Máy bay</th>
+                <th>Hãng bay</th>
+                <th>Từ</th>
+                <th>Đến</th>
+                <th>Trạng thái</th>
+                <th class="text-end">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="flights-table-body"></tbody>
+          </table>
+        </div>
+ 
+        <!-- pagination injected here by JS -->
+        <div class="d-flex justify-content-between align-items-center pt-3 px-3 pb-3" id="flights-pagination-wrap">
+          <small id="flights-pagination-info" class="text-muted" style="font-size:12px;"></small>
+          <div id="flights-pagination-nav" class="d-flex gap-1 flex-wrap"></div>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- ── RIGHT: forms ── -->
+    <div class="col-lg-4">
+      <div id="flights-right-panel" class="d-flex flex-column gap-3">
+ 
+        <!-- UPDATE FORM -->
+        <div class="fp-card flights-form-shell is-collapsed" id="flights-edit-card">
+          <div class="fp-card-header">
+            <span class="fp-card-title"><i class="fa-solid fa-pen-to-square"></i> Cập nhật chuyến bay</span>
+            <button type="button" class="fp-btn fp-btn-outline fp-btn-sm fp-card-toggle" id="flights-edit-toggle-btn">
+              <i class="fa-solid fa-pen-to-square"></i> Mở form sửa
+            </button>
+          </div>
+          <div class="fp-card-body p-3">
+            <form id="flights-edit-form" class="vstack gap-2">
+              <input type="hidden" id="flights-edit-id">
+ 
+              <div>
+                <label class="fp-label">Mã chuyến bay <span class="req">*</span></label>
+                <input class="fp-input" id="flights-edit-number" placeholder="VD: VNA001" required>
+              </div>
+ 
+              <div>
+                <label class="fp-label">Máy bay (Plane ID) <span class="req">*</span></label>
+                <input class="fp-input" id="flights-edit-plane-id" type="number" placeholder="Plane ID" required>
+              </div>
+ 
+              <div>
+                <label class="fp-label">Hãng bay (Airline ID) <span class="req">*</span></label>
+                <input class="fp-input" id="flights-edit-airline-id" type="number" placeholder="Airline ID" required>
+              </div>
+ 
+              <div class="fp-section-sep"><span>Lịch trình</span></div>
+ 
+              <div>
+                <label class="fp-label"><i class="fa-solid fa-plane-departure"></i> Sân bay khởi hành <span class="req">*</span></label>
+                <input class="fp-input" id="flights-edit-departure-airport-id" type="number" placeholder="Departure Airport ID" required>
+              </div>
+ 
+              <div>
+                <label class="fp-label"><i class="fa-solid fa-plane-arrival"></i> Sân bay đến <span class="req">*</span></label>
+                <input class="fp-input" id="flights-edit-arrival-airport-id" type="number" placeholder="Arrival Airport ID" required>
+              </div>
+ 
+              <div>
+                <label class="fp-label"><i class="fa-regular fa-clock"></i> Giờ khởi hành <span class="req">*</span></label>
+                <input class="fp-input" id="flights-edit-departure-time" type="datetime-local" required>
+              </div>
+ 
+              <div>
+                <label class="fp-label"><i class="fa-regular fa-clock"></i> Giờ đến <span class="req">*</span></label>
+                <input class="fp-input" id="flights-edit-arrival-time" type="datetime-local" required>
+              </div>
+ 
+              <div>
+                <label class="fp-label">Trạng thái <span class="req">*</span></label>
+                <select class="fp-select" id="flights-edit-status">
+                  <option value="WAITING">WAITING</option>
+                  <option value="BOARDING">BOARDING</option>
+                  <option value="DEPARTED">DEPARTED</option>
+                  <option value="ARRIVED">ARRIVED</option>
+                  <option value="DELAYED">DELAYED</option>
+                  <option value="CANCELLED">CANCELLED</option>
+                </select>
+              </div>
+ 
+              <div class="fp-section-sep"><span>Lý do cập nhật</span></div>
+ 
+              <div>
+                <label class="fp-label"><i class="fa-solid fa-note-sticky"></i> Lý do <span class="req">*</span></label>
+                <textarea class="fp-input" id="flights-edit-reason" rows="3"
+                  placeholder="Bắt buộc nhập lý do cập nhật..." required
+                  style="resize:vertical; min-height:72px;"></textarea>
+              </div>
+ 
+              <button class="fp-btn fp-btn-primary mt-1" type="submit" style="width:100%;">
+                <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi
+              </button>
+            </form>
+          </div>
+        </div>
+ 
+        <!-- CREATE FORM -->
+        <div class="fp-card flights-form-shell is-collapsed" id="flights-create-card">
+          <div class="fp-card-header">
+            <span class="fp-card-title"><i class="fa-solid fa-circle-plus"></i> Đăng ký chuyến bay</span>
+            <button type="button" class="fp-btn fp-btn-success fp-btn-sm fp-card-toggle" id="flights-create-toggle-btn">
+              <i class="fa-solid fa-circle-plus"></i> Đăng ký chuyến bay
+            </button>
+          </div>
+          <div class="fp-card-body p-3">
+            <!-- Flight number preview -->
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <span style="font-size:12px;font-weight:600;color:var(--f-muted);">Mã tự động:</span>
+              <div class="fn-preview" id="flights-create-fn-preview">
+                <i class="fa-solid fa-tag"></i> <span id="flights-create-fn-text">–</span>
+              </div>
+            </div>
+ 
+            <form id="flights-create-form" class="vstack gap-2">
+              <div>
+                <label class="fp-label"><i class="fa-solid fa-building"></i> Hãng bay <span class="req">*</span></label>
+                <select class="fp-select" id="flights-create-airline-id" required>
+                  <option value="">-- Đang tải... --</option>
+                </select>
+              </div>
+ 
+              <div>
+                <label class="fp-label"><i class="fa-solid fa-jet-fighter"></i> Máy bay <span class="req">*</span></label>
+                <select class="fp-select" id="flights-create-plane-id" required>
+                  <option value="">-- Chọn hãng bay trước --</option>
+                </select>
+              </div>
+ 
+              <div class="fp-section-sep"><span>Lịch trình</span></div>
+ 
+              <div>
+                <label class="fp-label"><i class="fa-solid fa-plane-departure"></i> Sân bay khởi hành <span class="req">*</span></label>
+                <select class="fp-select" id="flights-create-departure-airport-id" required>
+                  <option value="">-- Đang tải... --</option>
+                </select>
+              </div>
+ 
+              <div>
+                <label class="fp-label"><i class="fa-solid fa-plane-arrival"></i> Sân bay đến <span class="req">*</span></label>
+                <select class="fp-select" id="flights-create-arrival-airport-id" required>
+                  <option value="">-- Chọn sân bay đến --</option>
+                </select>
+              </div>
+ 
+              <div>
+                <label class="fp-label"><i class="fa-regular fa-clock"></i> Giờ khởi hành <span class="req">*</span></label>
+                <input class="fp-input" id="flights-create-departure-time" type="datetime-local" required>
+              </div>
+ 
+              <div>
+                <label class="fp-label"><i class="fa-regular fa-clock"></i> Giờ đến <span class="req">*</span></label>
+                <input class="fp-input" id="flights-create-arrival-time" type="datetime-local" required>
+              </div>
+ 
+              <div>
+                <label class="fp-label">Khoảng cách (km) <span class="req">*</span></label>
+                <input class="fp-input" id="flights-create-distance" type="number" min="1" placeholder="VD: 1200" required>
+              </div>
+ 
+              <button class="fp-btn fp-btn-success mt-1" type="submit" style="width:100%;">
+                <i class="fa-solid fa-paper-plane"></i> Tạo chuyến bay
+              </button>
+            </form>
+          </div>
+        </div>
+ 
+      </div><!-- /right panel -->
+    </div>
+ 
+  </div>
+</div>
+ 
+ 

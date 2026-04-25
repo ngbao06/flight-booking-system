@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>FlightAdmin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="../../assets/css/admin.css">
+    <link rel="stylesheet" href="../../assets/css/flights.css">
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon"><i class="fa-solid fa-plane-departure"></i></div>
+        <div>
+        <div class="brand-name">FlightAdmin</div>
+        <div class="brand-sub">Management System</div>
+        </div>
+    </div>
+
+    <div class="sidebar-scroll">
+        <!-- Nhóm 1 -->
+        <div class="nav-section">
+        <div class="nav-section-label">Quản lý</div>
+        <ul class="list-unstyled mb-0">
+            <li class="nav-item">
+            <a href="dashboard.html" class="nav-link-custom active" data-page="Dashboard">
+                <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            </li>
+            <li class="nav-item">
+            <a href="airlines.html" class="nav-link-custom" data-page="Hãng hàng không">
+                <span class="nav-icon"><i class="fa-solid fa-building"></i></span>
+                <span class="nav-label">Hãng hàng không</span>
+            </a>
+            </li>
+            <li class="nav-item">
+            <a href="airports.html" class="nav-link-custom" data-page="Sân bay">
+                <span class="nav-icon"><i class="fa-solid fa-plane-arrival"></i></span>
+                <span class="nav-label">Sân bay</span>
+            </a>
+            </li>
+            <li class="nav-item">
+            <a href="planes.html" class="nav-link-custom" data-page="Máy bay">
+                <span class="nav-icon"><i class="fa-solid fa-jet-fighter-up"></i></span>
+                <span class="nav-label">Máy bay</span>
+            </a>
+            </li>
+            <li class="nav-item">
+            <a href="flights.html" class="nav-link-custom" data-page="Chuyến bay">
+                <span class="nav-icon"><i class="fa-solid fa-plane"></i></span>
+                <span class="nav-label">Chuyến bay</span>
+            </a>
+            </li>
+            <li class="nav-item">
+            <a href="bookings.html" class="nav-link-custom" data-page="Giao dịch">
+                <span class="nav-icon"><i class="fa-solid fa-credit-card"></i></span>
+                <span class="nav-label">Giao dịch</span>
+                <span class="nav-badge">5</span>
+            </a>
+            </li>
+        </ul>
+        </div>
+
+        <hr class="sidebar-divider"/>
+
+        <!-- Nhóm 2 -->
+        <div class="nav-section">
+            <div class="nav-section-label">Người dùng</div>
+            <ul class="list-unstyled mb-0">
+                <li class="nav-item">
+                <a href="staff.html" class="nav-link-custom" data-page="Nhân viên">
+                    <span class="nav-icon"><i class="fa-solid fa-user-tie"></i></span>
+                    <span class="nav-label">Nhân viên</span>
+                </a>
+                </li>
+                <li class="nav-item">
+                <a href="passengers.html" class="nav-link-custom" data-page="Hành khách">
+                    <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+                    <span class="nav-label">Khách hàng thân thiết</span>
+                </a>
+                </li>
+            </ul>
+        </div>
+
+        <hr class="sidebar-divider"/>
+
+        <!-- Nhóm 3 -->
+        <div class="nav-section">
+        <div class="nav-section-label">Hệ thống</div>
+        <ul class="list-unstyled mb-0">
+            <li class="nav-item">
+            <a href="logs.html" class="nav-link-custom" data-page="Logs">
+                <span class="nav-icon"><i class="fa-solid fa-scroll"></i></span>
+                <span class="nav-label">Logs</span>
+            </a>
+            </li>
+        </ul>
+        </div>
+    </div>
+    </aside>
+
+    <!-- OVERLAY -->
+    <div id="overlay"></div>
+
+    <!-- MAIN -->
+    <div id="main-wrapper">
+
+    <!-- TOPBAR -->
+        <nav id="topbar">
+            <button id="hamburger"><i class="fa-solid fa-bars"></i></button>
+
+            <div class="topbar-page-name">
+            <span id="page-title">Dashboard</span>
+            <span id="page-breadcrumb">/ Trang chủ</span>
+            </div>
+
+            <!-- Account -->
+            <div class="account-wrapper">
+            <div class="account-btn" id="accountBtn">
+                <div class="account-avatar">AD</div>
+                <div class="account-info">
+                <div class="account-name">Admin System</div>
+                <div class="account-role">Quản trị viên</div>
+                </div>
+                <i class="fa-solid fa-chevron-down account-arrow"></i>
+            </div>
+            <div class="account-dropdown" id="accountDropdown">
+                <div class="px-3 py-2" style="background:var(--primary-light); border-bottom:1px solid var(--border);">
+                <div style="font-weight:700; font-size:13px; color:var(--primary);">Admin System</div>
+                <div style="font-size:11px; color:var(--muted);">admin@flightadmin.vn</div>
+                </div>
+                <button class="dropdown-item-custom"><i class="fa-solid fa-user-gear"></i> Quản lý tài khoản</button>
+                <button class="dropdown-item-custom"><i class="fa-solid fa-key"></i> Đổi mật khẩu</button>
+                <div class="dropdown-divider-custom"></div>
+                <button class="dropdown-item-custom danger"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</button>
+            </div>
+            </div>
+        </nav>
+
+        <!-- CONTENT -->
+        <main id="content">
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fa-solid fa-plane-circle-check"></i>
+                </div>
+                <div class="empty-title">Chào mừng trở lại!</div>
+                <div class="empty-sub">Chọn một chức năng từ thanh điều hướng để bắt đầu quản lý hệ thống hàng không của bạn.</div>
+            </div>
+        </main>
+
+    </div><!-- /main-wrapper -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="../../assets/js/admin.js"></script>
+
+</body>
+</html>

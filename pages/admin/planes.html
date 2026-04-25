@@ -1,0 +1,70 @@
+<div class="page-content" id="planes-page">
+  <div id="planes-alert"></div>
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h6 class="mb-0 fw-bold">Danh sách máy bay</h6>
+          <button class="btn btn-sm btn-outline-primary" id="planes-refresh-btn">Làm mới</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Airline ID</th>
+                <th>Model</th>
+                <th>Tổng ghế</th>
+                <th>Trạng thái</th>
+                <th class="text-end">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="planes-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 d-flex flex-column gap-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white"><h6 class="mb-0 fw-bold">Cập nhật máy bay</h6></div>
+        <div class="card-body">
+          <form id="planes-edit-form" class="vstack gap-2">
+            <input type="hidden" id="planes-edit-id">
+            <input class="form-control" id="planes-edit-airline-id" type="number" placeholder="Airline ID" required>
+            <input class="form-control" id="planes-edit-model" placeholder="Model" required>
+            <input class="form-control" id="planes-edit-total-seats" type="number" placeholder="Tổng ghế" required>
+            <select class="form-select" id="planes-edit-status">
+              <option value="ACTIVE">ACTIVE</option>
+              <option value="MAINTENANCE">MAINTENANCE</option>
+              <option value="GROUNDED">GROUNDED</option>
+              <option value="RETIRED">RETIRED</option>
+            </select>
+            <div class="d-grid gap-2 mt-2">
+              <button class="btn btn-primary" type="submit">Lưu thay đổi</button>
+              <button class="btn btn-outline-danger" type="button" id="planes-delete-btn">Xóa máy bay</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white"><h6 class="mb-0 fw-bold">Đăng ký máy bay</h6></div>
+        <div class="card-body">
+          <form id="planes-create-form" class="vstack gap-2">
+            <input class="form-control" id="planes-create-airline-id" type="number" placeholder="Airline ID" required>
+            <input class="form-control" id="planes-create-model" placeholder="Model" required>
+            <input class="form-control" id="planes-create-total-seats" type="number" placeholder="Tổng ghế" required>
+            <select class="form-select" id="planes-create-status">
+              <option value="ACTIVE">ACTIVE</option>
+              <option value="MAINTENANCE">MAINTENANCE</option>
+              <option value="GROUNDED">GROUNDED</option>
+              <option value="RETIRED">RETIRED</option>
+            </select>
+            <button class="btn btn-success" type="submit">Tạo máy bay</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
