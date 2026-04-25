@@ -9,6 +9,13 @@
   let _planes    = [];   // { id, model, airlineId }
   let _airports  = [];   // { id, name, iataCode }
   let _flightCounts = {}; // { airlineId: count }  for auto-numbering
+  const FLIGHT_STATUSES = [
+    { value: 'WAITING', label: 'Chờ xử lý' },
+    { value: 'DELAYED', label: 'Trì hoãn' },
+    { value: 'CANCELED', label: 'Đã hủy' },
+    { value: 'IN_PROGRESS', label: 'Đang diễn ra' },
+    { value: 'COMPLETED', label: 'Hoàn thành' },
+  ];
  
   /* ────────────────────────────────────── */
   /*  UTILS                                 */
@@ -64,17 +71,95 @@
     );
   }
 
-  function openEditForm(item) {
-    fill(item);
-    setFormState('edit');
-  }
-
   function openCreateForm() {
     setFormState('create');
   }
 
   function closeForms() {
     setFormState(null);
+  }
+
+  function renderAirlineOptions(selectedAirlineId) {
+    const opts = _airlines.map(function (airline) {
+      return '<option value="' + airline.id + '">' + window.AdminAPI.escape(airline.name) +
+        (airline.code ? ' (' + airline.code + ')' : '') + '</option>';
+    }).join('');
+    const html = '<option value="">-- Chọn hãng bay --</option>' + opts;
+
+    $('#flights-create-airline-id').html(html);
+    $('#flights-edit-airline-id').html(html);
+
+    if (selectedAirlineId !== undefined && selectedAirlineId !== null && selectedAirlineId !== '') {
+      $('#flights-edit-airline-id').val(String(selectedAirlineId));
+    }
+  }
+
+  function renderAirportOptions() {
+    const opts = _airports.map(function (airport) {
+      return '<option value="' + airport.id + '">' + window.AdminAPI.escape(airport.name || airport.iataCode || airport.code) +
+        (airport.iataCode ? ' (' + airport.iataCode + ')' : '') + '</option>';
+    }).join('');
+    const html = '<option value="">-- Chọn sân bay --</option>' + opts;
+
+    $('#flights-create-departure-airport-id').html(html);
+    $('#flights-create-arrival-airport-id').html(html);
+    $('#flights-edit-departure-airport-id').html(html);
+    $('#flights-edit-arrival-airport-id').html(html);
+  }
+
+  function renderStatusOptions() {
+    const html = '<option value="">-- Chọn trạng thái --</option>' + FLIGHT_STATUSES.map(function (status) {
+      return '<option value="' + status.value + '">' + status.label + ' (' + status.value + ')</option>';
+    }).join('');
+    $('#flights-edit-status').html(html);
+  }
+
+  function buildAirportArrivalOptions(excludedAirportId) {
+    return _airports
+      .filter(function (airport) {
+        return String(airport.id) !== String(excludedAirportId);
+      })
+      .map(function (airport) {
+        return '<option value="' + airport.id + '">' + window.AdminAPI.escape(airport.name || airport.iataCode || airport.code) +
+          (airport.iataCode ? ' (' + airport.iataCode + ')' : '') + '</option>';
+      }).join('');
+  }
+
+  async function loadPlanesByAirline(airlineId, targetSelector, selectedPlaneId) {
+    const $planeSelect = $(targetSelector || '#flights-create-plane-id');
+    if (!airlineId) {
+      $planeSelect.html('<option value="">-- Chọn hãng bay trước --</option>');
+      return;
+    }
+    $planeSelect.html('<option value="">-- Đang tải... --</option>');
+    try {
+      const res = await window.AdminAPI.request('/api/planes?airlineId=' + airlineId + '&limit=200', { method: 'GET' });
+      _planes = Array.isArray(res.data) ? res.data : [];
+      if (!_planes.length) {
+        $planeSelect.html('<option value="">-- Không có máy bay --</option>');
+        return;
+      }
+      const opts = _planes.map(function (plane) {
+        return '<option value="' + plane.id + '">' + window.AdminAPI.escape(plane.model || plane.name || ('Plane #' + plane.id)) +
+          ' (ID: ' + plane.id + ')' + '</option>';
+      }).join('');
+      $planeSelect.html('<option value="">-- Chọn máy bay --</option>' + opts);
+      if (selectedPlaneId !== undefined && selectedPlaneId !== null && selectedPlaneId !== '') {
+        $planeSelect.val(String(selectedPlaneId));
+      }
+    } catch (e) {
+      $planeSelect.html('<option value="">-- Lỗi tải máy bay --</option>');
+    }
+  }
+
+  async function prepareEditForm(item) {
+    const airlineId = item.airlineId || item.airline_id || '';
+    const planeId = item.planeId || item.plane_id || '';
+
+    renderStatusOptions();
+    renderAirportOptions();
+    renderAirlineOptions(airlineId);
+    await loadPlanesByAirline(airlineId, '#flights-edit-plane-id', planeId);
   }
  
   /* ────────────────────────────────────── */
@@ -93,10 +178,12 @@
       + '<td>' + airlineName + '</td>'
       + '<td>' + window.AdminAPI.escape(getAirportLabel(item.departureAirportId || item.departure_airport_id || '')) + '</td>'
       + '<td>' + window.AdminAPI.escape(getAirportLabel(item.arrivalAirportId || item.arrival_airport_id || '')) + '</td>'
+      + '<td>' + window.AdminAPI.escape(getAirportLabel(window.AdminAPI.formatDate(item.departureTime || item.departure_time || ''))) + '</td>'
+      + '<td>' + window.AdminAPI.escape(getAirportLabel(window.AdminAPI.formatDate(item.arrivalTime || item.arrival_time || ''))) + '</td>'
       + '<td><span class="s-badge s-' + status + '">' + status + '</span></td>'
       + '<td class="text-end" style="white-space:nowrap;">'
-      + '<button class="fp-btn fp-btn-outline fp-btn-sm js-edit me-1"><i class="fa-solid fa-pen"></i></button>'
-      + '<button class="fp-btn fp-btn-danger-ghost fp-btn-sm js-delete"><i class="fa-solid fa-trash"></i></button>'
+      +   '<button class="fp-btn fp-btn-outline fp-btn-sm js-edit me-1"><i class="fa-solid fa-pen"></i></button>'
+      +   '<button class="fp-btn fp-btn-danger-ghost fp-btn-sm js-delete"><i class="fa-solid fa-trash"></i></button>'
       + '</td></tr>';
   }
  
@@ -114,8 +201,6 @@
     $('#flights-edit-arrival-time').val(toLocalInput(item.arrivalTime || item.arrival_time));
     $('#flights-edit-status').val((item.status || 'WAITING').toUpperCase());
     $('#flights-edit-reason').val('');
-    // scroll right panel to top
-    $('#flights-right-panel').scrollTop(0);
   }
  
   /* ────────────────────────────────────── */
@@ -214,14 +299,12 @@
     try {
       const res = await window.AdminAPI.request('/api/airlines?limit=200', { method: 'GET' });
       _airlines = Array.isArray(res.data) ? res.data : [];
- 
-      const opts = _airlines.map(a =>
-        '<option value="' + a.id + '">' + window.AdminAPI.escape(a.name) +
-        (a.code ? ' (' + a.code + ')' : '') + '</option>'
-      ).join('');
-      $('#flights-create-airline-id').html('<option value="">-- Chọn hãng bay --</option>' + opts);
+
+      renderAirlineOptions();
     } catch (e) {
-      $('#flights-create-airline-id').html('<option value="">-- Lỗi tải hãng bay --</option>');
+      const err = '<option value="">-- Lỗi tải hãng bay --</option>';
+      $('#flights-create-airline-id').html(err);
+      $('#flights-edit-airline-id').html(err);
     }
   }
  
@@ -229,41 +312,11 @@
     try {
       const res = await window.AdminAPI.request('/api/airports?limit=500', { method: 'GET' });
       _airports = Array.isArray(res.data) ? res.data : [];
- 
-      const opts = _airports.map(a =>
-        '<option value="' + a.id + '">' + window.AdminAPI.escape(a.name || a.iataCode || a.code) +
-        (a.iataCode ? ' (' + a.iataCode + ')' : '') + '</option>'
-      ).join('');
-      const base = '<option value="">-- Chọn sân bay --</option>' + opts;
-      $('#flights-create-departure-airport-id').html(base);
-      $('#flights-create-arrival-airport-id').html(base);
+
+      renderAirportOptions();
     } catch (e) {
       const err = '<option value="">-- Lỗi tải sân bay --</option>';
-      $('#flights-create-departure-airport-id, #flights-create-arrival-airport-id').html(err);
-    }
-  }
- 
-  async function loadPlanesByAirline(airlineId) {
-    const $planeSelect = $('#flights-create-plane-id');
-    if (!airlineId) {
-      $planeSelect.html('<option value="">-- Chọn hãng bay trước --</option>');
-      return;
-    }
-    $planeSelect.html('<option value="">-- Đang tải... --</option>');
-    try {
-      const res = await window.AdminAPI.request('/api/planes?airlineId=' + airlineId + '&limit=200', { method: 'GET' });
-      _planes = Array.isArray(res.data) ? res.data : [];
-      if (!_planes.length) {
-        $planeSelect.html('<option value="">-- Không có máy bay --</option>');
-        return;
-      }
-      const opts = _planes.map(p =>
-        '<option value="' + p.id + '">' + window.AdminAPI.escape(p.model || p.name || 'Plane #' + p.id) +
-        ' (ID: ' + p.id + ')' + '</option>'
-      ).join('');
-      $planeSelect.html('<option value="">-- Chọn máy bay --</option>' + opts);
-    } catch (e) {
-      $planeSelect.html('<option value="">-- Lỗi tải máy bay --</option>');
+      $('#flights-create-departure-airport-id, #flights-create-arrival-airport-id, #flights-edit-departure-airport-id, #flights-edit-arrival-airport-id').html(err);
     }
   }
  
@@ -292,6 +345,12 @@
     $('#flights-create-fn-text').text(fn);
     $('#flights-create-fn-preview').toggleClass('ready', fn !== '–');
   }
+
+  async function openEditForm(item) {
+    await prepareEditForm(item || {});
+    fill(item || {});
+    setFormState('edit');
+  }
  
   /* ────────────────────────────────────── */
   /*  BIND EVENTS                           */
@@ -313,7 +372,7 @@
       const id = $(this).closest('tr').data('id');
       try {
         const payload = await window.AdminAPI.request('/api/flights/' + id, { method: 'GET' });
-        openEditForm(payload.data || {});
+        await openEditForm(payload.data || {});
       } catch (err) { showErr(err); }
     });
  
@@ -358,18 +417,22 @@
       } catch (err) { showErr(err); }
     });
 
-    $('#flights-edit-toggle-btn').on('click.flights', function () {
+    $('#flights-edit-toggle-btn').on('click.flights', async function () {
       if ($('#flights-edit-card').hasClass('is-open')) {
         closeForms();
       } else {
-        openEditForm({});
+        await openEditForm({});
       }
+    });
+
+    $('#flights-edit-airline-id').on('change.flights', async function () {
+      await loadPlanesByAirline($(this).val(), '#flights-edit-plane-id');
     });
  
     /* ── CREATE FORM: airline changed → reload planes + preview ── */
     $('#flights-create-airline-id').on('change.flights', async function () {
       const airlineId = $(this).val();
-      await loadPlanesByAirline(airlineId);
+      await loadPlanesByAirline(airlineId, '#flights-create-plane-id');
       await updateFlightNumberPreview();
     });
  
@@ -377,12 +440,14 @@
     $('#flights-create-departure-airport-id').on('change.flights', function () {
       const depId = $(this).val();
       const arrSelect = $('#flights-create-arrival-airport-id');
-      const opts = _airports
-        .filter(a => String(a.id) !== String(depId))
-        .map(a =>
-          '<option value="' + a.id + '">' + window.AdminAPI.escape(a.name || a.iataCode || a.code) +
-          (a.iataCode ? ' (' + a.iataCode + ')' : '') + '</option>'
-        ).join('');
+      const opts = buildAirportArrivalOptions(depId);
+      arrSelect.html('<option value="">-- Chọn sân bay đến --</option>' + opts);
+    });
+
+    $('#flights-edit-departure-airport-id').on('change.flights', function () {
+      const depId = $(this).val();
+      const arrSelect = $('#flights-edit-arrival-airport-id');
+      const opts = buildAirportArrivalOptions(depId);
       arrSelect.html('<option value="">-- Chọn sân bay đến --</option>' + opts);
     });
 
@@ -441,6 +506,7 @@
       Promise.all([
         loadAirlines(),
         loadAirports(),
+        Promise.resolve().then(renderStatusOptions),
       ])
         .then(function () {
           return loadData(1);
@@ -453,7 +519,9 @@
       $('#flights-edit-form').off('.flights');
       $('#flights-create-form').off('.flights');
       $('#flights-create-airline-id').off('.flights');
+      $('#flights-edit-airline-id').off('.flights');
       $('#flights-create-departure-airport-id').off('.flights');
+      $('#flights-edit-departure-airport-id').off('.flights');
       $('#flights-edit-toggle-btn').off('.flights');
       $('#flights-create-toggle-btn').off('.flights');
       $(document).off('.flights');
