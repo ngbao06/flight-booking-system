@@ -44,7 +44,9 @@ const listPlanesQuerySchema = Joi.object({
 	airlineId: Joi.number().integer().positive(),
 	model: Joi.string().trim().min(1).max(255),
 	totalSeats: Joi.number().integer().positive(),
-	status: Joi.string().trim().min(1).max(50)
+	status: Joi.string().trim().min(1).max(50),
+	page: Joi.number().integer().positive(),
+	limit: Joi.number().integer().positive().max(1000)
 });
 
 export const validateCreatePlane = validate(createPlaneSchema, "body");

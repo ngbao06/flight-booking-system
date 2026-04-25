@@ -1,4 +1,5 @@
 import { query } from "../../database/mysql/conn.js";
+import { normalizePageLimit, paginateQuery } from "../../common/utils/pagination.js";
 
 class PlaneRepository {
     // bool
@@ -129,31 +130,43 @@ class PlaneRepository {
     }
 
     static async getPlaneComplex(filters) {
-        let sql = `SELECT id, airline_id, model, total_seats, status FROM Planes WHERE is_deleted = 0`;
+        let fromSql = `FROM Planes WHERE is_deleted = 0`;
         
         const params = [];
 
         if (filters.airlineId) {
-            sql += " AND airline_id = ?";
+            fromSql += " AND airline_id = ?";
             params.push(filters.airlineId);
         }
 
         if (filters.model) {
-            sql += " AND model LIKE ?";
+            fromSql += " AND model LIKE ?";
             params.push(`%${filters.model}%`);
         }
 
         if (filters.totalSeats) {
-            sql += " AND total_seats = ?";
+            fromSql += " AND total_seats = ?";
             params.push(filters.totalSeats);
         }
 
         if (filters.status) {
-            sql += " AND status = ?";
+            fromSql += " AND status = ?";
             params.push(filters.status);
         }
 
-        const [result] = await query(sql, params);
+        if (filters.page !== undefined || filters.limit !== undefined) {
+            const { page, limit } = normalizePageLimit(filters, 10, 1000);
+            return paginateQuery({
+                selectSql: "SELECT id, airline_id, model, total_seats, status",
+                fromSql,
+                params,
+                page,
+                limit,
+                orderBy: "ORDER BY id ASC"
+            });
+        }
+
+        const [result] = await query(`SELECT id, airline_id, model, total_seats, status ${fromSql}`, params);
 
         return result.length > 0 ? result : null;
     }

@@ -30,6 +30,20 @@ class PlaneService {
 	}
 
 	static async getPlanes(filters = {}) {
+		const { page, limit } = filters;
+
+		if (page !== undefined || limit !== undefined) {
+			const planes = await PlaneRepository.getPlaneComplex(filters);
+
+			return {
+				ok: true,
+				statusCode: 200,
+				message: "Planes fetched successfully",
+				data: planes.data || [],
+				pagination: planes.pagination
+			};
+		}
+
 		const planes = await PlaneRepository.getPlaneComplex(filters);
 
 		if (!planes) {
