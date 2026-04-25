@@ -50,32 +50,65 @@ class FlightsService {
 
 		const cachedFlights = await redisClient.get(cacheKey);
 		if (cachedFlights) {
+			const parsed = JSON.parse(cachedFlights);
 			return {
 				ok: true,
 				statusCode: 200,
 				message: "Flights fetched successfully from cache",
-				data: JSON.parse(cachedFlights)
+				data: parsed.data,
+				pagination: parsed.pagination
 			}
 		}
 
 		const flights = await FlightsRepository.getFlightsComplex(filters);
 
-		if (flights) {
-			await redisClient.set(cacheKey, JSON.stringify(flights), { EX: TTL_list });
-		}
-		else {
+		// if (flights) {
+		// 	await redisClient.set(cacheKey, JSON.stringify(flights), { EX: TTL_list });
+		// }
+		// else {
+		// 	return {
+		// 		ok: false,
+		// 		statusCode: 404,
+		// 		message: "Flights not found"
+		// 	}
+		// }
+
+		// return {
+		// 	ok: true,
+		// 	statusCode: 200,
+		// 	message: "Flights fetched successfully",
+		// 	data: flights || []
+		// };
+
+		if (flights && flights.data.length > 0) {
+			const totalPages = Math.ceil(flights.totalItems / flights.limit);
+			
+			const responseData = {
+				data: flights.data,
+				pagination: {
+					totalItems: flights.totalItems,
+					totalPages: totalPages,
+					currentPage: flights.page,
+					pageSize: flights.limit
+				}
+			};
+
+			await redisClient.set(cacheKey, JSON.stringify(responseData), { EX: TTL_list });
+
 			return {
-				ok: false,
-				statusCode: 404,
-				message: "Flights not found"
-			}
+				ok: true,
+				statusCode: 200,
+				message: "Flights fetched successfully",
+				data: responseData.data,
+				pagination: responseData.pagination
+			};
 		}
 
 		return {
-			ok: true,
-			statusCode: 200,
-			message: "Flights fetched successfully",
-			data: flights || []
+			ok: false,
+			statusCode: 404,
+			message: "No flights found",
+			data: []
 		};
 	}
 

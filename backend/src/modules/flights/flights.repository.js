@@ -104,53 +104,74 @@ class FlightRepository {
 
     // get all hoặc có filter
     static async getFlightsComplex(filter) {
-        let sql = "SELECT * FROM Flights WHERE is_deleted = 0";
+        const page = Number(filter.page) || 1;
+        const limit = Number(filter.limit) || 20;
+        const offset = Number((page - 1) * limit);
+
+        let sql = " FROM Flights WHERE is_deleted = 0";
 
         const params = [];
 
-        if (filter.flightNumber) {
-            sql += " AND flight_number = ?";
-            params.push(filter.flightNumber);
-        }
+        if (filter && Object.keys(filter).length > 0) {
+            if (filter.flightNumber) {
+                sql += " AND flight_number = ?";
+                params.push(filter.flightNumber);
+            }
 
-        if (filter.planeId) {
-            sql += " AND plane_id = ?";
-            params.push(filter.planeId);
-        }
+            if (filter.planeId) {
+                sql += " AND plane_id = ?";
+                params.push(filter.planeId);
+            }
 
-        if (filter.airlineId) {
-            sql += " AND airline_id = ?";
-            params.push(filter.airlineId);
-        }
-    
-        if (filter.departureAirportId) {
-            sql += " AND departure_airport_id = ?";
-            params.push(filter.departureAirportId);
+            if (filter.airlineId) {
+                sql += " AND airline_id = ?";
+                params.push(filter.airlineId);
+            }
+        
+            if (filter.departureAirportId) {
+                sql += " AND departure_airport_id = ?";
+                params.push(filter.departureAirportId);
+            }
+            
+            if (filter.arrivalAirportId) {
+                sql += " AND arrival_airport_id = ?";
+                params.push(filter.arrivalAirportId);
+            }
+
+            if (filter.departureTime) {
+                sql += " AND departure_time = ?";
+                params.push(filter.departureTime);
+            }
+
+            if (filter.arrivalTime) {
+                sql += " AND DATE_FORMAT(arrival_time, '%Y-%m-%d %H:%i') = DATE_FORMAT(?, '%Y-%m-%d %H:%i')";
+                params.push(filter.arrivalTime);
+            }
+
+            if (filter.status) {
+                sql += " AND status = ?";
+                params.push(filter.status);
+            }
         }
         
-        if (filter.arrivalAirportId) {
-            sql += " AND arrival_airport_id = ?";
-            params.push(filter.arrivalAirportId);
+        const totalRecords = await this.getTotalRecord(sql, params);
+        const finalSql = `SELECT * ${sql} LIMIT ${limit} OFFSET ${offset}`;
+
+        console.log(finalSql + " | " + params + " | " + totalRecords)
+        const [result] = await query(finalSql, params);
+
+        return {
+            data: result,
+            totalItems: totalRecords,
+            page: page,
+            limit: limit
         }
+    }
 
-        if (filter.departureTime) {
-            sql += " AND departure_time = ?";
-            params.push(filter.departureTime);
-        }
-
-        if (filter.arrivalTime) {
-            sql += " AND DATE_FORMAT(arrival_time, '%Y-%m-%d %H:%i') = DATE_FORMAT(?, '%Y-%m-%d %H:%i')";
-            params.push(filter.arrivalTime);
-        }
-
-        if (filter.status) {
-            sql += " AND status = ?";
-            params.push(filter.status);
-        }
-
-        const [result] = await query(sql, params);
-
-        return result.length > 0 ? result : null;
+    static async getTotalRecord(sql, params) {
+        const countSql = "SELECT COUNT(*) as total " + sql;
+        const [result] = await query(countSql, params);
+        return result[0].total;
     }
 }
 

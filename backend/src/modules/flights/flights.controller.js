@@ -5,7 +5,8 @@ const sendResult = (res, result) => {
 	return res.status(statusCode).json({
 		success: Boolean(result?.ok),
 		message: result?.message || "Internal server error",
-		data: result?.data
+		data: result?.data,
+		pagination: result?.pagination
 	});
 };
 
