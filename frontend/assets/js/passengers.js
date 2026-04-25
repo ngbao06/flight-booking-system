@@ -27,41 +27,17 @@
       + '</div>';
   }
 
-  // function ensurePaginationUI() {
-  //   if ($('#passengers-pagination-nav').length) return;
-  //   const html = '<div class="d-flex justify-content-between align-items-center pt-3 px-3 pb-3">'
-  //     + '<small id="passengers-pagination-info" class="text-muted"></small>'
-  //     + '<nav aria-label="pagination" id="passengers-pagination-nav"></nav>'
-  //     + '</div>';
-  //   $('#passengers-table-body').closest('.table-responsive').after(html);
-  // }
-
-  // function renderPagination(pagination) {
-  //   ensurePaginationUI();
-  //   if (!pagination) {
-  //     $('#passengers-pagination-info').html('');
-  //     $('#passengers-pagination-nav').html('');
-  //     return;
-  //   }
-
-  //   currentPage = pagination.currentPage;
-  //   $('#passengers-pagination-info').html('Trang ' + pagination.currentPage + ' / ' + pagination.totalPages + ' (tổng ' + pagination.totalRecords + ')');
-
-  //   let html = '<ul class="pagination mb-0 gap-1" style="flex-wrap:wrap;">';
-  //   if (pagination.hasPrevPage) html += '<li class="page-item"><button class="page-link rounded-2" data-page="' + (currentPage - 1) + '">Trước</button></li>';
-
-  //   const start = Math.max(1, currentPage - 2);
-  //   const end = Math.min(pagination.totalPages, currentPage + 2);
-  //   for (let p = start; p <= end; p++) {
-  //     html += '<li class="page-item ' + (p === currentPage ? 'active' : '') + '"><button class="page-link rounded-2" data-page="' + p + '">' + p + '</button></li>';
-  //   }
-
-  //   if (pagination.hasNextPage) html += '<li class="page-item"><button class="page-link rounded-2" data-page="' + (currentPage + 1) + '">Tiếp</button></li>';
-  //   html += '</ul>';
-  //   $('#passengers-pagination-nav').html(html);
-  // }
+  function ensurePaginationUI() {
+    if ($('#passengers-pagination-nav').length) return;
+    const html = '<div class="d-flex justify-content-between align-items-center pt-3 px-3 pb-3">'
+      + '<small id="passengers-pagination-info" class="text-muted"></small>'
+      + '<div id="passengers-pagination-nav" class="d-flex gap-1 flex-wrap"></div>'
+      + '</div>';
+    $('#passengers-table-body').closest('.table-responsive').after(html);
+  }
 
   function renderPagination(pagination) {
+    ensurePaginationUI();
     if (!pagination) {
       $('#passengers-pagination-info').html('');
       $('#passengers-pagination-nav').html('');
@@ -69,29 +45,60 @@
     }
 
     currentPage = pagination.currentPage;
+    const total = pagination.totalItems ?? pagination.totalRecords ?? '?';
     $('#passengers-pagination-info').html(
-      'Trang ' + pagination.currentPage + ' / ' + pagination.totalPages +
-      ' (tổng ' + pagination.totalRecords + ')'
+      'Trang <strong>' + pagination.currentPage + '</strong> / ' + pagination.totalPages +
+      ' &nbsp;·&nbsp; ' + total + ' hành khách'
     );
 
-    let html = '<ul class="pagination mb-0 gap-1" style="flex-wrap:wrap;">';
-    if (pagination.hasPrevPage) {
-      html += '<li class="page-item"><button class="page-link rounded-2" data-page="'
-        + (currentPage - 1) + '">Trước</button></li>';
+    const totalPages = Number(pagination.totalPages) || 0;
+    const pagesToShow = [];
+
+    function pushPage(pageNumber) {
+      if (pageNumber >= 1 && pageNumber <= totalPages && !pagesToShow.includes(pageNumber)) {
+        pagesToShow.push(pageNumber);
+      }
     }
 
-    const start = Math.max(1, currentPage - 2);
-    const end   = Math.min(pagination.totalPages, currentPage + 2);
-    for (let p = start; p <= end; p++) {
-      html += '<li class="page-item ' + (p === currentPage ? 'active' : '') + '">'
-        + '<button class="page-link rounded-2" data-page="' + p + '">' + p + '</button></li>';
+    if (totalPages <= 7) {
+      for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+        pushPage(pageNumber);
+      }
+    } else {
+      pushPage(1);
+      pushPage(totalPages);
+      pushPage(currentPage - 1);
+      pushPage(currentPage);
+      pushPage(currentPage + 1);
+
+      if (currentPage <= 3) {
+        pushPage(2);
+        pushPage(3);
+        pushPage(4);
+      }
+
+      if (currentPage >= totalPages - 2) {
+        pushPage(totalPages - 3);
+        pushPage(totalPages - 2);
+        pushPage(totalPages - 1);
+      }
+
+      pagesToShow.sort(function (a, b) { return a - b; });
     }
 
-    if (pagination.hasNextPage) {
-      html += '<li class="page-item"><button class="page-link rounded-2" data-page="'
-        + (currentPage + 1) + '">Tiếp</button></li>';
+    let html = '';
+
+    for (let index = 0; index < pagesToShow.length; index++) {
+      const pageNumber = pagesToShow[index];
+      const previousPage = pagesToShow[index - 1];
+
+      if (index > 0 && pageNumber - previousPage > 1) {
+        html += '<span class="fp-page-ellipsis">...</span>';
+      }
+
+      html += '<button class="fp-page-btn' + (pageNumber === currentPage ? ' active' : '') + '" data-page="' + pageNumber + '">' + pageNumber + '</button>';
     }
-    html += '</ul>';
+
     $('#passengers-pagination-nav').html(html);
   }
   async function loadData(page) {
@@ -120,7 +127,7 @@
   }
 
   function bind() {
-    // ensurePaginationUI();
+    ensurePaginationUI();
     $('#passengers-refresh-btn').on('click.passengers', function () { loadData(currentPage).catch(showErr); });
 
     $(document).on('click.passengers', '#passengers-pagination-nav button', function () {

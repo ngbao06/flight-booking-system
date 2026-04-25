@@ -1,13 +1,107 @@
 <div class="page-content" id="dashboard-page">
-	<div id="dashboard-alert"></div>
-	<div class="row g-3 mb-4" id="dashboard-summary"></div>
-
-	<div class="card shadow-sm border-0">
-		<div class="card-header bg-white">
-			<h6 class="mb-0 fw-bold">Tổng quan hệ thống</h6>
-		</div>
-		<div class="card-body" id="dashboard-overview">
-			<p class="text-muted mb-0">Đang tải dữ liệu tổng quan...</p>
-		</div>
-	</div>
+ 
+  <!-- ── ALERT ── -->
+  <div id="dashboard-alert"></div>
+ 
+  <!-- ── DATE FILTER BAR ── -->
+  <div class="db-filter-bar">
+    <div class="db-filter-left">
+      <span class="db-filter-label"><i class="fa-solid fa-calendar-days"></i> Khoảng thời gian</span>
+      <div class="db-date-group">
+        <div class="db-date-field">
+          <label>Từ ngày</label>
+          <input type="date" id="db-from" class="db-date-input" />
+        </div>
+        <div class="db-date-sep">→</div>
+        <div class="db-date-field">
+          <label>Đến ngày</label>
+          <input type="date" id="db-to" class="db-date-input" />
+        </div>
+      </div>
+    </div>
+    <div class="db-filter-right">
+      <button class="db-quick-btn" data-range="today">Hôm nay</button>
+      <button class="db-quick-btn" data-range="7d">7 ngày</button>
+      <button class="db-quick-btn" data-range="30d">30 ngày</button>
+      <button class="db-quick-btn" data-range="all">Tất cả</button>
+      <button class="db-apply-btn" id="db-apply-btn">
+        <i class="fa-solid fa-rotate-right"></i> Áp dụng
+      </button>
+    </div>
+  </div>
+ 
+  <!-- ── KPI CARDS ── -->
+  <div class="db-kpi-grid" id="db-kpi-grid">
+    <div class="db-kpi-skeleton"></div>
+    <div class="db-kpi-skeleton"></div>
+    <div class="db-kpi-skeleton"></div>
+    <div class="db-kpi-skeleton"></div>
+  </div>
+ 
+  <!-- ── FLIGHT STATS + USER STATS ── -->
+  <div class="db-section-row">
+    <div class="db-panel db-flight-panel">
+      <div class="db-panel-header">
+        <span class="db-panel-title"><i class="fa-solid fa-plane"></i> Thống kê chuyến bay</span>
+      </div>
+      <div class="db-panel-body" id="db-flight-stats">
+        <div class="db-skeleton-bar"></div>
+        <div class="db-skeleton-bar" style="width:70%;margin-top:10px;"></div>
+      </div>
+    </div>
+ 
+    <div class="db-panel db-user-panel">
+      <div class="db-panel-header">
+        <span class="db-panel-title"><i class="fa-solid fa-users"></i> Người dùng &amp; Loyalty</span>
+      </div>
+      <div class="db-panel-body" id="db-user-stats">
+        <div class="db-skeleton-bar"></div>
+        <div class="db-skeleton-bar" style="width:60%;margin-top:10px;"></div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- ── BOTTOM: Airlines + Destinations ── -->
+  <div class="db-bottom-row">
+ 
+    <div class="db-panel db-airlines-panel">
+      <div class="db-panel-header">
+        <span class="db-panel-title"><i class="fa-solid fa-building"></i> TOP Hãng hàng không</span>
+        <div class="db-panel-nav" id="db-airlines-nav"></div>
+      </div>
+      <div class="db-panel-body p0">
+        <table class="db-table">
+          <thead>
+            <tr>
+              <th>#</th><th>Hãng bay</th><th>Chuyến</th><th>Giao dịch</th><th>Doanh thu</th><th>Tỉ trọng</th>
+            </tr>
+          </thead>
+          <tbody id="db-airlines-body">
+            <tr><td colspan="6" class="db-loading-cell"><span class="db-inline-spin"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+ 
+    <div class="db-panel db-dest-panel">
+      <div class="db-panel-header">
+        <span class="db-panel-title"><i class="fa-solid fa-location-dot"></i> Điểm đến được ưu chuộng</span>
+        <div class="db-panel-nav" id="db-dest-nav"></div>
+      </div>
+      <div class="db-panel-body p0">
+        <table class="db-table">
+          <thead>
+            <tr>
+              <th>#</th><th>Sân bay</th><th>Chuyến</th><th>Đặt vé</th><th>Doanh thu</th>
+            </tr>
+          </thead>
+          <tbody id="db-dest-body">
+            <tr><td colspan="5" class="db-loading-cell"><span class="db-inline-spin"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+ 
+  </div>
+ 
 </div>

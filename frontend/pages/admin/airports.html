@@ -2,13 +2,15 @@
 	<div id="airports-alert"></div>
 	<div class="row g-3">
 		<div class="col-lg-9">
-			<div class="card shadow-sm border-0 h-100">
-				<div class="card-header bg-white d-flex justify-content-between align-items-center">
-					<h6 class="mb-0 fw-bold">Danh sách sân bay</h6>
-					<button class="btn btn-sm btn-outline-primary" id="airports-refresh-btn">Làm mới</button>
+			<div class="fp-card h-100" style="position:relative;">
+				<div class="fp-card-header">
+					<span class="fp-card-title"><i class="fa-solid fa-tower-control"></i> Danh sách sân bay</span>
+					<button class="fp-btn fp-btn-outline fp-btn-sm" id="airports-refresh-btn">
+						<i class="fa-solid fa-rotate-right"></i> Làm mới
+					</button>
 				</div>
 				<div class="table-responsive">
-					<table class="table table-hover align-middle mb-0">
+					<table class="table fp-table align-middle mb-0">
 						<thead class="table-light">
 							<tr>
 								<th>ID</th>
@@ -27,33 +29,61 @@
 		</div>
 
 		<div class="col-lg-3 d-flex flex-column gap-3">
-			<div class="card shadow-sm border-0">
-				<div class="card-header bg-white"><h6 class="mb-0 fw-bold">Cập nhật sân bay</h6></div>
-				<div class="card-body">
+			<div class="fp-card">
+				<div class="fp-card-header">
+					<span class="fp-card-title"><i class="fa-solid fa-pen-to-square"></i> Cập nhật sân bay</span>
+				</div>
+				<div class="fp-card-body p-3">
 					<form id="airports-edit-form" class="vstack gap-2">
 						<input type="hidden" id="airports-edit-id">
-						<input class="form-control" id="airports-edit-iata" placeholder="IATA code" required>
-						<input class="form-control" id="airports-edit-name" placeholder="Tên sân bay" required>
-						<input class="form-control" id="airports-edit-city" placeholder="Thành phố" required>
-						<input class="form-control" id="airports-edit-region" placeholder="Miền" required>
+						<div>
+							<label class="fp-label">IATA code</label>
+							<input class="fp-input" id="airports-edit-iata" placeholder="IATA code" required>
+						</div>
+						<div>
+							<label class="fp-label">Tên sân bay</label>
+							<input class="fp-input" id="airports-edit-name" placeholder="Tên sân bay" required>
+						</div>
+						<div>
+							<label class="fp-label">Thành phố</label>
+							<input class="fp-input" id="airports-edit-city" placeholder="Thành phố" required>
+						</div>
+						<div>
+							<label class="fp-label">Miền</label>
+							<input class="fp-input" id="airports-edit-region" placeholder="Miền" required>
+						</div>
 						<div class="d-grid gap-2 mt-2">
-							<button class="btn btn-primary" type="submit">Lưu thay đổi</button>
-							<button class="btn btn-outline-warning" type="button" id="airports-toggle-lock-btn">Khóa/Mở khóa</button>
-							<button class="btn btn-outline-danger" type="button" id="airports-delete-btn">Xóa sân bay</button>
+							<button class="fp-btn fp-btn-primary" type="submit">Lưu thay đổi</button>
+							<button class="fp-btn fp-btn-outline" type="button" id="airports-toggle-lock-btn">Khóa / mở khóa</button>
+							<button class="fp-btn fp-btn-danger-ghost" type="button" id="airports-delete-btn">Xóa sân bay</button>
 						</div>
 					</form>
 				</div>
 			</div>
 
-			<div class="card shadow-sm border-0">
-				<div class="card-header bg-white"><h6 class="mb-0 fw-bold">Đăng ký sân bay</h6></div>
-				<div class="card-body">
+			<div class="fp-card">
+				<div class="fp-card-header">
+					<span class="fp-card-title"><i class="fa-solid fa-circle-plus"></i> Đăng ký sân bay</span>
+				</div>
+				<div class="fp-card-body p-3">
 					<form id="airports-create-form" class="vstack gap-2">
-						<input class="form-control" id="airports-create-iata" placeholder="IATA code" required>
-						<input class="form-control" id="airports-create-name" placeholder="Tên sân bay" required>
-						<input class="form-control" id="airports-create-city" placeholder="Thành phố" required>
-						<input class="form-control" id="airports-create-region" placeholder="Miền" required>
-						<button class="btn btn-success" type="submit">Tạo sân bay</button>
+						<div>
+							<label class="fp-label">IATA code</label>
+							<input class="fp-input" id="airports-create-iata" placeholder="IATA code" required>
+						</div>
+						<div>
+							<label class="fp-label">Tên sân bay</label>
+							<input class="fp-input" id="airports-create-name" placeholder="Tên sân bay" required>
+						</div>
+						<div>
+							<label class="fp-label">Thành phố</label>
+							<input class="fp-input" id="airports-create-city" placeholder="Thành phố" required>
+						</div>
+						<div>
+							<label class="fp-label">Miền</label>
+							<input class="fp-input" id="airports-create-region" placeholder="Miền" required>
+						</div>
+						<button class="fp-btn fp-btn-success" type="submit">Tạo sân bay</button>
 					</form>
 				</div>
 			</div>
