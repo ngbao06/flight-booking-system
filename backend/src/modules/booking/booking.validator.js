@@ -43,7 +43,9 @@ const listBookingsQuerySchema = Joi.object({
 	bookingDate: Joi.date().iso(),
 	fromAmount: Joi.number().positive(),
 	toAmount: Joi.number().positive(),
-	status: Joi.string().trim().min(1).max(50)
+	status: Joi.string().trim().min(1).max(50),
+	page: Joi.number().integer().positive(),
+	limit: Joi.number().integer().positive().max(1000)
 });
 
 export const validateCreateBooking = validate(createBookingSchema, "body");

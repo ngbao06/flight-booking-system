@@ -1,5 +1,6 @@
 // booking.repository.js
 import { query } from "../../database/mysql/conn.js";
+import { normalizePageLimit, paginateQuery } from "../../common/utils/pagination.js";
 
 class BookingRepository {
     //
@@ -114,6 +115,46 @@ class BookingRepository {
             WHERE status = ?
             `, [status]);
 
+        return result.length > 0 ? result : null;
+    }
+
+    static async getBookingsComplex(filters = {}) {
+        let fromSql = "FROM Bookings WHERE 1 = 1";
+        const params = [];
+
+        if (filters.flightId !== undefined) {
+            fromSql += " AND flight_id = ?";
+            params.push(filters.flightId);
+        }
+
+        if (filters.bookingDate) {
+            fromSql += " AND booking_date = ?";
+            params.push(filters.bookingDate);
+        }
+
+        if (filters.fromAmount !== undefined && filters.toAmount !== undefined) {
+            fromSql += " AND total_amount BETWEEN ? AND ?";
+            params.push(filters.fromAmount, filters.toAmount);
+        }
+
+        if (filters.status) {
+            fromSql += " AND status = ?";
+            params.push(filters.status);
+        }
+
+        if (filters.page !== undefined || filters.limit !== undefined) {
+            const { page, limit } = normalizePageLimit(filters, 10, 1000);
+            return paginateQuery({
+                selectSql: "SELECT *",
+                fromSql,
+                params,
+                page,
+                limit,
+                orderBy: "ORDER BY id DESC"
+            });
+        }
+
+        const [result] = await query(`SELECT * ${fromSql}`, params);
         return result.length > 0 ? result : null;
     }
     

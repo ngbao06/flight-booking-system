@@ -23,7 +23,7 @@ class BookingService {
 	}
 
 	static async getBookings(filters = {}) {
-		const { id, flightId, bookingDate, fromAmount, toAmount, status } = filters;
+		const { id, page, limit } = filters;
 
 		if (id !== undefined) {
 			const booking = await BookingRepository.getById(Number(id));
@@ -42,6 +42,20 @@ class BookingService {
 				data: booking
 			};
 		}
+
+		if (page !== undefined || limit !== undefined) {
+			const result = await BookingRepository.getBookingsComplex(filters);
+
+			return {
+				ok: true,
+				statusCode: 200,
+				message: "Bookings fetched successfully",
+				data: result.data || [],
+				pagination: result.pagination
+			};
+		}
+
+		const { flightId, bookingDate, fromAmount, toAmount, status } = filters;
 
 		if (flightId !== undefined) {
 			const bookings = await BookingRepository.getByFlight(flightId);
