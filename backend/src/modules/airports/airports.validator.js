@@ -44,7 +44,9 @@ const listAirportsQuerySchema = Joi.object({
 	name: Joi.string().trim().min(1).max(255),
 	city: Joi.string().trim().min(1).max(255),
 	region: Joi.string().trim().min(1).max(255),
-	status: Joi.string().trim().min(1).max(50)
+	status: Joi.string().trim().min(1).max(50),
+	page: Joi.number().integer().positive(),
+	limit: Joi.number().integer().positive().max(1000)
 });
 
 export const validateCreateAirport = validate(createAirportSchema, "body");

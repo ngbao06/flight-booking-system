@@ -1,5 +1,6 @@
 import { query } from "../../database/mysql/conn.js";
 import eventBus, { Events } from "../../common/utils/eventsBus.js";
+import { normalizePageLimit, paginateQuery } from "../../common/utils/pagination.js";
 
 class AirportsRepository {
     // bool
@@ -134,6 +135,51 @@ class AirportsRepository {
             SELECT * FROM Airports WHERE is_deleted = 0 AND status = ?
             `, [status]);
 
+        return result.length > 0 ? result : null;
+    }
+
+    static async getAirportsComplex(filters = {}) {
+        let fromSql = "FROM Airports WHERE is_deleted = 0";
+        const params = [];
+
+        if (filters.iataCode) {
+            fromSql += " AND iata_code = ?";
+            params.push(filters.iataCode);
+        }
+
+        if (filters.name) {
+            fromSql += " AND name = ?";
+            params.push(filters.name);
+        }
+
+        if (filters.city) {
+            fromSql += " AND city = ?";
+            params.push(filters.city);
+        }
+
+        if (filters.region) {
+            fromSql += " AND region = ?";
+            params.push(filters.region);
+        }
+
+        if (filters.status) {
+            fromSql += " AND status = ?";
+            params.push(filters.status);
+        }
+
+        if (filters.page !== undefined || filters.limit !== undefined) {
+            const { page, limit } = normalizePageLimit(filters, 10, 1000);
+            return paginateQuery({
+                selectSql: "SELECT *",
+                fromSql,
+                params,
+                page,
+                limit,
+                orderBy: "ORDER BY id ASC"
+            });
+        }
+
+        const [result] = await query(`SELECT * ${fromSql}`, params);
         return result.length > 0 ? result : null;
     }
 }

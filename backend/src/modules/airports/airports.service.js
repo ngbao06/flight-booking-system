@@ -41,7 +41,7 @@ class AirportsService {
     }
 
     static async getAirports(filters = {}) {
-        const { id, iataCode, name, city, region, status } = filters;
+        const { id, iataCode, name, city, region, status, page, limit } = filters;
 
         if (id !== undefined) {
             const airport = await AirportsRepository.getById(Number(id));
@@ -58,6 +58,17 @@ class AirportsService {
                 statusCode: 200,
                 message: "Airport fetched successfully",
                 data: airport
+            };
+        }
+
+        if (page !== undefined || limit !== undefined) {
+            const airports = await AirportsRepository.getAirportsComplex(filters);
+            return {
+                ok: true,
+                statusCode: 200,
+                message: "Airports fetched successfully",
+                data: airports.data || [],
+                pagination: airports.pagination
             };
         }
 
