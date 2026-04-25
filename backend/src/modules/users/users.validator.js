@@ -61,11 +61,19 @@ const userIdParamSchema = Joi.object({
 const listUsersQuerySchema = Joi.object({
 	id		: Joi.number().integer().positive(),
 	username: Joi.string().trim().min(1).max(255),
-	role	: Joi.string().trim().min(1).max(50).uppercase()
+	role	: Joi.string().trim().min(1).max(50).uppercase(),
+	page	: Joi.number().integer().positive().default(1),
+	limit	: Joi.number().integer().positive().max(100).default(10)
+});
+
+const listPassengersFullInfoQuerySchema = Joi.object({
+	page	: Joi.number().integer().positive().default(1),
+	limit	: Joi.number().integer().positive().max(100).default(10)
 });
 
 export const validateCreateUser     = validate(createUserSchema, "body");
 export const validateUpdateUser     = validate(updateUserSchema, "body");
 export const validateUserIdParam    = validate(userIdParamSchema, "params");
 export const validateListUsersQuery = validate(listUsersQuerySchema, "query");
+export const validateListPassengersFullInfoQuery = validate(listPassengersFullInfoQuerySchema, "query");
 // users.validator.js

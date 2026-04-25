@@ -5,7 +5,8 @@ const sendResult = (res, result) => {
 	return res.status(statusCode).json({
 		success: Boolean(result?.ok),
 		message: result?.message || "Internal server error",
-		data: result?.data
+		data: result?.data,
+		pagination: result?.pagination
 	});
 };
 
@@ -22,6 +23,25 @@ class UsersController {
 	static async getUsers(req, res, next) {
 		try {
 			const result = await UsersService.getUsers(req.query);
+			return sendResult(res, result);
+		} catch (error) {
+			return next(error);
+		}
+	}
+
+	static async getPassengersFullInfo(req, res, next) {
+		try {
+			const result = await UsersService.getPassengersFullInfo(req.query);
+			return sendResult(res, result);
+		} catch (error) {
+			return next(error);
+		}
+	}
+
+	static async getPassengerProfile(req, res, next) {
+		try {
+			const id = Number(req.params.id);
+			const result = await UsersService.getPassengerProfile(id);
 			return sendResult(res, result);
 		} catch (error) {
 			return next(error);

@@ -81,34 +81,101 @@ class UsersService {
 	}
 
 	static async getUsers(filters = {}) {
-		const { username, role } = filters;
+		const { username, role, page, limit } = filters;
 
 		if (username && role) {
 			return {
 				ok: false,
-				status: 400,
+				statusCode: 400,
 				message: "Bad request"
-			}
+			};
 		}
 
-		// query param chỉ nhận 1 param, nếu kh có = getAll()
+		if (page !== undefined || limit !== undefined) {
+			const result = await UsersRepository.getUsersWithPagination({
+				username,
+				role,
+				page: page || 1,
+				limit: limit || 10
+			});
+
+			return {
+				ok: true,
+				statusCode: 200,
+				message: "Users fetched successfully",
+				data: result.data || [],
+				pagination: result.pagination
+			};
+		}
+
 		let user;
-		if (username)  user = await UsersRepository.getUserByUsername(username);
+		if (username) user = await UsersRepository.getUserByUsername(username);
 		else if (role) user = await UsersRepository.getUserByRole(role);
-		else 		   user = await UsersRepository.getAllUser();
+		else user = await UsersRepository.getAllUser();
 
 		if (!user) {
 			return {
-				ok: false,
-				statusCode: 404,
-				message: "User not found"
-			}
+				ok: true,
+				statusCode: 200,
+				message: "Users fetched successfully",
+				data: []
+			};
 		}
+
 		return {
 			ok: true,
 			statusCode: 200,
 			message: "Users fetched successfully",
-			data: user || []
+			data: Array.isArray(user) ? user : [user]
+		};
+	}
+
+	static async getPassengersFullInfo(filters = {}) {
+		const { page, limit } = filters;
+
+		const result = await UsersRepository.getPassengerUsersWithPagination({
+			page: page || 1,
+			limit: limit || 10
+		});
+
+		const passengers = result.data || [];
+		const userIds = passengers.map((user) => user.id);
+		const profiles = await UsersRepository.getPassengerProfilesByUserIds(userIds);
+
+		const profileMap = new Map(
+			(profiles || []).map((profile) => [Number(profile._id), profile])
+		);
+
+		const data = passengers.map((user) => ({
+			...user,
+			profile: profileMap.get(user.id) || null
+		}));
+
+		return {
+			ok: true,
+			statusCode: 200,
+			message: "Passengers fetched successfully",
+			data,
+			pagination: result.pagination
+		};
+	}
+
+	static async getPassengerProfile(id) {
+		const profile = await UsersRepository.getPassengerProfileByUserId(id);
+
+		if (!profile) {
+			return {
+				ok: false,
+				statusCode: 404,
+				message: "Passenger profile not found"
+			};
+		}
+
+		return {
+			ok: true,
+			statusCode: 200,
+			message: "Passenger profile fetched successfully",
+			data: profile
 		};
 	}
 

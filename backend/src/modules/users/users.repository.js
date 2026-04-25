@@ -1,6 +1,7 @@
 // users.repository.js
 import { query } from "../../database/mysql/conn.js";
 import PassengerProfile from "../../database/mongodb/schemas/passengers_profile.js";
+import { buildPagination } from "../../common/utils/pagination.js";
 
 class UserRepository {
     // luu vao MySQL
@@ -99,13 +100,45 @@ class UserRepository {
     }
 
     static async getUserByRole(role = 'PASSENGER') {
-        const [result] = await query(`
+        let sql = `
             SELECT id, username, created_at, updated_at, is_deleted, role 
             FROM Users
-            WHERE is_deleted = 0 AND role = ?
-            `, [role]);
+            WHERE is_deleted = 0
+        `;
+        const params = [];
 
+        if (role === 'STAFF') {
+            sql += ` AND role IN ('ADMIN', 'GATE_AGENT')`;
+        } else {
+            sql += ` AND role = ?`;
+            params.push(role);
+        }
+
+        const [result] = await query(sql, params);
         return result.length > 0 ? result : null;
+    }
+
+    static async getAllPassengerUsers() {
+        const [result] = await query(`
+            SELECT id, username, created_at, updated_at, is_deleted, role
+            FROM Users
+            WHERE is_deleted = 0 AND role = 'PASSENGER'
+            ORDER BY id ASC
+            `);
+
+        return result.length > 0 ? result : [];
+    }
+
+    static async getPassengerProfilesByUserIds(userIds = []) {
+        if (!Array.isArray(userIds) || userIds.length === 0) {
+            return [];
+        }
+
+        return PassengerProfile.find({ _id: { $in: userIds } }).lean();
+    }
+
+    static async getPassengerProfileByUserId(userId) {
+        return PassengerProfile.findById(userId).lean();
     }
 
     static async isUserDeleted(id) {
@@ -127,13 +160,79 @@ class UserRepository {
         }
 
         if (filters.role) {
-            sql += ` AND role = ?`;
-            params.push(filters.role);
+            if (filters.role === 'STAFF') {
+                sql += ` AND role IN ('ADMIN', 'GATE_AGENT')`;
+            } else {
+                sql += ` AND role = ?`;
+                params.push(filters.role);
+            }
         }
 
         const [result] = await query(sql, params);
         
         return result.length > 0 ? result : null;
+    }
+    static async getUsersWithPagination(filters = {}) {
+        const page = Math.max(1, Number(filters.page) || 1);
+        const limit = Math.min(100, Math.max(1, Number(filters.limit) || 10));
+        const offset = (page - 1) * limit;
+
+        let sql = `SELECT id, username, created_at, updated_at, is_deleted, role FROM Users WHERE is_deleted = 0`;
+        let countSql = `SELECT COUNT(*) as total FROM Users WHERE is_deleted = 0`;
+        const params = [];
+        const countParams = [];
+
+        if (filters.username) {
+            sql += ` AND username = ?`;
+            countSql += ` AND username = ?`;
+            params.push(filters.username);
+            countParams.push(filters.username);
+        }
+
+        if (filters.role) {
+            if (filters.role === 'STAFF') {
+                sql += ` AND role IN ('ADMIN', 'GATE_AGENT')`;
+                countSql += ` AND role IN ('ADMIN', 'GATE_AGENT')`;
+            } else {
+                sql += ` AND role = ?`;
+                countSql += ` AND role = ?`;
+                params.push(filters.role);
+                countParams.push(filters.role);
+            }
+        }
+
+        sql += ` ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+
+        const [countRows] = await query(countSql, countParams);
+        const [rows] = await query(sql, params);
+
+        const total = Number(countRows?.[0]?.total || 0);
+        const pagination = buildPagination(total, page, limit);
+
+        return {
+            data: rows,
+            pagination
+        };
+    }
+
+    static async getPassengerUsersWithPagination(filters = {}) {
+        const page = Math.max(1, Number(filters.page) || 1);
+        const limit = Math.min(100, Math.max(1, Number(filters.limit) || 10));
+        const offset = (page - 1) * limit;
+
+        const countSql = `SELECT COUNT(*) as total FROM Users WHERE is_deleted = 0 AND role = 'PASSENGER'`;
+        const listSql = `SELECT id, username, created_at, updated_at, is_deleted, role FROM Users WHERE is_deleted = 0 AND role = 'PASSENGER' ORDER BY id ASC LIMIT ${limit} OFFSET ${offset}`;
+
+        const [countRows] = await query(countSql);
+        const [rows] = await query(listSql);
+
+        const total = Number(countRows?.[0]?.total || 0);
+        const pagination = buildPagination(total, page, limit);
+
+        return {
+            data: rows,
+            pagination
+        };
     }
 }
 
