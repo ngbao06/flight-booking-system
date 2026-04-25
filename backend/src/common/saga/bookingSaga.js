@@ -7,16 +7,6 @@ import LoyaltyRepository from '../../modules/loyalty/loyalty.repository.js';
 import AdminLogRepository from '../../modules/adminlogs/adminLogs.repository.js';
 import SagaManager from './sagaManager.js';
 
-/**
- * BookingSaga implements the Saga pattern for booking workflow
- * Steps:
- * 1. Create booking (PENDING)
- * 2. Wait for seat selection
- * 3. Apply loyalty points (if used)
- * 4. Process payment
- * 5. Issue ticket
- * 6. Log to system
- */
 class BookingSaga {
     constructor(bookingData) {
         this.bookingId = bookingData.bookingId;
@@ -33,11 +23,9 @@ class BookingSaga {
         this.paymentId = null;
     }
 
-    /**
-     * Step 1: Create booking with PENDING status
-     */
+    // tạo booking
     async executeStep1_CreateBooking() {
-        try {
+        try {   
             console.log(`[SAGA STEP 1] Creating booking for flight ${this.flightId}`);
             
             const booking = await BookingRepository.createBooking({
@@ -78,9 +66,7 @@ class BookingSaga {
         }
     }
 
-    /**
-     * Step 2: Handle seat selection
-     */
+    // chọn ghế
     async handleSeatSelection(seatData) {
         try {
             console.log(`[SAGA STEP 2] Processing seat selection for booking ${this.bookingId}`);
@@ -138,9 +124,7 @@ class BookingSaga {
         }
     }
 
-    /**
-     * Step 3: Handle loyalty points exchange
-     */
+    // đổi điểm LP
     async handleLoyaltyExchange(loyaltyData) {
         try {
             console.log(`[SAGA STEP 3] Exchanging loyalty points for booking ${this.bookingId}`);
@@ -197,9 +181,7 @@ class BookingSaga {
         }
     }
 
-    /**
-     * Step 4: Handle payment success
-     */
+    // thanh toán
     async handlePaymentSuccess(paymentData) {
         try {
             console.log(`[SAGA STEP 4] Processing payment success for booking ${this.bookingId}`);
@@ -252,9 +234,7 @@ class BookingSaga {
         }
     }
 
-    /**
-     * Step 4b: Handle payment failure
-     */
+    // compensation
     async handlePaymentFailure(paymentData) {
         try {
             console.log(`[SAGA STEP 4b] Processing payment failure for booking ${this.bookingId}`);
@@ -342,9 +322,7 @@ class BookingSaga {
         }
     }
 
-    /**
-     * Step 6: Log booking to admin logs
-     */
+    // ghi log
     async executeStep6_LogBooking() {
         try {
             console.log(`[SAGA STEP 6] Logging booking information`);
@@ -398,9 +376,7 @@ class BookingSaga {
         }
     }
 
-    /**
-     * Compensation: Release reserved seats
-     */
+    // nhả ghế nếu thanh toán fail
     async compensateStep2_ReleaseSeat() {
         try {
             console.log(`[COMPENSATION] Releasing seats for booking ${this.bookingId}`);
@@ -415,9 +391,7 @@ class BookingSaga {
         }
     }
 
-    /**
-     * Compensation: Refund loyalty points
-     */
+    // hoàn điểm đã đổi
     async compensateStep3_RefundLoyalty(passengerId) {
         try {
             console.log(`[COMPENSATION] Refunding loyalty points for passenger ${passengerId}`);
@@ -433,9 +407,7 @@ class BookingSaga {
         }
     }
 
-    /**
-     * Compensation: Refund payment
-     */
+    // hoàn tiền
     async compensateStep4_RefundPayment(paymentId) {
         try {
             console.log(`[COMPENSATION] Refunding payment ${paymentId}`);
@@ -450,9 +422,7 @@ class BookingSaga {
         }
     }
 
-    /**
-     * Compensation: Cancel issued tickets
-     */
+    // hoãn vé
     async compensateStep5_CancelTickets() {
         try {
             console.log(`[COMPENSATION] Canceling tickets for booking ${this.bookingId}`);
@@ -471,9 +441,6 @@ class BookingSaga {
         }
     }
 
-    /**
-     * Rollback all completed steps
-     */
     async rollbackAllSteps() {
         try {
             console.log(`[ROLLBACK] Rolling back all steps for booking ${this.bookingId}`);
@@ -492,7 +459,7 @@ class BookingSaga {
             }
 
             if (this.completedSteps.includes('LOYALTY_EXCHANGED')) {
-                // Compensation will be handled by loyalty service
+                await this.compensateStep3_RefundLoyalty(this.userId);
             }
 
             if (this.completedSteps.includes('SEATS_SELECTED')) {
