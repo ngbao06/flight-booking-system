@@ -1,0 +1,611 @@
+/* ═══════════════════════════════════════════════════════
+   dashboard.css  –  scoped to #dashboard-page
+   Kế thừa CSS variables từ global: --primary, --primary-hover,
+   --primary-light, --border, --bg, --text, --muted, --radius, --shadow
+═══════════════════════════════════════════════════════ */
+ 
+/* ── tokens ── */
+#dashboard-page {
+  --db-green:    #0d9e6e;
+  --db-red:      #e05252;
+  --db-orange:   #f59e0b;
+  --db-blue:     #3b82f6;
+  --db-card-r:   14px;
+  --db-panel-r:  12px;
+  --db-gap:      18px;
+}
+ 
+/* ── filter bar ── */
+#dashboard-page .db-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--db-card-r);
+  padding: 14px 20px;
+  margin-bottom: var(--db-gap);
+  box-shadow: 0 2px 12px rgba(0,104,133,.07);
+}
+ 
+#dashboard-page .db-filter-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+ 
+#dashboard-page .db-filter-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+ 
+#dashboard-page .db-date-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+ 
+#dashboard-page .db-date-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+ 
+#dashboard-page .db-date-field label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+ 
+#dashboard-page .db-date-input {
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+  transition: border-color .2s, box-shadow .2s;
+  cursor: pointer;
+}
+ 
+#dashboard-page .db-date-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,104,133,.12);
+}
+ 
+#dashboard-page .db-date-sep {
+  font-size: 16px;
+  color: var(--muted);
+  padding-top: 14px;
+}
+ 
+#dashboard-page .db-filter-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+ 
+#dashboard-page .db-quick-btn {
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--muted);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .18s;
+}
+ 
+#dashboard-page .db-quick-btn:hover,
+#dashboard-page .db-quick-btn.active {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
+}
+ 
+#dashboard-page .db-apply-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 7px 18px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,104,133,.25);
+  transition: background .2s, transform .12s;
+}
+ 
+#dashboard-page .db-apply-btn:hover { background: var(--primary-hover); }
+#dashboard-page .db-apply-btn:active { transform: scale(.96); }
+ 
+/* ── KPI grid ── */
+#dashboard-page .db-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--db-gap);
+  margin-bottom: var(--db-gap);
+}
+ 
+@media (max-width: 1100px) {
+  #dashboard-page .db-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  #dashboard-page .db-kpi-grid { grid-template-columns: 1fr; }
+}
+ 
+/* skeleton */
+#dashboard-page .db-kpi-skeleton {
+  height: 110px;
+  border-radius: var(--db-card-r);
+  background: linear-gradient(90deg, #e8f4f8 25%, #f5fbfd 50%, #e8f4f8 75%);
+  background-size: 200% 100%;
+  animation: db-shimmer 1.4s infinite;
+}
+ 
+@keyframes db-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+ 
+/* KPI card */
+#dashboard-page .db-kpi-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--db-card-r);
+  padding: 20px 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 14px rgba(0,104,133,.07);
+  animation: db-fadeup .4s ease both;
+}
+ 
+@keyframes db-fadeup {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+ 
+#dashboard-page .db-kpi-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: var(--db-card-r) var(--db-card-r) 0 0;
+}
+ 
+#dashboard-page .db-kpi-card.c-revenue::after  { background: linear-gradient(90deg, var(--primary), var(--db-green)); }
+#dashboard-page .db-kpi-card.c-payments::after { background: linear-gradient(90deg, var(--db-blue), var(--primary)); }
+#dashboard-page .db-kpi-card.c-flights::after  { background: linear-gradient(90deg, var(--db-orange), var(--db-red)); }
+#dashboard-page .db-kpi-card.c-users::after    { background: linear-gradient(90deg, var(--db-green), var(--db-blue)); }
+ 
+#dashboard-page .db-kpi-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+ 
+#dashboard-page .db-kpi-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  color: var(--muted);
+}
+ 
+#dashboard-page .db-kpi-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #fff;
+  flex-shrink: 0;
+}
+ 
+#dashboard-page .db-kpi-icon.c-revenue  { background: linear-gradient(135deg, var(--primary), var(--db-green)); }
+#dashboard-page .db-kpi-icon.c-payments { background: linear-gradient(135deg, var(--db-blue), var(--primary)); }
+#dashboard-page .db-kpi-icon.c-flights  { background: linear-gradient(135deg, var(--db-orange), var(--db-red)); }
+#dashboard-page .db-kpi-icon.c-users    { background: linear-gradient(135deg, var(--db-green), var(--db-blue)); }
+ 
+#dashboard-page .db-kpi-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+  letter-spacing: -.5px;
+}
+ 
+#dashboard-page .db-kpi-sub {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+ 
+#dashboard-page .db-kpi-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+ 
+#dashboard-page .db-kpi-badge.up   { background: #d4f5e9; color: var(--db-green); }
+#dashboard-page .db-kpi-badge.down { background: #fde8e8; color: var(--db-red); }
+#dashboard-page .db-kpi-badge.neutral { background: var(--primary-light); color: var(--primary); }
+ 
+/* ── section rows ── */
+#dashboard-page .db-section-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--db-gap);
+  margin-bottom: var(--db-gap);
+}
+ 
+@media (max-width: 860px) {
+  #dashboard-page .db-section-row { grid-template-columns: 1fr; }
+}
+ 
+#dashboard-page .db-bottom-row {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: var(--db-gap);
+  margin-bottom: var(--db-gap);
+}
+ 
+@media (max-width: 1000px) {
+  #dashboard-page .db-bottom-row { grid-template-columns: 1fr; }
+}
+ 
+/* ── panel ── */
+#dashboard-page .db-panel {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--db-panel-r);
+  box-shadow: 0 2px 14px rgba(0,104,133,.07);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+ 
+#dashboard-page .db-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, #f5fbfd 0%, #eaf5f9 100%);
+  flex-shrink: 0;
+}
+ 
+#dashboard-page .db-panel-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+ 
+#dashboard-page .db-panel-title i { opacity: .7; }
+ 
+#dashboard-page .db-panel-body {
+  padding: 20px;
+  flex: 1;
+}
+ 
+#dashboard-page .db-panel-body.p0 { padding: 0; }
+ 
+/* ── flight stats ── */
+#dashboard-page .db-stat-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+ 
+#dashboard-page .db-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+ 
+#dashboard-page .db-stat-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+ 
+#dashboard-page .db-stat-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+ 
+#dashboard-page .db-stat-name i { font-size: 11px; }
+ 
+#dashboard-page .db-stat-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+ 
+#dashboard-page .db-stat-rate {
+  font-size: 11px;
+  color: var(--muted);
+}
+ 
+#dashboard-page .db-bar-track {
+  height: 7px;
+  border-radius: 10px;
+  background: var(--primary-light);
+  overflow: hidden;
+}
+ 
+#dashboard-page .db-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width .7s cubic-bezier(.4,0,.2,1);
+}
+ 
+/* ── loyalty donut ── */
+#dashboard-page .db-donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+ 
+#dashboard-page .db-donut-svg {
+  flex-shrink: 0;
+}
+ 
+#dashboard-page .db-donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+ 
+#dashboard-page .db-donut-leg-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+}
+ 
+#dashboard-page .db-donut-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+ 
+#dashboard-page .db-donut-leg-val {
+  margin-left: auto;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text);
+}
+ 
+/* ── table ── */
+#dashboard-page .db-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+ 
+#dashboard-page .db-table thead th {
+  background: #f0f8fb;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+ 
+#dashboard-page .db-table tbody tr {
+  transition: background .15s;
+  animation: db-fadeup .35s ease both;
+}
+ 
+#dashboard-page .db-table tbody tr:hover { background: var(--primary-light); }
+ 
+#dashboard-page .db-table tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+ 
+#dashboard-page .db-table tbody tr:last-child td { border-bottom: none; }
+ 
+#dashboard-page .db-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+}
+ 
+#dashboard-page .db-rank.r1 { background: #fef3c7; color: #92400e; }
+#dashboard-page .db-rank.r2 { background: #e2e8f0; color: #475569; }
+#dashboard-page .db-rank.r3 { background: #fce7f3; color: #9d174d; }
+#dashboard-page .db-rank.rn { background: var(--primary-light); color: var(--primary); }
+ 
+#dashboard-page .db-airline-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  margin-right: 6px;
+}
+ 
+#dashboard-page .db-iata {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 5px;
+  letter-spacing: .3px;
+}
+ 
+#dashboard-page .db-region-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: #f0f8fb;
+  color: var(--muted);
+}
+ 
+#dashboard-page .db-revenue-text {
+  font-weight: 700;
+  color: var(--db-green);
+}
+ 
+#dashboard-page .db-mini-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+ 
+#dashboard-page .db-mini-track {
+  flex: 1;
+  height: 5px;
+  border-radius: 10px;
+  background: var(--primary-light);
+  overflow: hidden;
+}
+ 
+#dashboard-page .db-mini-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+  transition: width .6s ease;
+}
+ 
+#dashboard-page .db-mini-pct {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+ 
+/* ── pagination nav ── */
+#dashboard-page .db-panel-nav {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+ 
+#dashboard-page .db-nav-btn {
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--muted);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+}
+ 
+#dashboard-page .db-nav-btn:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+ 
+#dashboard-page .db-nav-btn:disabled { opacity: .35; cursor: default; }
+ 
+#dashboard-page .db-nav-info {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  min-width: 48px;
+  text-align: center;
+}
+ 
+/* ── skeleton bars ── */
+#dashboard-page .db-skeleton-bar {
+  height: 14px;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #e8f4f8 25%, #f5fbfd 50%, #e8f4f8 75%);
+  background-size: 200% 100%;
+  animation: db-shimmer 1.4s infinite;
+}
+ 
+/* ── loading cell ── */
+#dashboard-page .db-loading-cell {
+  text-align: center;
+  padding: 28px;
+  color: var(--muted);
+  font-size: 13px;
+}
+ 
+#dashboard-page .db-inline-spin {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: db-spin .7s linear infinite;
+  vertical-align: middle;
+}
+ 
+@keyframes db-spin { to { transform: rotate(360deg); } }
+ 
+/* ── responsive tweaks ── */
+@media (max-width: 576px) {
+  #dashboard-page .db-filter-bar { padding: 12px 14px; }
+  #dashboard-page .db-filter-label { display: none; }
+  #dashboard-page .db-kpi-value { font-size: 22px; }

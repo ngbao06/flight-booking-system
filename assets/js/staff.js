@@ -35,19 +35,60 @@
     }
 
     currentPage = pagination.currentPage;
-    $('#staff-pagination-info').html('Trang ' + pagination.currentPage + ' / ' + pagination.totalPages + ' (tổng ' + pagination.totalRecords + ')');
+    const total = pagination.totalItems ?? pagination.totalRecords ?? '?';
+    $('#staff-pagination-info').html(
+      'Trang <strong>' + pagination.currentPage + '</strong> / ' + pagination.totalPages +
+      ' &nbsp;·&nbsp; ' + total + ' user'
+    );
 
-    let html = '<ul class="pagination mb-0 gap-1" style="flex-wrap:wrap;">';
-    if (pagination.hasPrevPage) html += '<li class="page-item"><button class="page-link rounded-2" data-page="' + (currentPage - 1) + '">Trước</button></li>';
+    const totalPages = Number(pagination.totalPages) || 0;
+    const pagesToShow = [];
 
-    const start = Math.max(1, currentPage - 2);
-    const end = Math.min(pagination.totalPages, currentPage + 2);
-    for (let p = start; p <= end; p++) {
-      html += '<li class="page-item ' + (p === currentPage ? 'active' : '') + '"><button class="page-link rounded-2" data-page="' + p + '">' + p + '</button></li>';
+    function pushPage(pageNumber) {
+      if (pageNumber >= 1 && pageNumber <= totalPages && !pagesToShow.includes(pageNumber)) {
+        pagesToShow.push(pageNumber);
+      }
     }
 
-    if (pagination.hasNextPage) html += '<li class="page-item"><button class="page-link rounded-2" data-page="' + (currentPage + 1) + '">Tiếp</button></li>';
-    html += '</ul>';
+    if (totalPages <= 7) {
+      for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+        pushPage(pageNumber);
+      }
+    } else {
+      pushPage(1);
+      pushPage(totalPages);
+      pushPage(currentPage - 1);
+      pushPage(currentPage);
+      pushPage(currentPage + 1);
+
+      if (currentPage <= 3) {
+        pushPage(2);
+        pushPage(3);
+        pushPage(4);
+      }
+
+      if (currentPage >= totalPages - 2) {
+        pushPage(totalPages - 3);
+        pushPage(totalPages - 2);
+        pushPage(totalPages - 1);
+      }
+
+      pagesToShow.sort(function (a, b) { return a - b; });
+    }
+
+    let html = '';
+
+    for (let index = 0; index < pagesToShow.length; index++) {
+      const pageNumber = pagesToShow[index];
+      const previousPage = pagesToShow[index - 1];
+
+      if (index > 0 && pageNumber - previousPage > 1) {
+        html += '<span class="fp-page-ellipsis">...</span>';
+      }
+
+      html += '<button class="fp-page-btn' + (pageNumber === currentPage ? ' active' : '') + '" data-page="' + pageNumber + '">' + pageNumber + '</button>';
+    }
+
     $('#staff-pagination-nav').html(html);
   }
 
@@ -99,7 +140,7 @@
     $('#staff-delete-btn').on('click.staff', async function () {
       const id = $('#staff-edit-id').val();
       if (!id || !confirm('Xóa user #' + id + '?')) return;
-      try { await window.AdminAPI.request('/api/users/' + id, { method: 'DELETE' }); await loadData(1); }
+      try { await window.AdminAPI.request('/api/users/' + id, { method: 'DELETE' }); await loadData(currentPage); }
       catch (err) { showErr(err); }
     });
 
