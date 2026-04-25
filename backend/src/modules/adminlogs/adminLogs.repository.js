@@ -2,6 +2,7 @@
 import ActivityLog      from "../../database/mongodb/schemas/activity_logs.js";
 import FlightUpdateLog  from "../../database/mongodb/schemas/flight_update_logs.js";
 import LoyaltyLog       from "../../database/mongodb/schemas/loyalty_logs.js";
+import { buildPagination } from "../../common/utils/pagination.js";
 
 
 class AdminLogRepository {
@@ -39,7 +40,6 @@ class AdminLogRepository {
     // Lấy Log (Cho Controller/Admin UI)
     async getLogs(filters = {}, page = 1, limit = 20) {
         try {
-            
             const skip = (page - 1) * limit;
             
             // Thực hiện query thuần MongoDB
@@ -51,7 +51,10 @@ class AdminLogRepository {
 
             const total = await ActivityLog.countDocuments(filters);
 
-            return { data: logs, total, totalPages: Math.ceil(total / limit), currentPage, limit };
+            return {
+                data: logs,
+                pagination: buildPagination(total, page, limit)
+            };
         } catch (error) {
             console.error('[AdminLogRepo] Error fetching logs:', error);
             throw error;
