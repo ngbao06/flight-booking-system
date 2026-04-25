@@ -29,8 +29,9 @@ const createAirlineSchema = Joi.object({
 });
 
 const updateAirlineSchema = Joi.object({
-	code: Joi.string().trim().uppercase().pattern(codePattern),
-	name: Joi.string().trim().min(2).max(255)
+	code: 	Joi.string().trim().uppercase().pattern(codePattern),
+	name: 	Joi.string().trim().min(2).max(255),
+	status: Joi.string().trim().uppercase()
 }).min(1);
 
 const airlineIdParamSchema = Joi.object({

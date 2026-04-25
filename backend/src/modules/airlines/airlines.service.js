@@ -141,18 +141,21 @@ class AirlinesService {
 			};
 		}
 
+		const newData = await AirlinesRepository.getAirlineById(id);
+
 		eventBus.emit(Events.UPDATE_EVENT, {
 			module: MODULE_NAME,
 			action: 'DELETE',
 			id: id,
 			old_data: existed,
-			user_id: 12321311
+			new_data: newData
 		});
 
 		return {
 			ok: true,
 			statusCode: 200,
-			message: "Airline deleted successfully"
+			message: "Airline deleted successfully",
+			data: newData
 		};
 	}
 }

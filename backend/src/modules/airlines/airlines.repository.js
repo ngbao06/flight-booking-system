@@ -16,7 +16,7 @@ class AirlinesRepository {
 
     // bool
     static async updateAirline(id, airline) {
-        const allowedFields = [`name`,`code`];
+        const allowedFields = [`name`,`code`,`status`];
         const fields = [];
         const values = [];
 
@@ -42,7 +42,7 @@ class AirlinesRepository {
     static async deleteAirline(id) {
         const [result] = await query(`
             UPDATE Airlines
-            SET is_deleted = 1 and status = 'LOCKED'
+            SET is_deleted = 1, status = 'LOCKED'
             WHERE id = ?
             `, [id]);
 
