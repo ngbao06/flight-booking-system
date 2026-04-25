@@ -193,9 +193,9 @@
 @keyframes fp-spin { to { transform: rotate(360deg); } }
  
 /* ── right panel scroll ── */
-#flights-right-panel { max-height: calc(100vh - 120px); overflow-y: auto; }
+/* #flights-right-panel { max-height: none; overflow-y: visible; }
 #flights-right-panel::-webkit-scrollbar { width: 5px; }
-#flights-right-panel::-webkit-scrollbar-thumb { background: var(--f-border); border-radius:4px; }
+#flights-right-panel::-webkit-scrollbar-thumb { background: var(--f-border); border-radius:4px; } */
 
 @media (max-width: 991px) {
   #flights-right-panel { max-height: none; overflow-y: visible; }
