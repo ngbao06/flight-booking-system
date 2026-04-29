@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng nhập | Vietnam Airlines</title>
+</head>
+<body>
+  <div id="page-content">
+    <div class="d-flex align-items-center justify-content-center w-100 position-relative" style="min-height: 100vh; background: url('./assets/images/login.jpg') center/cover no-repeat; padding: 40px 20px;">
+      
+      <!-- Overlay background -->
+      <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"></div>
+
+      <!-- Card Container -->
+      <div class="card shadow-lg border-0 position-relative" style="max-width: 450px; width: 100%; border-radius: 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); z-index: 1;">
+        <div class="card-body p-4 p-md-5 w-100">
+              <div class="text-center mb-4">
+                <i class="fa-solid fa-plane text-gold mb-3" style="font-size: 2.5rem;"></i>
+                <h3 class="font-display fw-bold text-teal mb-2">Đăng nhập</h3>
+                <p class="text-muted" style="font-size: 14px;">Chào mừng hội viên Lotusmiles quay trở lại</p>
+              </div>
+              
+              <form id="loginForm">
+                <div class="mb-3">
+                  <label class="form-label fw-bold text-muted text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">Tài khoản</label>
+                  <input type="text" name="username" class="form-control px-3 py-2" style="border-radius: 9px; border: 1.5px solid var(--border); font-size: 14px;" placeholder="Nhập tài khoản hoặc email" required>
+                </div>
+                <div class="mb-4">
+                  <label class="form-label fw-bold text-muted text-uppercase d-flex justify-content-between w-100" style="font-size: 11px; letter-spacing: 0.5px;">
+                    Mật khẩu
+                    <a href="#" class="text-teal text-decoration-none text-capitalize" style="letter-spacing: 0;">Quên mật khẩu?</a>
+                  </label>
+                  <input type="password" name="password" class="form-control px-3 py-2" style="border-radius: 9px; border: 1.5px solid var(--border); font-size: 14px;" placeholder="Nhập mật khẩu" required>
+                </div>
+                <div id="loginForm-message" class="mb-3" style="display: none;"></div>
+                <button type="submit" class="w-100 booking-search-btn justify-content-center py-3 fs-6 mb-3">Đăng nhập</button>
+                <div class="text-center">
+                  <span class="text-muted" style="font-size: 14px;">Chưa có tài khoản?</span>
+                  <a href="#register" onclick="$('.ls-btn.register').trigger('click'); return false;" class="fw-bold text-teal text-decoration-none ms-1 section-link d-inline border-0">Đăng ký ngay</a>
+                </div>
+              </form>
+            </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

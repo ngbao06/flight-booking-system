@@ -1,0 +1,230 @@
+PATCH http://localhost:3000/api/flights/1
+Content-Type: application/json
+
+{   
+    "departureAirportId": 3,
+    "arrivalAirportId": 4,
+    "distance": 800.4
+}
+
+###
+PATCH http://localhost:3000/api/flights/1
+Content-Type: application/json
+
+{   
+    "status" : "DELAYED",
+    "reason": "B"
+}
+
+###
+PATCH http://localhost:3000/api/flights/1
+Content-Type: application/json
+
+{   
+    "status" : "WAITING",
+    "reason": "A"
+}
+
+###
+DELETE http://localhost:3000/api/flights/2
+
+###
+POST http://localhost:3000/api/flights
+Content-Type: application/json
+
+{
+    "flightNumber": "VN208",
+    "planeId": 2,
+    "airlineId": 1,
+    "departureAirportId": 1,
+    "arrivalAirportId": 1,
+    "distance": "800.10",
+    "departureTime": "2026-04-10T02:30:00.000Z",
+    "arrivalTime": "2026-04-10T04:40:00.000Z"
+}
+###
+
+GET http://localhost:3000/api/flights/5
+
+###
+GET http://localhost:3000/api/flights/
+
+
+##########################  AIRLINES  ########################
+GET http://localhost:3000/api/airlines/
+
+###
+GET http://localhost:3000/api/airlines/2
+
+###
+PATCH http://localhost:3000/api/airlines/2
+Content-Type: application/json
+
+{
+    "name": "VietJetAir"
+}
+
+###
+POST http://localhost:3000/api/airlines
+Content-Type: application/json
+
+{
+    "code": "BMT",
+    "name": "Buon Ma Thuot Airlines"
+}
+
+###
+DELETE http://localhost:3000/api/airlines/9
+
+##########################  AIRPORTS  ########################
+GET http://localhost:3000/api/airports?iataCode=BMT
+
+###
+GET http://localhost:3000/api/airports/1
+
+###
+PATCH http://localhost:3000/api/airports/1
+Content-Type: application/json
+
+###
+PATCH http://localhost:3000/api/airports/1/lock
+Content-Type: application/json
+
+###
+PATCH http://localhost:3000/api/airports/1/unlock
+Content-Type: application/json
+
+###
+POST http://localhost:3000/api/airports
+Content-Type: application/json
+
+{
+    "iataCode": "BMT",
+    "name": "Tay Nguyen Airport",
+    "city": "Buon Ma Thuot",
+    "region": "CENTRAL"
+}
+
+###
+DELETE http://localhost:3000/api/airports/53
+
+
+################## USERS ###################
+GET http://localhost:3000/api/users?role=ADMIN
+
+###
+GET http://localhost:3000/api/users?username=pax_nguyen_an
+
+###
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+    "username": "lehoa",
+    "password": "lonmaconkhocnhe",
+    "role": "ADMIN",
+    "full_name": "Tran Thi Le Hoa",
+    "email": "lehoa0803@gmail.com",
+    "address": "Ba Ria - Vung Tau",
+    "meal": "Premium",
+    "seat_position": "aisle"
+}
+
+###
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "123456",
+    "role": "admin"
+}
+
+
+###
+PATCH http://localhost:3000/api/users/53
+Content-Type: application/json
+
+{
+    "meal": "Standard",
+    "seat_position": "aisle"
+}
+
+###
+DELETE http://localhost:3000/api/users/53
+
+################## PLANES ###################
+GET http://localhost:3000/api/planes
+
+###
+GET http://localhost:3000/api/planes?model=A123neo
+
+###
+POST http://localhost:3000/api/planes
+Content-Type: application/json
+
+{
+    "airlineId": 1,
+    "model": "Airbus A123neo",
+    "totalSeats": 220
+}
+
+###
+DELETE http://localhost:3000/api/planes/28
+
+###
+PATCH http://localhost:3000/api/planes/28
+Content-Type: application/json
+
+{
+    "totalSeats": 230
+}
+
+
+##################### Auth ##########################
+GET http://localhost:3000/api/auth/me
+
+###
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+    "username": "ngbaoo",
+    "password": "123456",
+    "full_name": "Nguyễn Gia Bảo",
+    "email": "hoten546@gmail.com",
+    "phone": "0935623878",
+    "address": "BMT",
+    "passport_number": "123456789",
+    "passport_expiry_date": "2029-02",
+    "passport_nationality": "VN"
+}
+###
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "ngbaoo",
+    "password": "1234567"
+}
+
+###
+POST http://localhost:3000/api/auth/logout
+Content-Type: application/json
+
+###
+PATCH http://localhost:3000/api/auth/password
+Content-Type: application/json
+
+{
+    "old_password": "123456",
+    "new_password": "1234567"
+}
+
+###
+POST http://localhost:3000/api/auth/password/reset-request
+Content-Type: application/json
+
+{
+    "username": "ngbaoo"
+}

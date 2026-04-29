@@ -1,0 +1,154 @@
+<nav id="topbar">
+  <div class="topbar-search">
+    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+    <input type="text" placeholder="Tìm kiếm điểm đến, chuyến bay…"/>
+  </div>
+  <div class="topbar-right">
+    <button class="topbar-lang">🇻🇳 VI <i class="fa-solid fa-chevron-down" style="font-size:9px;margin-left:3px;"></i></button>
+  </div>
+</nav>
+
+<div id="page-content">
+  <style>
+    .inner-page-header {
+      padding: 40px 20px 20px !important;
+      min-height: auto !important;
+    }
+    .inner-page-header h1 {
+      font-size: 2.2rem !important;
+      margin-bottom: 8px !important;
+    }
+    .inner-page-header p {
+      margin-bottom: 0 !important;
+    }
+  </style>
+  
+  <div class="inner-page-header">
+    <div class="breadcrumb">
+      <a href="index.html">Trang chủ</a><span class="sep">/</span><span>Mua vé</span>
+    </div>
+    <h1>Mua Vé Máy Bay</h1>
+    <p>Tìm kiếm và đặt vé với giá tốt nhất từ BAirlines.</p>
+  </div>
+
+  <div class="section">
+
+    <div id="mv-search-panel" class="search-panel">
+      <div class="booking-form booking-panes">
+        <div id="pane-buy" class="booking-pane">
+          <div class="row align-items-end g-3 pb-3">
+            <div class="col-6 position-relative">
+              <div class="booking-field mb-0">
+                <label><i class="fa-solid fa-plane-departure"></i> Điểm khởi hành</label>
+                <div id="field-from" class="airport-field d-flex flex-column">
+                  <div class="airport-display">
+                    <div id="val-from" class="bf-value">HAN</div>
+                    <div id="sub-from" class="bf-sub">Hà Nội, Việt Nam</div>
+                  </div>
+                </div>
+                <input id="input-from" type="hidden" value="HAN" />
+                <div id="dd-from" class="airport-dropdown"></div>
+              </div>
+            </div>
+
+            <div class="col-6 position-relative">
+              <div class="booking-field mb-0">
+                <label><i class="fa-solid fa-plane-arrival"></i> Điểm đến</label>
+                <div id="field-to" class="airport-field d-flex flex-column">
+                  <div class="airport-display">
+                    <div id="val-to" class="bf-value placeholder-text">Chọn điểm đến</div>
+                    <div id="sub-to" class="bf-sub">Nhấn để chọn sân bay</div>
+                  </div>
+                </div>
+                <input id="input-to" type="hidden" value="" />
+                <div id="dd-to" class="airport-dropdown"></div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="booking-field mb-0">
+                <label><i class="fa-regular fa-calendar"></i> Ngày đi</label>
+                <input id="dep-date" type="date" class="form-control" />
+              </div>
+            </div>
+
+            <div class="col-6 position-relative">
+              <div class="booking-field mb-0">
+                <label><i class="fa-solid fa-user"></i> Hành khách</label>
+                <div id="pax-display" class="pax-selector">
+                  <span id="pax-label">1 Người lớn</span>
+                </div>
+                <div id="pax-dd" class="pax-dropdown">
+                  <div class="pax-row">
+                    <div>
+                      <div class="pax-type">Người lớn</div>
+                      <div class="pax-note">Từ 12 tuổi</div>
+                    </div>
+                    <div class="pax-counter">
+                      <button class="pax-btn" data-type="adult" data-dir="-1">-</button>
+                      <span id="cnt-adult" class="pax-num">1</span>
+                      <button class="pax-btn" data-type="adult" data-dir="1">+</button>
+                    </div>
+                  </div>
+
+                  <div class="pax-row">
+                    <div>
+                      <div class="pax-type">Trẻ em</div>
+                      <div class="pax-note">Từ 2 đến dưới 12 tuổi</div>
+                    </div>
+                    <div class="pax-counter">
+                      <button class="pax-btn" data-type="child" data-dir="-1">-</button>
+                      <span id="cnt-child" class="pax-num">0</span>
+                      <button class="pax-btn" data-type="child" data-dir="1">+</button>
+                    </div>
+                  </div>
+
+                  <div class="pax-row">
+                    <div>
+                      <div class="pax-type">Em bé</div>
+                      <div class="pax-note">Dưới 2 tuổi</div>
+                    </div>
+                    <div class="pax-counter">
+                      <button class="pax-btn" data-type="infant" data-dir="-1">-</button>
+                      <span id="cnt-infant" class="pax-num">0</span>
+                      <button class="pax-btn" data-type="infant" data-dir="1">+</button>
+                    </div>
+                  </div>
+                  <button id="pax-confirm" class="pax-confirm-btn">Xác nhận</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 mt-3">
+              <div class="booking-action-row d-flex align-items-center gap-3">
+                <div id="buy-inline-error" class="booking-inline-error flex-grow-1">Nhập thông tin để tìm chuyến bay.</div>
+                <button id="btn-search-flight" class="booking-search-btn">
+                  <i class="fa-solid fa-magnifying-glass me-2"></i> Tìm chuyến bay
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="mv-results-area" style="display:none;">
+            <div class="results-header">
+              <div>
+                <div class="results-title" id="mv-results-title">Kết quả tìm kiếm</div>
+                <div class="results-count" id="mv-results-count"></div>
+              </div>
+              <div class="sort-tabs">
+                <button class="sort-btn active" data-sort="price">Rẻ nhất</button>
+                <button class="sort-btn" data-sort="duration">Nhanh nhất</button>
+                <button class="sort-btn" data-sort="departure">Sớm nhất</button>
+              </div>
+            </div>
+            <div id="mv-flight-list"></div>
+          </div>
+
+          <div id="mv-initial-hint" class="state-box">
+            <div class="state-icon">🔍</div>
+            <div class="state-title">Tìm chuyến bay phù hợp</div>
+            <div class="state-sub">Chọn điểm đi, điểm đến và ngày bay để xem các chuyến bay có sẵn.</div>
+          </div>
+
+        </div></div></div></div>
+</div>

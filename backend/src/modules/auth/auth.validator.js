@@ -1,7 +1,8 @@
 import Joi from "joi";
 
 const validate = (schema, source) => (req, res, next) => {
-	const { error, value } = schema.validate(req[source], {
+	const dataToValidate = req[source] || {};
+	const { error, value } = schema.validate(dataToValidate, {
 		abortEarly: false,
 		stripUnknown: true
 	});
@@ -12,6 +13,10 @@ const validate = (schema, source) => (req, res, next) => {
 			message: "Validation error",
 			errors: error.details.map((detail) => detail.message)
 		});
+	}
+
+	if (!req[source]) {
+		req[source] = {};
 	}
 
 	Object.keys(req[source]).forEach((key) => delete req[source][key]);
@@ -27,11 +32,11 @@ const registerSchema = Joi.object({
 
 	full_name:            Joi.string().trim().required(),
 	email:                Joi.string().email().lowercase().required(),
-	phone:                Joi.string().trim().required(),
-	address:              Joi.string().trim().required(),
-	passport_number:      Joi.string().uppercase().required(),
-	passport_expiry_date: Joi.date().required(),
-	passport_nationality: Joi.string().trim().required(),
+	phone:                Joi.string().trim().allow(null, "").optional(),
+	address:              Joi.string().trim().allow(null, "").optional(),
+	passport_number:      Joi.string().uppercase().allow(null, "").optional(),
+	passport_expiry_date: Joi.date().allow(null, "").optional(),
+	passport_nationality: Joi.string().trim().allow(null, "").optional(),
 	meal:                 Joi.string().trim().default("Standard"),
 	seat_position:        Joi.string().trim().lowercase().valid("window", "aisle", "none").default("none")
 });

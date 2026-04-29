@@ -42,3 +42,27 @@ export const sendResetPasswordEmail = async ({ to, username, resetUrl }) => {
         `
     });
 };
+
+export const sendVerificationEmail = async ({ to, username, code }) => {
+    const transporter = createTransporter();
+    if (!transporter) {
+        console.info(`Verification Code for ${username}: ${code}`);
+        return;
+    }
+
+    await transporter.sendMail({
+        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+        to,
+        subject: "Vietnam Airlines - Xác thực đăng ký",
+        html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px;">
+                <h2 style="color: #006885;">Chào mừng ${username}!</h2>
+                <p>Cảm ơn bạn đã đăng ký thành viên. Mã xác nhận của bạn là:</p>
+                <div style="background: #f4f4f4; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #DBA410;">
+                    ${code}
+                </div>
+                <p style="margin-top: 20px; font-size: 12px; color: #777;">Mã này có hiệu lực trong vòng 10 phút. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
+            </div>
+        `
+    });
+}

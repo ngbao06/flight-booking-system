@@ -68,7 +68,8 @@ class AuthService {
 			statusCode: 200,
 			message: "Login successful",
 			data: {
-				user: req.session.user
+				user: req.session.user,
+				token: req.sessionID
 			}
 		};
 	}
