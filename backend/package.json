@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "node --test"
+    "test": "node --test",
+    "seed": "node src/database/seed-full.js"
   },
   "keywords": [],
   "author": "NgBaoo",

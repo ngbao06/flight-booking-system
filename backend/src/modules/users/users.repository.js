@@ -201,7 +201,7 @@ class UserRepository {
             }
         }
 
-        sql += ` ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+        sql += ` ORDER BY id LIMIT ${limit} OFFSET ${offset}`;
 
         const [countRows] = await query(countSql, countParams);
         const [rows] = await query(sql, params);

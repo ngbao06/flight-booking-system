@@ -157,7 +157,6 @@ class FlightRepository {
         const totalRecords = await this.getTotalRecord(sql, params);
         const finalSql = `SELECT * ${sql} LIMIT ${limit} OFFSET ${offset}`;
 
-        console.log(finalSql + " | " + params + " | " + totalRecords)
         const [result] = await query(finalSql, params);
 
         return {

@@ -36,14 +36,16 @@ class AuthService {
 		const username = payload.username.trim();
 		const user = await AuthRepository.getUserCredentialsByUsername(username);
 
+		console.log(1);
 		if (!user) {
 			return {
 				ok: false,
 				statusCode: 401,
-				message: "Invalid username or password"
+				message: "User not exists"
 			};
 		}
 
+		console.log(2);
 		const validPassword = await bcrypt.compare(payload.password, user.password);
 		if (!validPassword) {
 			return {

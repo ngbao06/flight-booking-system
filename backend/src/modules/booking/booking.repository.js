@@ -150,7 +150,7 @@ class BookingRepository {
                 params,
                 page,
                 limit,
-                orderBy: "ORDER BY id DESC"
+                orderBy: "ORDER BY id"
             });
         }
 
