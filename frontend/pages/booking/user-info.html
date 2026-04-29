@@ -1,0 +1,178 @@
+<!-- ══ STEP INDICATOR ══ -->
+<div class="steps-bar">
+  <div class="steps-inner">
+    <div class="step-item done">
+      <div class="step-num"><i class="fa-solid fa-check" style="font-size:10px;"></i></div>
+      Chọn chuyến bay
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item active">
+      <div class="step-num">2</div>
+      Nhập thông tin
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      Lựa chọn dịch vụ
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      Thanh toán
+    </div>
+  </div>
+</div>
+
+<!-- ══ HERO BANNER ══ -->
+<div class="hero-banner">
+  <div class="hero-title">
+    <i class="fa-solid fa-user-pen me-2" style="opacity:.8;"></i>Nhập thông tin hành khách
+  </div>
+  <div class="hero-sub">Vui lòng điền đầy đủ và chính xác thông tin theo giấy tờ tùy thân.</div>
+</div>
+
+<!-- ══ PAGE BODY ══ -->
+<div class="page-body">
+
+  <!-- NOTICE -->
+  <div class="notice-box">
+    <strong><i class="fa-solid fa-circle-info me-2" style="color:#d97706;"></i>Lưu ý: * Trường bắt buộc nhập thông tin</strong>
+    Quý khách vui lòng sử dụng tiếng Việt không dấu và không sử dụng các ký tự đặc biệt, nhập đầy đủ tên hành khách
+    và những thông tin khác xuất hiện trên (các) giấy tờ tùy thân do chính phủ cấp.
+    <br/>Nếu Tên đầy đủ của Quý khách lớn hơn 41 ký tự, vui lòng viết tắt tên đệm.
+    <div class="example-row">
+      <strong>Ví dụ:</strong> Tên đầy đủ của hành khách là: <em>NGUYEN VUONG TRAN THI KIM NGUYET ANH DUONG MAI</em><br/>
+      Điểm và tên: V T T K N A DUONG MAI<br/>
+      Họ: NGUYEN
+    </div>
+  </div>
+
+  <div class="users">
+
+  </div>
+  <!-- ══ PASSENGER 1 ══
+  <div class="form-card" id="pax-card-1">
+    <div class="form-card-header pax-header">
+      <span class="pax-badge">Hành khách 1</span>
+      <span class="pax-title">Người lớn</span>
+    </div>
+    <div class="form-card-body">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:18px;">
+        <span style="color:#ef4444;">*</span> = các trường bắt buộc &nbsp;·&nbsp;
+        Vui lòng điền thông tin cá nhân tương ứng với thông tin trong hộ chiếu
+      </p>
+
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="field-group">
+            <label>Danh xưng <span class="req">*</span></label>
+            <select class="form-select">
+              <option value=""></option>
+              <option>Ông (Mr)</option>
+              <option>Bà (Mrs)</option>
+              <option>Cô (Ms)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="field-group">
+            <label>Tên đệm và tên (thứ tự như trên CCCD/Hộ chiếu) <span class="req">*</span></label>
+            <input type="text" class="form-control" placeholder="" />
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="field-group">
+            <label>Họ (như trên CCCD/Hộ chiếu) <span class="req">*</span></label>
+            <input type="text" class="form-control" placeholder="" />
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="field-group">
+            <label>Ngày sinh <span class="req">*</span></label>
+            <div class="input-with-icon">
+              <input type="date" class="form-control" id="dob" placeholder="Ngày / Tháng / Năm" />
+            </div>
+            <div class="field-note">Định dạng là Ngày / Tháng / Năm</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- ══ CONTACT INFO ══ -->
+  <div class="form-card" id="contact-card">
+    <div class="form-card-header contact-header">
+      <span class="contact-title">
+        <i class="fa-solid fa-address-card me-2" style="color:var(--accent);"></i>Thông tin liên lạc
+      </span>
+    </div>
+    <div class="form-card-body">
+
+      <!-- Email -->
+      <div class="field-group">
+        <label>Địa chỉ email bắt buộc <span class="req">*</span></label>
+        <input type="email" class="form-control" id="email-1" placeholder="" />
+      </div>
+
+      <hr class="form-divider"/>
+
+      <!-- Phone -->
+      <div class="row g-3">
+        <div class="col-12 col-md-5">
+          <div class="field-group">
+            <label>Loại điện thoại <span class="req">*</span></label>
+            <select class="form-select">
+              <option>Cá nhân</option>
+              <option>Công việc</option>
+              <option>Khác</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-12 col-md-7">
+            <div class="field-group">
+            <label>Số điện thoại <span class="req">*</span></label>
+            <input type="tel" class="form-control" placeholder="VD: 912345678" />
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PRIVACY CHECKBOX ══ -->
+  <div class="privacy-row">
+    <input type="checkbox" id="privacy-chk" />
+    <label for="privacy-chk">
+      Dữ liệu cá nhân của Quý khách thu thập trên trang này được xử lý và lưu trữ bởi BAirlines cho mục đích
+      và theo điều kiện đã được công bố tại
+      <a href="#">Chính sách bảo mật thông tin của BAirlines</a>.
+      <a href="#">Chi tiết</a>
+    </label>
+  </div>
+
+  <!-- ══ ACTIONS ══ -->
+  <div class="action-row">
+    <button class="btn-back" onclick="history.back()">
+      <i class="fa-solid fa-arrow-left"></i> Quay lại
+    </button>
+    <button class="btn-confirm" onclick="handleConfirm()">
+      XÁC NHẬN <i class="fa-solid fa-arrow-right"></i>
+    </button>
+  </div>
+
+</div>
+
+<!-- TOAST AREA -->
+<div id="toast-area"></div>
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<!-- Page JS -->
+<script src="./../../assets/js/booking/user-info.js"></script>
+
+</body>
+</html>

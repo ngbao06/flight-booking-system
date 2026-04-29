@@ -1,0 +1,242 @@
+<!-- ══ STEP INDICATOR ══ -->
+<div class="steps-bar">
+  <div class="steps-inner">
+    <div class="step-item done">
+      <div class="step-num"><i class="fa-solid fa-check" style="font-size:10px;"></i></div>
+      Chọn chuyến bay
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item done">
+      <div class="step-num"><i class="fa-solid fa-check" style="font-size:10px;"></i></div>
+      Nhập thông tin
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item active">
+      <div class="step-num">3</div>
+      Lựa chọn dịch vụ
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      Thanh toán
+    </div>
+  </div>
+</div>
+
+<!-- ══ HERO BANNER ══ -->
+<div class="hero-banner">
+  <div class="hero-title">
+    <i class="fa-solid fa-cart-shopping me-2" style="opacity:.85;"></i>Lựa chọn của Quý khách
+  </div>
+  <div class="hero-sub">TP. Hồ Chí Minh đến Hà Nội</div>
+</div>
+
+<!-- ══ PAGE BODY ══ -->
+<div class="page-body">
+
+  <!-- ════════════════════════════
+       1. CÁC CHUYẾN BAY
+  ════════════════════════════ -->
+  <div class="sec-card">
+    <div class="sec-card-header">
+      <div class="sec-title"><i class="fa-solid fa-plane-departure"></i> Các chuyến bay</div>
+    </div>
+    <div class="sec-body">
+
+      <!-- Nơi chèn HTML chuyến bay từ JS -->
+      <div id="sc-flight-container"></div>
+
+      <!-- Total -->
+      <div class="fl-total-row">
+        <span>Tổng số tiền:</span>
+        <span class="fl-total-amount" id="fl-total">Đang tính toán...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       2. HÀNH KHÁCH
+  ════════════════════════════ -->
+  <div class="sec-card">
+    <div class="sec-card-header">
+      <div class="sec-title"><i class="fa-solid fa-users"></i> Hành khách</div>
+      <div class="sec-title-sub">(Tên hiển thị theo thứ tự sau: Tên đệm và tên + Họ)</div>
+    </div>
+    <!-- Nơi chèn HTML hành khách từ JS -->
+    <div class="sec-body" id="sc-passenger-container"></div>
+  </div>
+
+  <!-- ════════════════════════════
+       3. BẢO HIỂM TRIPCARE
+  ════════════════════════════ -->
+  <div class="insurance-card">
+    <div class="insurance-header">
+      <div class="insurance-title">
+        <i class="fa-solid fa-shield-halved me-2" style="color:var(--accent);"></i>
+        An tâm bay cùng Bảo hiểm du lịch TripCARE
+      </div>
+      <div class="insurance-desc">
+        Bảo vệ Quý khách và những người thân yêu khi phát sinh các sự cố bất ngờ trong chuyến đi và trước khi bay.
+        <br/>
+        <em>Bảo hiểm du lịch TripCARE đã được chọn trước cho Quý khách. Lựa chọn này có thể được thay đổi để phù hợp với nhu cầu cá nhân.
+        TripCARE được cung cấp bởi Tổng công ty Bảo hiểm PVI và tái bảo hiểm bởi Chubb Việt Nam.</em>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-top:10px;">Phạm vi bảo hiểm</div>
+    </div>
+
+    <!-- Features grid -->
+    <div class="insurance-features">
+      <div class="ins-feat">
+        <div class="ins-feat-icon"><i class="fa-solid fa-plane-circle-xmark"></i></div>
+        <div class="ins-feat-text">Chi trả chi phí vé máy bay không được hoàn trong trường hợp khẩn cấp</div>
+      </div>
+      <div class="ins-feat">
+        <div class="ins-feat-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+        <div class="ins-feat-text">Quyền lợi bảo hiểm cho chuyến bay bị hành lý chậm trễ</div>
+      </div>
+      <div class="ins-feat">
+        <div class="ins-feat-icon"><i class="fa-solid fa-suitcase-rolling"></i></div>
+        <div class="ins-feat-text">Quyền lợi bảo hiểm hành lý và vật dụng cá nhân bị mất mát hoặc hư hỏng</div>
+      </div>
+      <div class="ins-feat">
+        <div class="ins-feat-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <div class="ins-feat-text">Quyền lợi Bảo hiểm Tai nạn Cá nhân</div>
+      </div>
+    </div>
+
+    <div style="padding:0 24px 8px;">
+      <a href="#" class="ins-feat-link">
+        <i class="fa-solid fa-circle-info me-1"></i>
+        Xem thêm điều khoản sản phẩm Quyền lợi, Quy tắc bảo hiểm và Nội dung quyền lợi bổ sung và ưu quyền
+      </a>
+    </div>
+
+    <!-- Options -->
+    <div class="insurance-options">
+      <div class="ins-option selected" data-value="yes">
+        <input type="radio" name="insurance" checked/>
+        <div class="ins-option-label">
+          <i class="fa-solid fa-shield-check me-1"></i>
+          Tôi muốn được bảo hiểm cho chuyến đi này.
+        </div>
+      </div>
+      <div class="ins-option decline" data-value="no">
+        <input type="radio" name="insurance"/>
+        <div class="ins-option-label" style="color:var(--muted);">
+          Tôi không chọn bảo hiểm và hiểu rằng chuyến đi của tôi sẽ không được bảo vệ.
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="insurance-footer">
+      <div class="ins-providers">
+        Được cung cấp bởi
+        <span class="ins-provider-logo">★ PVI</span>
+        <span class="ins-provider-logo">CHUBB</span>
+      </div>
+      <div class="ins-total">
+        Tổng giá cho tất cả hành khách:&nbsp;
+        <span id="ins-total-amt">80.000 VND</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       4. CÁC DỊCH VỤ BỔ TRỢ
+  ════════════════════════════ -->
+  <div class="sec-card mb-2">
+    <div class="sec-card-header">
+      <div class="sec-title"><i class="fa-solid fa-concierge-bell"></i> Các dịch vụ bổ trợ</div>
+    </div>
+  </div>
+
+  <!-- 4b. Chọn chỗ ngồi -->
+  <div class="anc-section">
+    <div class="anc-item">
+      <div class="anc-item-info">
+        <div>
+          <div class="anc-item-title">Chọn chỗ ngồi</div>
+          <div class="anc-item-desc">Chọn chỗ ngồi và thoải mái tận hưởng trọn vẹn hành trình.<br/>Từ 0 VND</div>
+        </div>
+        <button class="anc-btn primary" id="btn-seat">
+          <i class="fa-solid fa-chair me-1"></i> CHỌN CHỖ
+        </button>
+      </div>
+      <div class="anc-item-img">
+        <div class="anc-img-placeholder">💺</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4c. Suất ăn đặc biệt -->
+  <div class="anc-section">
+    <div class="anc-item">
+      <div class="anc-item-info">
+        <div>
+          <div class="anc-item-title">Suất ăn đặc biệt</div>
+          <div class="anc-item-desc">Lựa chọn suất ăn đặc biệt để được phục vụ theo yêu cầu riêng.</div>
+          <div class="anc-included"><i class="fa-solid fa-circle-check"></i> Đã bao gồm</div>
+        </div>
+        <button class="anc-btn primary mt-2" id="btn-meal">
+          <i class="fa-solid fa-utensils me-1"></i> LỰA CHỌN
+        </button>
+      </div>
+      <div class="anc-item-img">
+        <div class="anc-img-placeholder">🍱</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       5. PROMO / GIỜ GIÁ TỐT
+  ════════════════════════════ -->
+  <div class="promo-card">
+    <div class="promo-icon"><i class="fa-solid fa-tag"></i></div>
+    <div class="promo-text">
+      <strong>Giờ giá tốt!</strong>
+      Giờ mức ưu đãi này đến Thứ Năm, 30 tháng 4. 20:35
+    </div>
+    <div class="promo-amount">+ 130.000 VND</div>
+  </div>
+
+  <!-- ════════════════════════════
+       6. TỔNG TIỀN & NÚT TIẾP TỤC
+  ════════════════════════════ -->
+  <div class="summary-footer">
+    <div class="summary-total-row">
+      <span class="summary-total-label">Tổng số tiền:</span>
+      <span class="summary-total-amount" id="summary-total">1.059.000 VND</span>
+    </div>
+    <div class="summary-note">
+      Tổng giá cho tất cả các hành khách (đã bao gồm thuế, phí và chiết khấu).
+      <a href="#">Xem chi tiết giá</a>
+      <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i>
+    </div>
+    <div class="summary-links">
+      <a href="#">Chính sách hành lý <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i></a>
+      <span style="color:var(--border);">|</span>
+      <a href="#">Xem lại các điều kiện <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i></a>
+      <span style="color:var(--border);">|</span>
+      <a href="#">Chính sách hàng hóa nguy hiểm <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i></a>
+    </div>
+    <div class="summary-action-row">
+      <button class="btn-continue" id="btn-continue" onclick="if(window.BookingSPA) window.BookingSPA.goToStep('seatmap');">
+        TIẾP TỤC <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+</div><!-- /.page-body -->
+
+<!-- TOAST -->
+<div id="toast-area"></div>
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<!-- Page JS -->
+<script src="./../../assets/js/booking/shopping-cart.js"></script>
+</body>
+</html>
