@@ -604,12 +604,18 @@ ul { list-style: none; }
 .badge-boarding{ background: #dbeafe; color: #1d4ed8; }
 
 /* ══ BOOKING PANEL ══ */
+.booking-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
 .booking-panel {
     /* 1. Căn giữa trục X và nằm dưới trục Y */
     position: absolute;
-    left: 50%;
     bottom: 0; /* Đặt sát đáy của phần Hero */
-    transform: translate(-50%, -40%); /* Dịch trái 50% để giữa X, dịch xuống 50% để đè lên cạnh dưới Y */
+    transform: translateY(-40%); /* Dịch trái 50% để giữa X, dịch xuống 50% để đè lên cạnh dưới Y */
     
     /* 2. Layer và hiển thị */
     z-index: 10;
@@ -802,7 +808,7 @@ ul { list-style: none; }
 
 /* ══ SECTION ══ */
 .section {
-  padding: 56px 40px;
+  padding: 40px;
 }
 
 .section-alt { background: #fff; }
@@ -1071,7 +1077,7 @@ ul { list-style: none; }
 
 /* ══ PAGE: Inner pages ══ */
 .inner-page-header {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  background: var(--primary);
   padding: 48px 40px;
   color: #fff;
 }
@@ -1197,7 +1203,7 @@ footer {
   transition: var(--transition);
 }
 
-.footer-col ul li a:hover { color: #fff; padding-left: 4px; }
+.footer-col ul li a:hover { color: var(--primary); padding-left: 4px; }
 
 .footer-bottom {
   border-top: 1px solid rgba(255,255,255,.10);

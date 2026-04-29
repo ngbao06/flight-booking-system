@@ -15,15 +15,15 @@ $(function () {
     };
 
     const pageScripts = {
-        dashboard: '../../assets/js/dashboard.js',
-        airlines: '../../assets/js/airlines.js',
-        airports: '../../assets/js/airports.js',
-        planes: '../../assets/js/planes.js',
-        flights: '../../assets/js/flights.js',
-        bookings: '../../assets/js/bookings.js',
-        staff: '../../assets/js/staff.js',
-        passengers: '../../assets/js/passengers.js',
-        logs: '../../assets/js/logs.js',
+        dashboard: '../../assets/js/admin/dashboard.js',
+        airlines: '../../assets/js/admin/airlines.js',
+        airports: '../../assets/js/admin/airports.js',
+        planes: '../../assets/js/admin/planes.js',
+        flights: '../../assets/js/admin/flights.js',
+        bookings: '../../assets/js/admin/bookings.js',
+        staff: '../../assets/js/admin/staff.js',
+        passengers: '../../assets/js/admin/passengers.js',
+        logs: '../../assets/js/admin/logs.js',
     };
 
     let currentPageKey = '';

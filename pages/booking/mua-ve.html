@@ -1,17 +1,9 @@
-<nav id="topbar">
-  <div class="topbar-search">
-    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-    <input type="text" placeholder="Tìm kiếm điểm đến, chuyến bay…"/>
-  </div>
-  <div class="topbar-right">
-    <button class="topbar-lang">🇻🇳 VI <i class="fa-solid fa-chevron-down" style="font-size:9px;margin-left:3px;"></i></button>
-  </div>
-</nav>
+<link rel="stylesheet" href="../../assets/css/booking.css">
 
 <div id="page-content">
   <style>
     .inner-page-header {
-      padding: 40px 20px 20px !important;
+      padding:20px 20px !important;
       min-height: auto !important;
     }
     .inner-page-header h1 {
@@ -24,10 +16,7 @@
   </style>
   
   <div class="inner-page-header">
-    <div class="breadcrumb">
-      <a href="index.html">Trang chủ</a><span class="sep">/</span><span>Mua vé</span>
-    </div>
-    <h1>Mua Vé Máy Bay</h1>
+    <h1 style="padding-left: 5rem;">Mua Vé Máy Bay</h1>
     <p>Tìm kiếm và đặt vé với giá tốt nhất từ BAirlines.</p>
   </div>
 
@@ -134,11 +123,6 @@
               <div>
                 <div class="results-title" id="mv-results-title">Kết quả tìm kiếm</div>
                 <div class="results-count" id="mv-results-count"></div>
-              </div>
-              <div class="sort-tabs">
-                <button class="sort-btn active" data-sort="price">Rẻ nhất</button>
-                <button class="sort-btn" data-sort="duration">Nhanh nhất</button>
-                <button class="sort-btn" data-sort="departure">Sớm nhất</button>
               </div>
             </div>
             <div id="mv-flight-list"></div>

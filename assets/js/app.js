@@ -131,7 +131,8 @@ $(function() {
             $(document).off('click', '.airport-item');
             $(document).off('click', '#btn-swap');
             
-            const response = await fetch('./pages/common/booking/mua-ve.html');
+
+            const response = await fetch('./pages/booking/mua-ve.html');
             const html = await response.text();
             
             // Parse and extract just the content section
@@ -155,6 +156,18 @@ $(function() {
             alert('Lỗi khi tải trang mua vé. Vui lòng thử lại.');
         }
     }
+
+    function loadPageStyle(href) {
+        const cleanHref = href.replace('../../', '');
+        // Kiểm tra xem CSS này đã tồn tại chưa để tránh load trùng
+        if (!document.querySelector(`link[href="${href}"]`)) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = cleanHref;
+            document.head.appendChild(link);
+        }
+    }
+
 
     // ── Booking Tabs ──
     $(document).on('click', '.booking-tab[data-tab]', function() {
@@ -573,10 +586,6 @@ $(function() {
 
     async function init() {
         await loadAirports();
-        updatePaxLabel();
-        setInlineMessage('buy', INLINE_HINTS.buy, false);
-        setInlineMessage('manage', INLINE_HINTS.manage, false);
-        setInlineMessage('status', INLINE_HINTS.status, false);
 
         // Load sidebar trước
         await loadComponent('/../../frontend/components/sidebar.html', $sidebarContainer);
@@ -591,14 +600,22 @@ $(function() {
         // Kiểm tra hash trên URL để load trang tương ứng (hỗ trợ refresh trang)
         const currentHash = window.location.hash;
         if (currentHash && currentHash !== '#index') {
+            if (currentHash === '#mua-ve') {
+                loadPageStyle('assets/css/booking.css');
+            }
+            
             setTimeout(() => {
                 const $targetLink = $(`a[href="${currentHash}"]`);
                 if ($targetLink.length && $targetLink.data('url')) {
                     loadPage($targetLink.data('url'), '#page-content');
                     $('.sidebar-link').removeClass('active');
                     if ($targetLink.hasClass('sidebar-link')) $targetLink.addClass('active');
+                } else {
+                    loadPage('pages/common/home.html', '#page-content');
                 }
             }, 100); // Chờ sidebar component được load xong
+        } else {
+            loadPage('pages/common/home.html', '#page-content');
         }
     }
 
@@ -654,6 +671,12 @@ $(function() {
                 const renderedHtml = extractRenderableHtml(rawHtml, targetSelector);
                 
                 $target.html(renderedHtml).animate({ opacity: 1 }, 200);
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth' // Thêm hiệu ứng cuộn mượt mà
+                });
+                
                 // Khởi tạo lại các plugin/script sau khi có HTML mới
                 initDynamicScripts();
             } catch (err) {
@@ -672,9 +695,10 @@ $(function() {
             
             if (url) {
                 e.preventDefault();
-
-                console.log('here');
                 
+                // Khi bạn load trang Mua vé:
+                if (href === `#mua-ve`) loadPageStyle('assets/css/booking.css');
+
                 // Đổi hash thay vì pushState để dễ quản lý hơn trong project nhỏ
                 window.location.hash = href;
                 loadPage(url, '#page-content');
@@ -722,23 +746,39 @@ $(function() {
             observer.observe(this);
         });
 
-        $('.booking-panel').css({
-            'opacity': '0',
-            'transform': 'translateY(30px)'
-        }).animate({
-            'opacity': '1',
-            'transform': 'translateY(0)'
-        }, 600);
+
+        // Re-init inputs/DOM cho nội dung vừa được load (VD: trang home)
+        updatePaxLabel();
+        setInlineMessage('buy', INLINE_HINTS.buy, false);
+        setInlineMessage('manage', INLINE_HINTS.manage, false);
+        setInlineMessage('status', INLINE_HINTS.status, false);
+
+        const now = new Date();
+        const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+        
+        const $depDate = $('#dep-date');
+        if ($depDate.length) {
+            $depDate.attr('min', todayStr);
+            if (!$depDate.val()) $depDate.val(todayStr);
+        }
+        
+        const $flightDate = $('#flight-date');
+        if ($flightDate.length && !$flightDate.val()) $flightDate.val(todayStr);
+
+        updateAirportDisplay('from', fromAirport);
+        updateAirportDisplay('to', toAirport);
     }
 
     // 6. Sidebar Mobile & Active Link
     $(document).on('click', '#hamburger', function() {
         $('#sidebar').toggleClass('open');
         $('#overlay').toggleClass('show');
+        $('#hamburger').hide();
     });
 
     $(document).on('click', '#overlay', function() {
         $('#sidebar').removeClass('open');
+        $('#hamburger').show();
         $(this).removeClass('show');
     });
 
@@ -771,8 +811,8 @@ $(function() {
         const originalButtonText = $button.html();
 
         const data = {
-            "username": $form.find('input[name="username"]').val(),
-            "password": $form.find('input[name="password"]').val()
+            "username": $form.find('input[name="username"]').val().trim(),
+            "password": $form.find('input[name="password"]').val().trim()
         };
 
         if (!data.username || !data.password) {

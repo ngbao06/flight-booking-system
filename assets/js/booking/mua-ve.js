@@ -407,7 +407,7 @@
           if (!pricing) continue;
 
           html += `
-          <div class="vna-card mb-4" data-flight-id="${flight.id}">
+          <div class="vna-card mb-4 shadow-lg" data-flight-id="${flight.id}">
               <div class="vna-info-sec">
                   <div class="row w-100 align-items-center">
                       <div class="col-md-5 vna-route-col">
@@ -436,7 +436,7 @@
                   </div>
               </div>
 
-              <div class="vna-price-sec eco" onclick="mvSelectFlight(${flight.id}, 'ECONOMY')">
+              <div class="vna-price-sec eco" ${pricing.ECONOMY.minPrice ? `onclick="mvSelectFlight(${flight.id}, 'ECONOMY', ${pricing.ECONOMY.minPrice})"` : `onclick="showToast('Hạng Phổ thông đã hết chỗ.', 'error')"`}>
                 ${pricing.ECONOMY.available > 0 && pricing.ECONOMY.available <= 10 ? `<div class="vna-badge">${pricing.ECONOMY.available} ghế còn lại</div>` : ''}
                 <i class="fa-solid fa-tag vna-tag"></i>
                 <div class="vna-class-name">PHỔ THÔNG</div>
@@ -448,7 +448,7 @@
                   <i class="fa-solid fa-chevron-down mt-auto mb-2"></i>
               </div>
 
-              <div class="vna-price-sec prem" onclick="mvSelectFlight(${flight.id}, 'BUSINESS')">
+              <div class="vna-price-sec prem" ${pricing.BUSINESS.minPrice ? `onclick="mvSelectFlight(${flight.id}, 'BUSINESS', ${pricing.BUSINESS.minPrice})"` : `onclick="showToast('Hạng Thương gia đã hết chỗ.', 'error')"`}>
                   <i class="fa-solid fa-tag vna-tag"></i>
                   <div class="vna-class-name">THƯƠNG GIA</div>
                   ${pricing.BUSINESS.minPrice ? `
@@ -459,7 +459,7 @@
                   <i class="fa-solid fa-chevron-down mt-auto mb-2"></i>
               </div>
 
-              <div class="vna-price-sec biz" onclick="mvSelectFlight(${flight.id}, 'BUSINESS')">
+              <div class="vna-price-sec biz" ${pricing.FIRST.minPrice ? `onclick="mvSelectFlight(${flight.id}, 'FIRST', ${pricing.FIRST.minPrice})"` : `onclick="showToast('Hạng Nhất đã hết chỗ.', 'error')"`}>
                   ${pricing.FIRST.available > 0 && pricing.FIRST.available <= 5 ? `<div class="vna-badge bg-teal">${pricing.FIRST.available} ghế còn lại</div>` : ''}
                   <i class="fa-solid fa-tag vna-tag"></i>
                   <div class="vna-class-name">HẠNG NHẤT</div>
@@ -485,11 +485,49 @@
   */
 
   /* Public: select flight */
-  window.mvSelectFlight = function (flightId, classType) {
+  window.mvSelectFlight = function (flightId, classType, price) {
     const f = allFlights.find(x => Number(x.id) === Number(flightId));
+    if (!f) return;
+    
+    if (!price) {
+      showToast('Hạng ghế này hiện đã hết chỗ.', 'error');
+      return;
+    }
+
     const num = f?.flightNumber || f?.flight_number || flightId;
-    showToast(`Đã chọn chuyến ${num} - Hạng: ${classType}`, 'success');
-    // TODO: chuyển sang trang thanh toán / đặt chỗ
+    
+    // Xác định thông tin sân bay đi và đến
+    const depId = f.departure_airport_id || f.departureAirportId;
+    const arrId = f.arrival_airport_id || f.arrivalAirportId;
+    const depAP = airports.find(a => Number(a.id) === Number(depId));
+    const arrAP = airports.find(a => Number(a.id) === Number(arrId));
+    
+    const classMap = {
+      'ECONOMY': 'Phổ thông',
+      'BUSINESS': 'Thương gia',
+      'FIRST': 'Hạng Nhất'
+    };
+
+    const bookingData = {
+      flight: f,
+      classType: classType,
+      basePrice: price, // Truyền giá trị minPrice tìm được sang các bước sau
+      departureAirport: depAP,
+      arrivalAirport: arrAP,
+      passengers: {
+        adult: parseInt($('#cnt-adult').text()) || 1,
+        child: parseInt($('#cnt-child').text()) || 0,
+        infant: parseInt($('#cnt-infant').text()) || 0
+      }
+    };
+
+    // Lưu vào session và chuyển hướng
+    sessionStorage.setItem('selectedFlightBooking', JSON.stringify(bookingData));
+    showToast(`Đã chọn chuyến ${num} - Hạng: ${classMap[classType] || classType}. Đang chuyển trang...`, 'success');
+    
+    setTimeout(() => {
+      window.location.href = 'pages/booking/index.html'; // Sửa path này tương ứng với router của bạn nếu cần
+    }, 1200);
   };
 
   /* Attach sort button listeners */
@@ -508,10 +546,16 @@
   window.initMuaVe = async function() {
     await loadAirports();
 
-    const today = new Date().toISOString().slice(0, 10);
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const today = `${year}-${month}-${day}`;
+
     const depEl = document.getElementById('dep-date');
     if (depEl) {
-      depEl.min = today;
+      depEl.setAttribute('min', today);
+
       if (!depEl.value) depEl.value = today;
     }
 
@@ -600,5 +644,4 @@
     }
   });
   */
-
 })();
