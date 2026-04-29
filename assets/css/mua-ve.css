@@ -1,0 +1,309 @@
+/* ═══════════════════════════════════════════════════════
+   mua-ve.css  —  CSS riêng cho trang Mua Vé
+   Không bao gồm những thứ đã có trong style.css:
+     layout, sidebar, topbar, inner-page-header, breadcrumb,
+     section, tabs, anim, spinner, footer, hamburger, overlay,
+     airport-dropdown, airport-item, airport-search-wrap,
+     airport-field, booking-form, booking-field...
+   ═══════════════════════════════════════════════════════ */
+
+/* ══ SEARCH PANEL ══ */
+.search-panel {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 28px 32px;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 28px;
+  border: 1px solid var(--border);
+}
+
+/* ══ TRIP TYPE BUTTONS ══ */
+.trip-type-btns { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+
+.trip-btn {
+  padding: 8px 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 24px;
+  font-size: 13px; font-weight: 600;
+  color: var(--muted); background: var(--white);
+  display: flex; align-items: center; gap: 7px;
+  transition: var(--transition);
+}
+.trip-btn.active  { background: var(--primary); color: #fff; border-color: var(--primary); }
+.trip-btn:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
+
+/* ══ SEARCH FORM ROW ══ */
+.search-form-row {
+  display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;
+}
+
+.sf-field {
+  display: flex; flex-direction: column; gap: 6px;
+  position: relative;
+}
+.sf-field label {
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--muted);
+  display: flex; align-items: center; gap: 5px;
+}
+.sf-field label i { font-size: 10px; }
+
+.sf-input, .sf-select {
+  border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 12px 14px; font-size: 14px; font-weight: 600;
+  font-family: var(--font); color: var(--text);
+  background: var(--white); outline: none;
+  transition: var(--transition); width: 100%;
+}
+.sf-input:focus, .sf-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,104,133,.10);
+}
+.sf-input.is-invalid { border-color: #ef4444; }
+
+/* ══ AIRPORT BUTTON ══ */
+.airport-field-wrap { flex: 1; min-width: 180px; position: relative; }
+
+.airport-btn {
+  border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 12px 14px; font-size: 14px; font-weight: 600;
+  font-family: var(--font); color: var(--text);
+  background: var(--white); outline: none; width: 100%;
+  text-align: left; display: flex; align-items: center; gap: 8px;
+  transition: var(--transition); cursor: pointer;
+}
+.airport-btn:focus, .airport-btn.open {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,104,133,.10);
+}
+.airport-btn.is-invalid { border-color: #ef4444; }
+
+.ab-code {
+  font-size: 18px; font-weight: 800;
+  color: var(--primary); letter-spacing: 1px; min-width: 38px;
+}
+.ab-info { display: flex; flex-direction: column; line-height: 1.2; }
+.ab-name { font-size: 12px; color: var(--text); font-weight: 600; }
+.ab-city { font-size: 11px; color: var(--muted); font-weight: 400; }
+.ab-placeholder { color: var(--muted); font-weight: 400; font-size: 13px; }
+
+/* ══ SWAP BUTTON ══ */
+.swap-btn {
+  width: 40px; height: 40px;
+  border: 2px solid var(--border); border-radius: 50%;
+  background: var(--white); color: var(--primary);
+  font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); flex-shrink: 0;
+  margin-bottom: 2px;
+}
+.swap-btn:hover {
+  background: var(--primary); color: #fff;
+  border-color: var(--primary);
+  transform: rotate(180deg);
+}
+
+/* ══ AIRPORT DROPDOWN ══ */
+.airport-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0;
+  width: 320px; z-index: 200;
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 14px; box-shadow: var(--shadow-lg);
+  display: block !important;
+  opacity: 0; visibility: hidden; transform: translateY(-6px);
+  transition: opacity .2s ease, visibility .2s ease, transform .2s ease;
+  pointer-events: none;
+}
+.airport-dropdown.show {
+  opacity: 1; visibility: visible; transform: translateY(0);
+  pointer-events: auto;
+}
+
+.dd-search-wrap {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.dd-search {
+  width: 100%;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 9px 12px; font-size: 13px; font-family: var(--font);
+  outline: none; transition: var(--transition);
+}
+.dd-search:focus { border-color: var(--primary); }
+
+.dd-list { max-height: 280px; overflow-y: auto; padding: 8px; }
+.dd-list::-webkit-scrollbar { width: 4px; }
+.dd-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.dd-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 10px;
+  cursor: pointer; transition: var(--transition);
+}
+.dd-item:hover, .dd-item.selected { background: var(--primary-light); }
+
+.dd-code { font-size: 15px; font-weight: 800; color: var(--primary); min-width: 42px; }
+.dd-info { flex: 1; }
+.dd-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.dd-city { font-size: 11px; color: var(--muted); }
+.dd-empty { padding: 24px 12px; text-align: center; font-size: 13px; color: var(--muted); }
+
+/* ══ WIDTH HELPERS CHO FORM ══ */
+.date-wrap  { min-width: 160px; }
+.pax-wrap   { min-width: 130px; }
+.class-wrap { min-width: 130px; }
+
+/* ══ SEARCH BUTTON ══ */
+.search-btn {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff; border: none; border-radius: 12px;
+  padding: 13px 28px; font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+  transition: var(--transition); white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0,104,133,.30);
+}
+.search-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,104,133,.40); }
+.search-btn:disabled { opacity: .65; transform: none; pointer-events: none; }
+
+/* ══ RESULTS HEADER ══ */
+.results-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+}
+.results-title { font-size: 18px; font-weight: 800; color: var(--text); }
+.results-count { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.sort-tabs { display: flex; gap: 4px; }
+
+/* Đã Comment Card Design cũ:  .flt-card, .fc-airline, .fc-route ... Không dùng nữa vì dùng VNA style */
+/*
+.flt-card { ... }
+...
+*/
+
+/* ══ STATE BOXES ══ */
+.state-box {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 20px; padding: 60px 40px;
+  text-align: center; margin-bottom: 12px;
+}
+.state-icon  { font-size: 52px; margin-bottom: 16px; opacity: .4; }
+.state-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.state-sub   { font-size: 13px; color: var(--muted); }
+
+/* ══ TOAST NOTIFICATIONS ══ */
+#toast-area {
+  position: fixed; bottom: 24px; right: 24px;
+  z-index: 9999; display: flex; flex-direction: column; gap: 10px;
+}
+.toast-msg {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 14px 18px;
+  box-shadow: var(--shadow-lg);
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 500;
+  animation: fadeup .3s ease;
+  max-width: 320px;
+}
+.toast-msg.success { border-color: #22c55e; }
+.toast-msg.error   { border-color: #ef4444; }
+.toast-msg .t-icon { font-size: 16px; }
+.toast-msg.success .t-icon { color: #22c55e; }
+.toast-msg.error   .t-icon { color: #ef4444; }
+
+/* ══ VNA STYLES FLIGHT CARDS ══ */
+.vna-card {
+    display: flex;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    /* overflow: hidden; */
+    min-height: 140px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.vna-info-sec {
+    flex: 1;
+    display: flex;
+    padding: 20px;
+    border-right: 1px solid #eee;
+}
+
+.vna-route-col {
+    border-right: 1px solid #ddd;
+    padding-right: 20px;
+}
+
+.vna-detail-col {
+    padding-left: 20px;
+}
+
+.vna-time { font-size: 20px; color: #005f6e; font-family: 'Arial', sans-serif; }
+.vna-code { font-size: 16px; font-weight: bold; color: #005f6e; margin-top: 5px; }
+.vna-terminal { font-size: 11px; color: #666; }
+.vna-text-sm { font-size: 12px; color: #333; }
+.vna-link { font-size: 12px; color: #005f6e; text-decoration: none; font-weight: bold; }
+
+.vna-line {
+    flex: 1;
+    text-align: center;
+    border-bottom: 1px dashed #999;
+    line-height: 0.1em;
+    margin: 10px 15px 0;
+    font-size: 11px;
+    color: #005f6e;
+}
+.vna-line span { background:#fff; padding:0 5px; }
+
+/* Các cột giá vé */
+.vna-price-sec {
+    width: 170px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 10px;
+    position: relative;
+    color: #fff;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+.vna-price-sec:hover { filter: brightness(0.95); }
+
+.vna-price-sec.eco { background-color: #006874; }
+.vna-price-sec.prem { background-color: #d1e3df; color: #000; }
+.vna-price-sec.biz { background-color: #dfad47; color: #000; }
+
+.vna-class-name { font-size: 13px; font-weight: bold; margin-bottom: 8px; text-align: center;}
+.vna-price-lbl { font-size: 12px; opacity: 0.9; }
+.vna-price-val { font-size: 18px; font-weight: bold; }
+.vna-currency { font-size: 11px; }
+
+.vna-tag { position: absolute; top: 10px; right: 10px; font-size: 14px; opacity: 0.8; }
+.vna-badge {
+    position: absolute;
+    top: -12px;
+    background: #006874;
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.bg-teal { background: #005f6e !important; }
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 900px) {
+  .search-panel { padding: 20px 18px; }
+  .vna-card { flex-direction: column; }
+  .vna-info-sec { border-right: none; border-bottom: 1px solid #eee; }
+  .vna-price-sec { width: 100%; min-height: 100px; }
+}
+@media (max-width: 600px) {
+  .search-form-row { flex-direction: column; }
+  .airport-field-wrap, .date-wrap, .pax-wrap, .class-wrap { width: 100%; }
+  .airport-dropdown { width: 100%; }
+  .vna-route-col { border-right: none; padding-right: 0; padding-bottom: 15px; border-bottom: 1px dashed #ddd; margin-bottom: 15px; }
+  .vna-detail-col { padding-left: 0; }
+}

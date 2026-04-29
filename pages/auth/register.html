@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng ký | Vietnam Airlines</title>
+</head>
+<body>
+  <div id="page-content">
+    <div class="d-flex align-items-center justify-content-center w-100 position-relative" style="min-height: 100vh; background: url('./assets/images/register.jpg') center/cover no-repeat; padding: 40px 20px;">
+      
+      <!-- Overlay background -->
+      <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"></div>
+
+      <!-- Card Container -->
+      <div class="card shadow-lg border-0 position-relative" style="max-width: 550px; width: 100%; border-radius: 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); z-index: 1;">
+        <div class="card-body p-4 p-md-5 w-100">
+              <div class="text-center mb-4">
+                <h3 class="font-display fw-bold text-teal mb-2">Đăng ký hội viên</h3>
+                <p class="text-muted" style="font-size: 14px;">Gia nhập cộng đồng Lotusmiles ngay hôm nay</p>
+              </div>
+              
+              <form id="registerForm">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-muted text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">Họ và tên</label>
+                    <input type="text" name="fullname" class="form-control px-3 py-2" style="border-radius: 9px; border: 1.5px solid var(--border); font-size: 14px;" placeholder="Ví dụ: NGUYEN VAN A" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-muted text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">Số điện thoại</label>
+                    <input type="tel" name="phone" class="form-control px-3 py-2" style="border-radius: 9px; border: 1.5px solid var(--border); font-size: 14px;" placeholder="Nhập SĐT">
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-bold text-muted text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">Email / Tài khoản</label>
+                  <input type="email" name="email" class="form-control px-3 py-2" style="border-radius: 9px; border: 1.5px solid var(--border); font-size: 14px;" placeholder="Nhập địa chỉ email" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-bold text-muted text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">Mật khẩu</label>
+                  <input type="password" name="password" class="form-control px-3 py-2" style="border-radius: 9px; border: 1.5px solid var(--border); font-size: 14px;" placeholder="Tạo mật khẩu" required>
+                </div>
+                <div id="registerForm-message" class="mb-3" style="display: none;"></div>
+                <button type="submit" class="w-100 booking-search-btn justify-content-center py-3 fs-6 mb-4" style="background: var(--gold);">Đăng ký ngay</button>
+                <div class="text-center">
+                  <span class="text-muted" style="font-size: 14px;">Đã có tài khoản?</span>
+                  <a href="#login" onclick="$('.ls-btn.login').trigger('click'); return false;" class="fw-bold text-teal text-decoration-none ms-1 section-link d-inline border-0">Đăng nhập</a>
+                </div>
+              </form>
+            </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

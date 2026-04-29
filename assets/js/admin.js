@@ -242,7 +242,9 @@ $(function () {
 
     $('.logout-btn, .dropdown-item-custom.danger').on('click', function () {
         if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-            alert('Đã đăng xuất!');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userRole');
+            window.location.href = '../../index.html';
         }
     });
 
