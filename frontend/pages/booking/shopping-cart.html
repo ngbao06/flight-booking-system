@@ -157,7 +157,10 @@
       <div class="anc-item-info">
         <div>
           <div class="anc-item-title">Chọn chỗ ngồi</div>
-          <div class="anc-item-desc">Chọn chỗ ngồi và thoải mái tận hưởng trọn vẹn hành trình.<br/>Từ 0 VND</div>
+          <div class="anc-item-desc" id="seat-desc">Chọn chỗ ngồi và thoải mái tận hưởng trọn vẹn hành trình.<br/>Từ 0 VND</div>
+          <div id="seat-selected-info" class="mt-2" style="display:none; font-weight:600; color:var(--text); font-size: 13.5px;">
+            <!-- Chèn thông tin ghế vào đây -->
+          </div>
         </div>
         <button class="anc-btn primary" id="btn-seat">
           <i class="fa-solid fa-chair me-1"></i> CHỌN CHỖ
@@ -175,8 +178,11 @@
       <div class="anc-item-info">
         <div>
           <div class="anc-item-title">Suất ăn đặc biệt</div>
-          <div class="anc-item-desc">Lựa chọn suất ăn đặc biệt để được phục vụ theo yêu cầu riêng.</div>
-          <div class="anc-included"><i class="fa-solid fa-circle-check"></i> Đã bao gồm</div>
+          <div class="anc-item-desc" id="meal-desc">Lựa chọn suất ăn đặc biệt để được phục vụ theo yêu cầu riêng.</div>
+          <div id="meal-selected-info" class="mt-2" style="display:none; font-weight:600; color:var(--text); font-size: 13.5px;">
+            <!-- Chèn thông tin suất ăn vào đây -->
+          </div>
+          <div class="anc-included mt-2"><i class="fa-solid fa-circle-check"></i> Đã bao gồm</div>
         </div>
         <button class="anc-btn primary mt-2" id="btn-meal">
           <i class="fa-solid fa-utensils me-1"></i> LỰA CHỌN
@@ -184,6 +190,52 @@
       </div>
       <div class="anc-item-img">
         <div class="anc-img-placeholder">🍱</div>
+      </div>
+    </div>
+
+    <!-- Phần chọn suất ăn (Slide down) -->
+    <div id="meal-options-container" style="display:none; border-top: 1px solid var(--border); padding: 16px 20px; background: var(--bg);">
+      <div class="mb-3" style="font-weight:600; font-size:14px;">Chọn suất ăn yêu thích của Quý khách:</div>
+      <div class="meal-options row g-3">
+        <div class="col-6 col-md-4">
+          <label class="meal-option m-0 w-100 h-100" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1.5px solid var(--border); cursor: pointer; transition: all .2s;">
+            <input type="radio" name="meal_option" value="Hải sản" style="accent-color: var(--primary);" />
+            <div style="font-size: 13px; font-weight: 600;">Hải sản</div>
+          </label>
+        </div>
+        <div class="col-6 col-md-4">
+          <label class="meal-option m-0 w-100 h-100" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1.5px solid var(--border); cursor: pointer; transition: all .2s;">
+            <input type="radio" name="meal_option" value="Suất chay" style="accent-color: var(--primary);" />
+            <div style="font-size: 13px; font-weight: 600;">Suất chay</div>
+          </label>
+        </div>
+        <div class="col-6 col-md-4">
+          <label class="meal-option m-0 w-100 h-100" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1.5px solid var(--border); cursor: pointer; transition: all .2s;">
+            <input type="radio" name="meal_option" value="Ẩm thực Việt" style="accent-color: var(--primary);" />
+            <div style="font-size: 13px; font-weight: 600;">Ẩm thực Việt</div>
+          </label>
+        </div>
+        <div class="col-6 col-md-4">
+          <label class="meal-option m-0 w-100 h-100" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1.5px solid var(--border); cursor: pointer; transition: all .2s;">
+            <input type="radio" name="meal_option" value="Món không gluten" style="accent-color: var(--primary);" />
+            <div style="font-size: 13px; font-weight: 600;">Món không gluten</div>
+          </label>
+        </div>
+        <div class="col-6 col-md-4">
+          <label class="meal-option m-0 w-100 h-100" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1.5px solid var(--border); cursor: pointer; transition: all .2s;">
+            <input type="radio" name="meal_option" value="Bữa nhẹ" style="accent-color: var(--primary);" />
+            <div style="font-size: 13px; font-weight: 600;">Bữa nhẹ</div>
+          </label>
+        </div>
+        <div class="col-6 col-md-4">
+          <label class="meal-option m-0 w-100 h-100" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1.5px solid var(--primary); background: var(--primary-light); cursor: pointer; transition: all .2s;">
+            <input type="radio" name="meal_option" value="none" checked style="accent-color: var(--primary);" />
+            <div style="font-size: 13px; font-weight: 600;">Không chọn suất ăn</div>
+          </label>
+        </div>
+      </div>
+      <div class="text-end mt-3">
+        <button class="btn btn-primary px-4 py-2" id="btn-confirm-meal" style="font-size:13px; font-weight:700; border-radius: 8px; background: var(--primary); border: none;">XÁC NHẬN</button>
       </div>
     </div>
   </div>
@@ -203,31 +255,40 @@
   <!-- ════════════════════════════
        6. TỔNG TIỀN & NÚT TIẾP TỤC
   ════════════════════════════ -->
-  <div class="summary-footer">
-    <div class="summary-total-row">
-      <span class="summary-total-label">Tổng số tiền:</span>
-      <span class="summary-total-amount" id="summary-total">1.059.000 VND</span>
-    </div>
-    <div class="summary-note">
+  <div class="summary-details mb-5 pb-5">
+    <div class="summary-note text-center text-muted mb-2" style="font-size:13px;">
       Tổng giá cho tất cả các hành khách (đã bao gồm thuế, phí và chiết khấu).
-      <a href="#">Xem chi tiết giá</a>
+      <a href="#" class="text-primary">Xem chi tiết giá</a>
       <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i>
     </div>
-    <div class="summary-links">
+    <div class="summary-links text-center" style="font-size:12px;">
       <a href="#">Chính sách hành lý <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i></a>
       <span style="color:var(--border);">|</span>
       <a href="#">Xem lại các điều kiện <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i></a>
       <span style="color:var(--border);">|</span>
       <a href="#">Chính sách hàng hóa nguy hiểm <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i></a>
     </div>
-    <div class="summary-action-row">
-      <button class="btn-continue" id="btn-continue" onclick="if(window.BookingSPA) window.BookingSPA.goToStep('seatmap');">
+  </div>
+
+</div><!-- /.page-body -->
+
+<!-- ══ BOTTOM ACTION BAR ══ -->
+<div class="sm-action-bar">
+  <div class="sm-action-inner">
+    <div class="sm-action-selected" style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+      <div style="font-size:13px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing: 0.5px;">Tổng số tiền</div>
+      <div style="font-size:22px; font-weight:800; color:var(--primary); line-height:1; margin-top:2px;" id="summary-total">0 VND</div>
+    </div>
+    <div class="sm-action-btns">
+      <button class="btn-back" onclick="if(window.BookingSPA) window.BookingSPA.goToStep('user-info');">
+        <i class="fa-solid fa-arrow-left"></i> QUAY LẠI
+      </button>
+      <button class="btn-sm-confirm fs-5 px-4" id="btn-continue">
         TIẾP TỤC <i class="fa-solid fa-arrow-right"></i>
       </button>
     </div>
   </div>
-
-</div><!-- /.page-body -->
+</div>
 
 <!-- TOAST -->
 <div id="toast-area"></div>
@@ -238,5 +299,3 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <!-- Page JS -->
 <script src="./../../assets/js/booking/shopping-cart.js"></script>
-</body>
-</html>

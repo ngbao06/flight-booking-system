@@ -523,6 +523,8 @@
 
     // Lưu vào session và chuyển hướng
     sessionStorage.setItem('selectedFlightBooking', JSON.stringify(bookingData));
+    // Reset lại trạng thái để luôn bắt đầu từ bước 1 (nhập thông tin) khi chọn chuyến bay mới
+    sessionStorage.removeItem('currentBookingStep'); 
     showToast(`Đã chọn chuyến ${num} - Hạng: ${classMap[classType] || classType}. Đang chuyển trang...`, 'success');
     
     setTimeout(() => {

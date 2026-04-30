@@ -1215,16 +1215,16 @@ footer {
   gap: 12px;
 }
 
-.footer-bottom p { font-size: 12px; color: rgba(255,255,255,.4); }
+.footer-bottom p { font-size: 12px; color: black; }
 
 .footer-socials { display: flex; gap: 10px; }
 
 .footer-social {
   width: 32px; height: 32px;
-  border: 1px solid rgba(255,255,255,.2);
+  border: 1px solid black;
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  color: rgba(255,255,255,.6);
+  color: black;
   font-size: 14px;
   transition: var(--transition);
 }

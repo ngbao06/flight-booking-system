@@ -34,6 +34,20 @@ window.initShoppingCart = function () {
       calculateBasePrice();
       renderFlightInfo();
       renderPassengerInfo();
+      renderSelectedSeats();
+      
+      // Khôi phục suất ăn nếu đã chọn trước đó
+      if (bookingData.selectedServices && bookingData.selectedServices.meal) {
+          state.meal = bookingData.selectedServices.meal;
+          $(`input[name="meal_option"][value="${state.meal}"]`).prop('checked', true);
+          
+          $('.meal-option').css({ 'border-color': 'var(--border)', 'background': 'transparent' });
+          $(`input[name="meal_option"][value="${state.meal}"]`).closest('.meal-option').css({ 'border-color': 'var(--primary)', 'background': 'var(--primary-light)' });
+          
+          $('#meal-selected-info').html(`Đã chọn: <span style="color:var(--primary);">${state.meal}</span>`).show();
+          $('#meal-desc').hide();
+          $('#btn-meal').html('<i class="fa-solid fa-pen me-1"></i> SỬA LỰA CHỌN').removeClass('primary').addClass('outline');
+      }
     }
   }
 
@@ -142,12 +156,47 @@ window.initShoppingCart = function () {
     $('#sc-passenger-container').html(html);
   }
 
+  /* ══ RENDER CHỖ NGỒI ĐÃ CHỌN ══ */
+  function renderSelectedSeats() {
+    const summary = bookingData.seatSummary || [];
+    let seatTotal = 0;
+    let seatLabels = [];
+
+    summary.forEach(item => {
+      if (item.seatLabel) {
+        seatLabels.push(`${item.passengerName}: <span style="color:var(--primary); font-weight:700;">${item.seatLabel}</span>`);
+        seatTotal += (item.price || 0);
+      }
+    });
+
+    PRICES.seat = seatTotal;
+
+    if (seatLabels.length > 0) {
+      state.seat = true;
+      let seatText = seatLabels.join('<br/>');
+      let priceText = seatTotal > 0 ? `+ ${formatVND(seatTotal)}` : 'Miễn phí';
+
+      $('#seat-selected-info').html(`Đã chọn ghế:<br/>${seatText}<br/><span style="color:#16a34a; font-weight:700;">${priceText}</span>`).show();
+      $('#seat-desc').hide();
+      
+      $('#btn-seat').html('<i class="fa-solid fa-pen me-1"></i> SỬA LỰA CHỌN')
+                    .removeClass('primary').addClass('outline');
+    } else {
+      state.seat = false;
+      $('#seat-selected-info').hide();
+      $('#seat-desc').show();
+      $('#btn-seat').html('<i class="fa-solid fa-chair me-1"></i> CHỌN CHỖ')
+                    .removeClass('outline').addClass('primary');
+    }
+  }
+
   /* ══ RENDER TỔNG TIỀN ══ */
   function calcTotal() {
     let total = PRICES.baseTicket;
     if (state.insurance) total += PRICES.insurance;
     if (state.baggage === 20) total += PRICES.baggage20;
     if (state.baggage === 30) total += PRICES.baggage30;
+    total += PRICES.seat;
     return total;
   }
 
@@ -196,19 +245,37 @@ window.initShoppingCart = function () {
 
   /* ══ CHỌN CHỖ ══ */
   $('#btn-seat').on('click', function () {
-    state.seat = true;
-    $(this).html('<i class="fa-solid fa-check me-1"></i> Đã chọn chỗ')
-           .removeClass('primary').addClass('outline');
-    showToast('success', 'Đã thêm dịch vụ chọn chỗ ngồi.');
-    renderTotal();
+    window.BookingSPA.goToStep('seatmap');
   });
 
   /* ══ SUẤT ĂN ══ */
   $('#btn-meal').on('click', function () {
-    state.meal = true;
-    $(this).html('<i class="fa-solid fa-check me-1"></i> Đã chọn')
-           .removeClass('primary').addClass('outline');
-    showToast('success', 'Đã chọn suất ăn đặc biệt.');
+    $('#meal-options-container').slideToggle(300);
+  });
+
+  $('input[name="meal_option"]').on('change', function() {
+      $('.meal-option').css({ 'border-color': 'var(--border)', 'background': 'transparent' });
+      if($(this).is(':checked')) {
+          $(this).closest('.meal-option').css({ 'border-color': 'var(--primary)', 'background': 'var(--primary-light)' });
+      }
+  });
+
+  $('#btn-confirm-meal').on('click', function () {
+    const selectedMeal = $('input[name="meal_option"]:checked').val();
+    
+    if (selectedMeal && selectedMeal !== 'none') {
+        state.meal = selectedMeal;
+        $('#meal-selected-info').html(`Đã chọn: <span style="color:var(--primary); font-weight:700;">${selectedMeal}</span>`).show();
+        $('#meal-desc').hide();
+        $('#btn-meal').html('<i class="fa-solid fa-pen me-1"></i> SỬA LỰA CHỌN').removeClass('primary').addClass('outline');
+    } else {
+        state.meal = false;
+        $('#meal-selected-info').hide();
+        $('#meal-desc').show();
+        $('#btn-meal').html('<i class="fa-solid fa-utensils me-1"></i> LỰA CHỌN').removeClass('outline').addClass('primary');
+    }
+    
+    $('#meal-options-container').slideUp(300);
   });
 
   /* ══ DỊCH VỤ ĐẶC BIỆT ══ */
@@ -231,11 +298,22 @@ window.initShoppingCart = function () {
   });
 
   /* ══ TIẾP TỤC ══ */
-  $('#btn-continue').on('click', function () {
-    showToast('success', 'Đang chuyển đến trang thanh toán…');
+  $('#btn-continue').off('click').on('click', function () {
+    showToast('success', 'Đang lưu giỏ hàng và chuyển trang…');
+    
+    bookingData.selectedServices = {
+        insurance: state.insurance,
+        baggage: state.baggage,
+        meal: state.meal,
+        special: state.special,
+        totalExtraFee: calcTotal() - PRICES.baseTicket
+    };
+    bookingData.totalPrice = calcTotal();
+    sessionStorage.setItem('selectedFlightBooking', JSON.stringify(bookingData));
+
     setTimeout(function () {
-      // window.location.href = 'thanh-toan.html';
-    }, 1600);
+      if(window.BookingSPA) window.BookingSPA.goToStep('payment');
+    }, 1000);
   });
 
   /* ══ TOAST ══ */

@@ -1,0 +1,156 @@
+<!-- seatmap.html — SPA fragment, được BookingSPA.goToStep('seatmap') load vào #booking-content -->
+
+<!-- ══ STEPS BAR ══ -->
+<div class="steps-bar">
+  <div class="steps-inner">
+    <div class="step-item done">
+      <div class="step-num"><i class="fa-solid fa-check" style="font-size:10px;"></i></div>
+      Chọn chuyến bay
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item done">
+      <div class="step-num"><i class="fa-solid fa-check" style="font-size:10px;"></i></div>
+      Nhập thông tin
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item active">
+      <div class="step-num">3</div>
+      Lựa chọn dịch vụ
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      Thanh toán
+    </div>
+  </div>
+</div>
+
+<!-- ══ NOTICE BANNER ══ -->
+<div class="container-xl py-3">
+  <div class="sm-notice">
+    <i class="fa-solid fa-circle-info sm-notice-icon"></i>
+    <div>
+      <div class="sm-notice-title">Lưu ý</div>
+      <ul class="sm-notice-list" id="sm-notice-list">
+        <li>Trước khi chọn chỗ ngồi, Quý khách vui lòng tìm hiểu sơ đồ và thông tin ghế ngồi của các hạng dịch vụ
+          <a href="#" class="sm-link">tại đây</a>. Dịch vụ chọn trước chỗ ngồi không áp dụng hoàn.
+        </li>
+        <li>
+          <button class="sm-link sm-toggle-guide" id="sm-toggle-guide">
+            <i class="fa-solid fa-chevron-down" id="sm-guide-arrow"></i>
+            Hiển thị hướng dẫn đọc bản phím
+          </button>
+        </li>
+      </ul>
+      <div class="sm-guide-box" id="sm-guide-box" style="display:none;">
+        <div class="sm-guide-grid">
+          <div class="sm-guide-item"><span class="sm-legend-dot" style="background:#b0bec5;"></span> A, B, C — Nhóm ghế cửa sổ trái</div>
+          <div class="sm-guide-item"><span class="sm-legend-dot" style="background:#b0bec5;"></span> D, E, G — Nhóm ghế cửa sổ phải</div>
+          <div class="sm-guide-item"><span class="sm-legend-dot" style="background:#80cbc4;"></span> Ghế cửa sổ hàng trước (có thêm phí)</div>
+          <div class="sm-guide-item"><span class="sm-legend-dot" style="background:#a5d6a7;"></span> Ghế lối đi hàng sau</div>
+          <div class="sm-guide-item"><span class="sm-legend-dot" style="background:#fff9c4;"></span> Ghế giữa hàng sau</div>
+          <div class="sm-guide-item"><span class="sm-legend-dot" style="background:#b0bec5;opacity:.4"></span> Ghế cửa sổ hàng sau</div>
+          <div class="sm-guide-item"><span class="sm-legend-dot" style="background:#fff;border:1.5px solid #b0bec5;"></span> Ghế miễn phí</div>
+          <div class="sm-guide-item"><span class="sm-legend-dot" style="background:#e0e0e0;"></span> Ghế không còn trống (×)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PASSENGER SELECTOR ══ -->
+<div class="container-xl pb-2">
+  <div class="sm-pax-bar" id="sm-pax-bar">
+    <!-- Rendered by JS -->
+  </div>
+</div>
+
+<!-- ══ MAIN LAYOUT ══ -->
+<div class="container-xl pb-4">
+  <div class="sm-layout">
+
+    <!-- LEFT: Legend -->
+    <aside class="sm-legend-panel" style="position: sticky; top: 130px; align-self: flex-start; z-index: 10;">
+      <div class="sm-legend-card">
+        <div class="sm-legend-title">Chú thích sơ đồ chỗ ngồi</div>
+        <div class="sm-legend-list" id="sm-legend-list">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER: Plane + Seats -->
+    <div class="sm-plane-wrap d-flex flex-column align-items-center flex-grow-1" id="sm-plane-wrap">
+      <div class="sm-loading" id="sm-loading">
+        <div class="sm-spinner"></div>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted);">Đang tải sơ đồ ghế…</div>
+      </div>
+
+      <div class="sm-cabin" id="sm-cabin" style="display:none; margin: 0 auto;">
+        <!-- Plane nose / header -->
+        <div class="sm-plane-nose">
+          <div class="sm-plane-model" id="sm-plane-model">AIRBUS A321</div>
+        </div>
+
+        <!-- Direction: head -->
+        <div class="sm-direction">
+          <span class="sm-dir-arrow">← Đầu máy bay →</span>
+        </div>
+
+        <!-- Col headers -->
+        <div class="sm-col-headers justify-content-center" id="sm-col-headers">
+          <!-- A B C | ROW | D E G -->
+        </div>
+
+        <!-- Seat rows -->
+        <div class="sm-rows d-flex flex-column align-items-center" id="sm-seat-rows">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Direction: tail -->
+        <div class="sm-direction">
+          <span class="sm-dir-arrow">← Đuôi máy bay →</span>
+        </div>
+
+        <!-- Plane tail -->
+        <div class="sm-plane-tail"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: (optional info panel, hidden on small screens) -->
+    <div class="sm-info-panel d-none d-xl-block" style="position: sticky; top: 130px; align-self: flex-start; z-index: 10;">
+      <div class="sm-info-card" id="sm-info-card">
+        <div class="sm-info-title"><i class="fa-solid fa-circle-info"></i> Thông tin ghế</div>
+        <div class="sm-info-body" id="sm-info-body">
+          <p style="font-size:13px;color:var(--muted);text-align:center;padding:20px 0;">
+            Hover vào ghế để xem chi tiết
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /sm-layout -->
+</div>
+
+<!-- ══ BOTTOM ACTION BAR ══ -->
+<div class="sm-action-bar">
+  <div class="sm-action-inner">
+    <div class="sm-action-selected">
+      <span id="sm-selected-count">0</span>/<span id="sm-required-count">1</span> ghế đã chọn
+    </div>
+    <a href="#" class="sm-clear-btn" id="sm-clear-btn">Xóa lựa chọn</a>
+    <div class="sm-action-btns">
+      <button class="btn-back" id="sm-back-btn">
+        <i class="fa-solid fa-arrow-left"></i> QUAY LẠI
+      </button>
+      <button class="btn-sm-confirm" id="sm-confirm-btn" disabled>
+        XÁC NHẬN <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Tooltip -->
+<div class="sm-tooltip" id="sm-tooltip" style="display:none;"></div>
+
+<script src="./../../assets/js/booking/seatmap.js"></script>

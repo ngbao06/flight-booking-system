@@ -41,6 +41,8 @@ $(function() {
                     });
 
                     window.BookingSPA.currentStep = stepName;
+                    // Lưu trạng thái bước hiện tại vào bộ nhớ tạm của tab trình duyệt
+                    sessionStorage.setItem('currentBookingStep', stepName);
                 }).fail(function() {
                     $('#booking-content').html('<div class="container text-center py-5 text-danger">Không thể tải nội dung trang.</div>').animate({ opacity: 1 }, 200);
                 });
@@ -48,6 +50,7 @@ $(function() {
         }
     };
 
-    // 3. Bắt đầu luồng ở trang nhập thông tin
-    window.BookingSPA.goToStep('user-info');
+    // 3. Khôi phục trạng thái bước hiện tại hoặc bắt đầu từ bước đầu tiên
+    const savedStep = sessionStorage.getItem('currentBookingStep');
+    window.BookingSPA.goToStep(savedStep && window.BookingSPA.routes[savedStep] ? savedStep : 'user-info');
 });

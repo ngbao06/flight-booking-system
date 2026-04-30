@@ -142,7 +142,7 @@
   </div>
 
   <!-- ══ PRIVACY CHECKBOX ══ -->
-  <div class="privacy-row">
+  <div class="privacy-row mb-5 pb-5">
     <input type="checkbox" id="privacy-chk" />
     <label for="privacy-chk">
       Dữ liệu cá nhân của Quý khách thu thập trên trang này được xử lý và lưu trữ bởi BAirlines cho mục đích
@@ -152,16 +152,23 @@
     </label>
   </div>
 
-  <!-- ══ ACTIONS ══ -->
-  <div class="action-row">
-    <button class="btn-back" onclick="history.back()">
-      <i class="fa-solid fa-arrow-left"></i> Quay lại
-    </button>
-    <button class="btn-confirm" onclick="handleConfirm()">
-      XÁC NHẬN <i class="fa-solid fa-arrow-right"></i>
-    </button>
-  </div>
+</div>
 
+<!-- ══ BOTTOM ACTION BAR ══ -->
+<div class="sm-action-bar">
+  <div class="sm-action-inner">
+    <div class="sm-action-selected" style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+      <div style="font-size:13px; color:var(--muted); font-weight:600;">Vui lòng kiểm tra kỹ thông tin trước khi tiếp tục.</div>
+    </div>
+    <div class="sm-action-btns">
+      <button class="btn-back" onclick="history.back()">
+        <i class="fa-solid fa-arrow-left"></i> QUAY LẠI
+      </button>
+      <button class="btn-sm-confirm fs-5 px-4" onclick="handleConfirm()">
+        TIẾP TỤC <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- TOAST AREA -->

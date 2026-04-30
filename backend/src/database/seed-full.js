@@ -55,8 +55,10 @@ const truncateTables = async () => {
     await PassengerProfile.deleteMany({});
 };
 
-const startSeedDate = new Date(Date.UTC(2026, 3, 29));
-const endSeedDate = new Date(Date.UTC(2026, 4, 16));
+const now = new Date();
+const startSeedDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+const endSeedDate = new Date(startSeedDate);
+endSeedDate.setUTCDate(startSeedDate.getUTCDate() + 15);
 const seedDayCount = Math.floor((endSeedDate - startSeedDate) / 86_400_000) + 1;
 
 const dtFor = (index, minuteOffset = 0) => toDateTimeString(addMinutes(addDays(startSeedDate, index % seedDayCount), minuteOffset));
@@ -370,8 +372,10 @@ const buildFlightNumber = (airlineCode, date, planeIndex) => `${airlineCode}${pa
 
 const seedFlightsAndSeats = async (airlineIdByCode, airportIdByCode, planeIdsByAirline) => {
     const flightRecords = [];
-    const startDate = new Date(Date.UTC(2026, 3, 29));
-    const endDate = new Date(Date.UTC(2026, 4, 16));
+    const now = new Date();
+    const startDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const endDate = new Date(startSeedDate);
+    endDate.setUTCDate(startSeedDate.getUTCDate() + 15);
     const dayCount = Math.floor((endDate - startDate) / 86_400_000) + 1;
 
     for (let dayIndex = 0; dayIndex < dayCount; dayIndex += 1) {
@@ -547,37 +551,32 @@ const seedBookingsPaymentsTickets = async (flightRecords, users) => {
 };
 
 const main = async () => {
-    
-    console.log(1);
     await connectMongo();
-    
-    console.log(2);
     await truncateTables();
 
     
-    console.log(3);
+    console.log('seed users');
     const users = await seedUsers();
     
-    console.log(4);
+    console.log('seed loyalty users');
     await seedLoyalty(users);
     
-    console.log(5);
+    console.log('seed passenger profiles');
     await seedPassengerProfiles(users);
-
     
-    console.log(6);
+    console.log('seed airports');
     const airportIdByCode = await seedAirports();
     
-    console.log(7);
+    console.log('seed airlines');
     const airlineIdByCode = await seedAirlines();
     
-    console.log(8);
+    console.log('seed planes');
     const planeIdsByAirline = await seedPlanes(airlineIdByCode);
     
-    console.log(9);
+    console.log('seed flights, seats');
     const flightRecords = await seedFlightsAndSeats(airlineIdByCode, airportIdByCode, planeIdsByAirline);
     
-    console.log(10);
+    console.log('seed bookings, payments, tickets');
     await seedBookingsPaymentsTickets(flightRecords, users);
 
     console.log(`Seed completed: ${users.length} users, ${flightRecords.length} flights.`);
