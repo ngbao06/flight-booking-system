@@ -10,6 +10,17 @@ const sendResult = (res, result) => {
 };
 
 class PaymentsController {
+	static async createOfflineQR(req, res, next) {
+		try {
+			const result = await PaymentsService.generateQRCode(req.body);
+			
+			return sendResult(res, result);
+		} 
+		catch (error) {
+			return next(error);
+		}
+	}
+	
 	static async createPayment(req, res, next) {
 		try {
 			const result = await PaymentsService.createPayment(req.body);

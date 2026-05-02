@@ -308,7 +308,7 @@
 
 /* ══ FLIGHT BAR (Thanh thông tin chuyến bay rút gọn) ══ */
 .flight-bar { background: var(--primary); color: #fff; }
-.flight-bar-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; max-width: 1200px; margin: 0 auto; gap: 24px; }
+.flight-bar-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; padding-left: 24px; max-width: 1200px; margin: 0 auto; gap: 24px; }
 .fb-segment { display: flex; align-items: center; gap: 12px; }
 .fb-iata { font-size: 20px; font-weight: 700; color: var(--gold); }
 .fb-city { font-size: 12px; color: rgba(255,255,255,0.7); }
@@ -388,6 +388,16 @@
 .field-group .input-with-icon .fi-icon {
   position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
   color: var(--muted); font-size: 15px; pointer-events: none;
+}
+
+/* Modifier for left icon */
+.field-group .input-with-icon.left-icon .form-control {
+  padding-right: 14px; /* Reset right padding for left-icon case */
+  padding-left: 44px;
+}
+.field-group .input-with-icon.left-icon .fi-icon {
+  right: auto;
+  left: 14px;
 }
 
 .form-divider { margin: 24px 0; border-color: var(--border); opacity: 0.5; }
@@ -1287,4 +1297,71 @@
   .sm-seat { width: 22px; height: 22px; font-size: 9px; border-radius: 3px; }
   .sm-pax-chip { min-width: 140px; }
   .sm-action-inner { padding: 10px 14px; gap: 10px; }
+}
+
+/* Custom Payment Styles */
+.method-item {
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.method-item:hover {
+    border-color: var(--primary-light);
+    background: var(--primary-light);
+}
+
+.method-item.active {
+    border-color: var(--primary);
+    background: #f0f8fb;
+    box-shadow: var(--shadow-sm);
+}
+
+.method-icon {
+    color: var(--primary);
+    font-size: 28px;
+    width: 40px;
+    text-align: center;
+    margin-right: 16px;
+}
+
+.method-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.method-desc {
+    font-size: 13.5px;
+    color: var(--muted);
+}
+
+.method-radio {
+    width: 22px;
+    height: 22px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.summary-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    /* position: sticky; */
+    top: 100px;
+    box-shadow: var(--shadow-sm);
+}
+
+.fw-800 { font-weight: 800; }
+.text-gold { color: var(--gold); }
+.text-navy { color: var(--navy); }
+
+#card-fields label {
+  background-color: rgba(255, 255, 255, 0.1);
 }

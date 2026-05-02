@@ -1,0 +1,132 @@
+<div class="container py-5">
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <h4 class="fw-bold mb-4 text-navy" style="font-size: 22px;">
+                <i class="fa-solid fa-credit-card me-2"></i>Phương thức thanh toán
+            </h4>
+            
+            <div class="payment-selection">
+                <div class="method-item active" data-method="credit-card">
+                    <div class="d-flex align-items-center w-100">
+                        <i class="fa-solid fa-credit-card method-icon"></i>
+                        <div class="flex-grow-1">
+                            <div class="method-title">Thẻ tín dụng / Ghi nợ</div>
+                            <div class="method-desc">Visa, Mastercard, JCB, Amex</div>
+                        </div>
+                        <input type="radio" name="payMethod" checked class="method-radio">
+                    </div>
+
+                    <div class="method-details mt-4" id="card-fields">
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="field-group">
+                                    <label>SỐ THẺ</label>
+                                    <div class="input-with-icon left-icon">
+                                        <i class="fa-regular fa-credit-card fi-icon"></i>
+                                        <input type="text" class="form-control" placeholder="0000 0000 0000 0000">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="field-group">
+                                    <label>TÊN TRÊN THẺ</label>
+                                    <input type="text" class="form-control" placeholder="NGUYEN VAN A">
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="field-group">
+                                    <label>NGÀY HẾT HẠN</label>
+                                    <input type="month" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-5">
+                                <div class="field-group">
+                                    <label>MÃ CVC/CVV</label>
+                                    <div class="input-with-icon left-icon">
+                                        <i class="fa-solid fa-lock fi-icon"></i>
+                                        <input type="password" class="form-control" placeholder="•••">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="method-item mt-3" data-method="momo">
+                    <div class="d-flex align-items-center w-100">
+                        <i class="fa-solid fa-wallet method-icon"></i>
+                        <div class="flex-grow-1">
+                            <div class="method-title">Ví điện tử MoMo</div>
+                            <div class="method-desc">Thanh toán nhanh qua ứng dụng MoMo</div>
+                        </div>
+                        <input type="radio" name="payMethod" class="method-radio">
+                    </div>
+                </div>
+
+                <div class="method-item mt-3" data-method="vnpay">
+                    <div class="d-flex align-items-center w-100">
+                        <i class="fa-solid fa-qrcode method-icon"></i>
+                        <div class="flex-grow-1">
+                            <div class="method-title">VNPAY-QR</div>
+                            <div class="method-desc">Quét mã QR từ ứng dụng ngân hàng</div>
+                        </div>
+                        <input type="radio" name="payMethod" class="method-radio">
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-light border d-flex align-items-center mt-4 p-4" style="border-radius: 12px; background-color: #f8fafc;">
+                <i class="fa-solid fa-shield-halved me-3 text-success" style="font-size: 28px;"></i>
+                <div class="text-muted" style="font-size: 14px; line-height: 1.6;">
+                    Thông tin thanh toán của bạn được bảo mật theo tiêu chuẩn quốc tế PCI DSS. Chúng tôi không lưu trữ mã CVC/CVV của bạn.
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="summary-card p-4">
+                <h5 class="fw-bold border-bottom pb-3 mb-4" style="font-size: 18px;">Tóm tắt đơn hàng</h5>
+                <div class="d-flex justify-content-between mb-3" style="font-size: 14.5px;">
+                    <span class="text-muted fw-bold" id="summary-pax-label">Giá vé (1 Hành khách)</span>
+                    <span class="fw-bold" id="summary-base-price">0 ₫</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3" style="font-size: 14.5px;">
+                    <span class="text-muted fw-bold">Thuế & Phí</span>
+                    <span class="fw-bold text-muted">Đã bao gồm</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3" style="font-size: 14.5px;">
+                    <span class="text-muted fw-bold">Dịch vụ thêm</span>
+                    <span class="fw-bold text-success" id="summary-extra-fee">0 ₫</span>
+                </div>
+                <hr class="my-4" style="border-color: var(--border);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-uppercase" style="font-size: 16px;">Tổng cộng</span>
+                    <span class="fw-800 text-gold" style="font-size: 26px;" id="summary-total-price">0 ₫</span>
+                </div>
+                
+                <button class="btn-sm-confirm w-100 mt-4 py-3 justify-content-center" id="btn-pay-now" style="font-size: 16px; border-radius: 10px;">
+                    THANH TOÁN NGAY <i class="fa-solid fa-chevron-right ms-2"></i>
+                </button>
+
+                <!-- Khối xử lý thanh toán (ẩn mặc định) -->
+                <div id="payment-processing-container" style="display: none;" class="mt-4">
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                        <div class="fw-bold" style="font-size: 13px;">Trạng thái:</div>
+                        <span id="payment-status-badge" class="badge bg-warning text-dark px-3 py-2" style="font-size: 13px;">PENDING</span>
+                    </div>
+                    <div class="text-center mb-3">
+                        <div class="text-muted mb-1" style="font-size: 13px;">Thời gian thanh toán còn lại</div>
+                        <div id="payment-countdown" class="fw-bold text-danger" style="font-size: 32px; font-family: monospace;">00:30</div>
+                    </div>
+                    <button class="btn btn-success w-100 py-3 fw-bold justify-content-center" id="btn-confirm-payment" style="font-size: 16px; border-radius: 10px;">
+                        XÁC NHẬN THANH TOÁN <i class="fa-solid fa-check ms-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="qr-container justify-content-center" style="display: none;">
+                <img src="" alt="QR Thanh Toán">
+            </div>
+        </div>
+    </div>
+</div>

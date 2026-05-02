@@ -51,8 +51,15 @@ const listPaymentsQuerySchema = Joi.object({
 	status: Joi.string().trim().min(1).max(50)
 });
 
+const paymentSchema = Joi.object({
+	amount: Joi.number().positive().required(),
+	content: Joi.string().trim().min(1).max(255)
+});
+
+
 export const validateCreatePayment = validate(createPaymentSchema, "body");
 export const validateUpdatePayment = validate(updatePaymentSchema, "body");
 export const validatePaymentIdParam = validate(paymentIdParamSchema, "params");
 export const validateListPaymentsQuery = validate(listPaymentsQuerySchema, "query");
+export const validatePayment = validate(paymentSchema, "body");
 // payments.validator.js

@@ -1,6 +1,73 @@
 import PaymentsRepository from "./payments.repository.js";
+import qrConfig from "../../config/payment.js";
+import QRCode from "qrcode";
+
+import pkg from 'vietnam-qr-pay';
+// Kiểm tra xem VietQRPay nằm ở đâu trong object được import
 
 class PaymentsService {
+	static async generateQRCode(payload) {
+		const { amount, content } = payload;
+		const { QRPay } = pkg;
+
+		const f = (id, val) => {
+			const v = String(val);
+			return id.toString().padStart(2, '0') + v.length.toString().padStart(2, '0') + v;
+		};
+
+		try {
+			const guid = f('00', 'A000000727'); // GUID của Napas
+			const bankData = f('00', qrConfig.BANK_INFO.BANK_ID) + f('01', qrConfig.BANK_INFO.ACCOUNT_NO);
+			const service = f('02', 'QRIBFTTA'); // Mã dịch vụ chuyển khoản nhanh
+			const merchantInfo = f('38', guid + f('01', bankData) + service);
+
+			// Lắp ghép chuỗi tổng
+			let rawData = "000201"; // Phiên bản định dạng
+			rawData += "010211";   // QR tĩnh
+			rawData += merchantInfo;
+			rawData += f('53', '704'); // Mã tiền tệ (VND)
+			if (amount) rawData += f('54', amount);
+			rawData += f('58', 'VN'); // Quốc gia
+			rawData += f('62', f('08', content)); // Nội dung chuyển khoản
+
+			// Tính toán mã CRC (4 ký tự cuối)
+			rawData += "6304";
+			const crc = (str) => {
+				let crc = 0xFFFF;
+				for (let i = 0; i < str.length; i++) {
+					crc ^= str.charCodeAt(i) << 8;
+					for (let j = 0; j < 8; j++) {
+						if ((crc & 0x8000) !== 0) crc = (crc << 1) ^ 0x1021;
+						else crc <<= 1;
+					}
+				}
+				return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+			};
+			
+			const finalQR = rawData + crc(rawData);
+			console.log("Mã QR Chuẩn VietQR:", finalQR);
+
+			// Tạo ảnh
+			const qrImageBase64 = await QRCode.toDataURL(finalQR, qrConfig.QR_OPTIONS);
+
+			return {
+				ok: true,
+				statusCode: 200,
+				message: "QR code generated successfully",
+				data: {
+					qrCode: finalQR,      // Chuỗi raw nếu FE muốn tự vẽ
+					qrImage: qrImageBase64, // Chuỗi base64 để FE bỏ vào thẻ <img>
+				}
+			};
+		} catch (err) {
+			return {
+				ok: false,
+				statusCode: 500,
+				message: "Failed to create qrcode"
+			};
+		}
+	}
+
 	static async createPayment(payload) {
 		const existing = await PaymentsRepository.getByTransactionId(payload.transactionId);
 		if (existing) {
