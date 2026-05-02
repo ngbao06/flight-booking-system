@@ -1,6 +1,8 @@
-/**
+/*
  * initPayment - Khởi tạo logic cho bước thanh toán
  */
+// const BASE_API_URL = 'http://localhost:3000/api';
+
 window.initPayment = function() {
     console.log("Thanh toán đã sẵn sàng.");
     
@@ -34,15 +36,10 @@ window.initPayment = function() {
     });
 
     // Xử lý nút thanh toán
-    $('#btn-pay-now').on('click', function() {
+    $('#btn-pay-now').on('click', async function() {
         const btn = $(this);
         const originalText = btn.html();
         const selectedMethod = $('.method-item.active').data('method');
-
-        // 1. Lấy dữ liệu từ giao diện
-        // Xóa chữ "₫" và dấu chấm phân cách hàng nghìn để lấy số nguyên
-        const totalAmount = parseInt($('#summary-total-price').text().replace(/[^\d]/g, ''));
-        const orderDescription = "Thanh toan don hang " + Date.now(); // Hoặc mã đơn hàng của bạn
 
         // Kiểm tra nếu là phương thức chuyển khoản (vietqr) mới hiện QR
         if (selectedMethod !== 'vnpay' && selectedMethod !== 'vietqr') {
@@ -50,57 +47,97 @@ window.initPayment = function() {
             return;
         }
 
-        
-        const rawData = sessionStorage.getItem('selectedFlightBooking');
-        const amount = (JSON.parse(rawData)).totalPrice;
-
         // 2. Hiệu ứng Loading
-        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span> Đang tạo mã QR...');
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span> Đang tạo giao dịch...');
 
-        // 3. Gọi API Backend (Offline QR)
-        $.ajax({
-            url: 'http://localhost:3000/api/payments/generateQRCode', // Đường dẫn route Node.js của bạn
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                amount: 2000,
-                content: orderDescription
-            }),
-            success: function(response) {
-                if (response.success) {
-                    // 4. Hiển thị ảnh QR vào thẻ img
-                    const qrImgTag = $('.qr-container img');
-                    qrImgTag.attr('src', response.data.qrImage);
-                    
-                    // Hiển thị container chứa QR (nếu đang ẩn)
-                    $('.qr-container').fadeIn().addClass('active');
+        try {
+            const rawData = sessionStorage.getItem('selectedFlightBooking');
+            if (!rawData) throw new Error("Không tìm thấy dữ liệu đơn hàng");
+            
+            const data = JSON.parse(rawData);
+            const amount = data.totalPrice;
+            const bookingId = data.bookingId;
+            if (!bookingId) throw new Error("Chưa có Booking ID. Vui lòng thử lại từ bước đầu.");
 
-                    // Bắt đầu logic đếm ngược TTL
-                    startPaymentProcess();
-                }
-            },
-            error: function(xhr) {
-                alert("Lỗi kết nối server: " + (xhr.responseJSON?.message || "Không thể tạo mã QR"));
-            },
-            complete: function() {
-                // Khôi phục trạng thái nút
-                btn.prop('disabled', false).html(originalText);
+            // [TẠO PAYMENT DB]
+            const transactionId = "TXN-" + Date.now();
+            const paymentRes = await fetch(`${BASE_API_URL}/payments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    bookingId: parseInt(bookingId),
+                    transactionId: transactionId,
+                    amount: amount,
+                    paymentMethod: 'BANKING',
+                    status: 'PENDING'
+                })
+            }).then(r => r.json());
+            if (!paymentRes.success) throw new Error(paymentRes.message || 'Lỗi khởi tạo Thanh toán');
+            
+            const paymentId = paymentRes.data.id;
+            sessionStorage.setItem('currentPaymentId', paymentId);
+            sessionStorage.setItem('currentTransactionId', transactionId);
+
+            // [HIỂN THỊ MÃ QR]
+            const qrRes = await fetch(`${BASE_API_URL}/payments/generateQRCode`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: amount, content: transactionId })
+            }).then(r => r.json());
+
+            if (qrRes.success) {
+                $('.qr-container img').attr('src', qrRes.data.qrImage);
+                $('.qr-container').fadeIn().addClass('active');
+                startPaymentProcess();
+            } else {
+                throw new Error("Không thể sinh mã QR");
             }
-        });
+        } catch (error) {
+            alert("Giao dịch gián đoạn: " + error.message);
+        } finally {
+            btn.prop('disabled', false).html(originalText);
+        }
     });
     
     // Xử lý nút xác nhận thanh toán (thành công)
-    $('#btn-confirm-payment').on('click', function() {
+    $('#btn-confirm-payment').on('click', async function() {
+        const btn = $(this);
         clearInterval(countdownInterval); // Dừng đếm ngược
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span> Đang xác nhận...');
         
-        // Cập nhật trạng thái thành SUCCEED
-        $('#payment-status-badge').removeClass().addClass('badge bg-success px-3 py-2').text('SUCCEED');
-        $('#payment-countdown').removeClass('text-danger').addClass('text-success');
-        
-        $(this).prop('disabled', true).html('ĐÃ XÁC NHẬN <i class="fa-solid fa-check ms-2"></i>');
-        
-        // TODO: Tại đây bạn có thể gọi API AJAX để gửi trạng thái SUCCEED lên server nếu cần thiết
-        alert("Xác nhận thanh toán thành công!");
+        try {
+            const data = JSON.parse(sessionStorage.getItem('selectedFlightBooking'));
+            const bookingId = data.bookingId;
+            const paymentId = sessionStorage.getItem('currentPaymentId');
+            const transactionId = sessionStorage.getItem('currentTransactionId');
+            const amount = data.totalPrice;
+            const paymentMethod = $('.method-item.active').data('method') || 'vietqr';
+
+            // Cập nhật Database: Đổi Payments sang COMPLETED
+            await fetch(`${BASE_API_URL}/payments/${paymentId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'SUCCEED' })
+            });
+
+            // [SAGA STEP 4] Báo Saga hoàn tất thanh toán để xuất vé
+            const confirmRes = await fetch(`${BASE_API_URL}/booking/${bookingId}/payment-completed`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentId: parseInt(paymentId), transactionId, amount, paymentMethod })
+            }).then(r => r.json());
+
+            if (!confirmRes.success) throw new Error(confirmRes.message);
+            
+            $('#payment-status-badge').removeClass().addClass('badge bg-success px-3 py-2').text('SUCCEED');
+            $('#payment-countdown').removeClass('text-danger').addClass('text-success');
+            btn.html('ĐÃ XÁC NHẬN <i class="fa-solid fa-check ms-2"></i>');
+            alert("Chúc mừng! Chuyến bay của bạn đã được đặt vé thành công.");
+            sessionStorage.removeItem('selectedFlightBooking');
+        } catch (error) {
+            alert("Lỗi xác nhận: " + error.message);
+            btn.prop('disabled', false).html('XÁC NHẬN LẠI <i class="fa-solid fa-rotate-right ms-2"></i>');
+        }
     });
 
     // Hàm bắt đầu bộ đếm ngược
@@ -127,7 +164,20 @@ window.initPayment = function() {
                 $('#payment-countdown').removeClass('text-danger').addClass('text-muted');
                 $('#btn-confirm-payment').prop('disabled', true).html('ĐÃ HẾT HẠN <i class="fa-solid fa-clock ms-2"></i>');
                 
-                // TODO: Gọi API báo backend là giao dịch OUT_OF_TIME (nếu cần)
+                // [SAGA COMPENSATION] Báo Saga huỷ giao dịch, nhả ghế
+                const data = JSON.parse(sessionStorage.getItem('selectedFlightBooking') || '{}');
+                const bookingId = data.bookingId;
+                const paymentId = sessionStorage.getItem('currentPaymentId');
+                if (bookingId && paymentId) {
+                    fetch(`${BASE_API_URL}/booking/${bookingId}/payment-failed`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            paymentId: parseInt(paymentId),
+                            reason: 'Hết thời gian thanh toán'
+                        })
+                    });
+                }
             }
         }, 1000);
     }

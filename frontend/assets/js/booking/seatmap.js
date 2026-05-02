@@ -586,7 +586,7 @@ function initSeatMap() {
     });
 
     /* Confirm button */
-    $(document).on('click.seatmap', '#sm-confirm-btn:not(:disabled)', function () {
+    $(document).on('click.seatmap', '#sm-confirm-btn:not(:disabled)', async function () {
       /* Persist selections to sessionStorage */
       const rawData = sessionStorage.getItem('selectedFlightBooking');
       let bookingData = rawData ? JSON.parse(rawData) : {};
@@ -594,6 +594,25 @@ function initSeatMap() {
       bookingData.selectedSeats = state.selectedSeats;
       bookingData.seatSummary   = buildSeatSummary();
       
+      const bookingId = bookingData.bookingId;
+      const seatIds = Object.values(state.selectedSeats).map(s => parseInt(s.seatId));
+
+      if (bookingId && seatIds.length > 0) {
+        try {
+          const BASE = (typeof BASE_API_URL !== 'undefined') ? BASE_API_URL : 'http://localhost:3000/api';
+          const seatRes = await fetch(`${BASE}/booking/${bookingId}/select-seats`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ seatIds })
+          }).then(r => r.json());
+
+          if (!seatRes.success) throw new Error(seatRes.message || 'Lỗi khóa ghế');
+        } catch (error) {
+          alert('Lỗi khi khóa ghế: ' + error.message);
+          return; // Dừng lại không chuyển trang nếu khóa ghế thất bại
+        }
+      }
+
       sessionStorage.setItem('selectedFlightBooking', JSON.stringify(bookingData));
 
       if (window.BookingSPA) window.BookingSPA.goToStep('shopping-cart');

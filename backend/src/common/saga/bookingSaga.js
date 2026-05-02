@@ -10,6 +10,7 @@ import SagaManager from './sagaManager.js';
 class BookingSaga {
     constructor(bookingData) {
         this.bookingId = bookingData.bookingId;
+        this.bookingDate = bookingData.bookingDate;
         this.userId = bookingData.userId;
         this.flightId = bookingData.flightId;
         this.totalAmount = bookingData.totalAmount;
@@ -26,19 +27,6 @@ class BookingSaga {
     // tạo booking
     async executeStep1_CreateBooking() {
         try {   
-            console.log(`[SAGA STEP 1] Creating booking for flight ${this.flightId}`);
-            
-            const booking = await BookingRepository.createBooking({
-                flightId: this.flightId,
-                bookingDate: new Date().toISOString(),
-                totalAmount: this.totalAmount,
-                status: 'PENDING'
-            });
-
-            if (!booking) {
-                throw new Error('Failed to create booking');
-            }
-
             this.completedSteps.push('BOOKING_CREATED');
             this.status = 'AWAITING_SEAT_SELECTION';
 
@@ -51,7 +39,7 @@ class BookingSaga {
                 message: 'Please select seats for your booking'
             });
 
-            return booking;
+            return true;
         } catch (error) {
             console.error(`[SAGA STEP 1] ❌ Error:`, error);
             this.status = 'FAILED';
@@ -195,13 +183,13 @@ class BookingSaga {
                 throw new Error('Payment not found');
             }
 
-            if (payment.status !== 'COMPLETED') {
+            if (payment.status !== 'SUCCEED') {
                 throw new Error('Payment status is not completed');
             }
 
             // Update booking status to CONFIRMED
             const updated = await BookingRepository.updateBooking(this.bookingId, {
-                status: 'CONFIRMED'
+                status: 'SUCCEED'
             });
 
             if (!updated) {
@@ -222,7 +210,9 @@ class BookingSaga {
             this.status = 'FAILED';
 
             // Compensation: Refund payment and loyalty
-            await this.compensateStep4_RefundPayment(paymentData.paymentId);
+            // await this.compensateStep4_RefundPayment(paymentData.paymentId);
+
+            await this.rollbackAllSteps();
 
             eventBus.emit(Events.SAGA_ERROR, {
                 bookingId: this.bookingId,
@@ -468,7 +458,7 @@ class BookingSaga {
 
             // Update booking status to CANCELLED
             await BookingRepository.updateBooking(this.bookingId, {
-                status: 'CANCELLED'
+                status: 'FAILED'
             });
 
             console.log(`[ROLLBACK] ✅ All steps rolled back successfully`);

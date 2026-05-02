@@ -11,13 +11,13 @@ class PaymentsRepository {
             VALUES (?, ?, ?, ?, ?)
             `, [bookingId, transactionId, amount, paymentMethod, status]);
 
-        return result.affectedRows > 0;
+        return result.insertId;
     }
     
     // to-log
     static async updatePayment(id, payment) {
-        const allowedFields = {
-            status: "status"
+        const allowedFields = { 
+            status: "status" 
         };
 
         const fields = [];
@@ -46,7 +46,7 @@ class PaymentsRepository {
             console.log(error.message);
             return false;
         }
-        return result.affectedRows > 0;
+        return result.insertId;
     }
     
     //

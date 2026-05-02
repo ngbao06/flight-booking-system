@@ -78,11 +78,11 @@ class PaymentsService {
 			};
 		}
 
-		const created = await PaymentsRepository.createPayment({
+		const insertId = await PaymentsRepository.createPayment({
 			...payload,
 			status: payload.status || "PENDING"
 		});
-		if (!created) {
+		if (!insertId) {
 			return {
 				ok: false,
 				statusCode: 500,
@@ -94,7 +94,7 @@ class PaymentsService {
 			ok: true,
 			statusCode: 201,
 			message: "Payment created successfully",
-			data: payload
+			data: { ...payload, id: insertId }
 		};
 	}
 

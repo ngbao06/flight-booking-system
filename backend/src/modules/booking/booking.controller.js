@@ -20,21 +20,21 @@ class BookingController {
 	 */
 	static async createBooking(req, res, next) {
 		try {
-			const { flightId, userId, totalAmount } = req.body;
+			const { flightId, bookingDate, totalAmount } = req.body;
 
 			// Validate required fields
-			if (!flightId || !userId || !totalAmount) {
+			if (!flightId || !bookingDate || !totalAmount) {
 				return sendResult(res, {
 					ok: false,
 					statusCode: 400,
-					message: "Missing required fields: flightId, userId, totalAmount"
+					message: "Missing required fields: flightId, bookingDate, totalAmount"
 				});
 			}
 
 			// Create booking first
 			const result = await BookingService.createBooking({
 				flightId,
-				bookingDate: new Date().toISOString(),
+				bookingDate,
 				totalAmount,
 				status: 'PENDING'
 			});
@@ -43,13 +43,12 @@ class BookingController {
 				return sendResult(res, result);
 			}
 
-			// Extract bookingId from created booking (or generate temporarily)
-			const bookingId = result.data?.id || `TEMP-${Date.now()}`;
+			const bookingId = result.data.id;
 
 			// Trigger saga workflow
 			eventBus.emit(Events.BOOKING_CREATED, {
 				bookingId,
-				userId,
+				bookingDate,
 				flightId,
 				totalAmount,
 				createdAt: new Date().toISOString()

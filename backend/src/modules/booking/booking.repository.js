@@ -13,7 +13,7 @@ class BookingRepository {
                 VALUES (?, ?, ?, ?)
                 `, [flightId, bookingDate, totalAmount, status]);
 
-            return result.affectedRows > 0;
+            return result.insertId;
         }
 
         const [result] = await query(`
@@ -21,7 +21,7 @@ class BookingRepository {
             VALUES (?, ?, ?)
             `, [flightId, bookingDate, totalAmount]);
 
-        return result.affectedRows > 0;
+        return result.insertId;
     }
     
     // to-log

@@ -139,13 +139,8 @@ class FlightRepository {
             }
 
             if (filter.departureTime) {
-                sql += " AND departure_time = ?";
+                sql += " AND DATE(departure_time) = DATE(?)";
                 params.push(filter.departureTime);
-            }
-
-            if (filter.arrivalTime) {
-                sql += " AND DATE_FORMAT(arrival_time, '%Y-%m-%d %H:%i') = DATE_FORMAT(?, '%Y-%m-%d %H:%i')";
-                params.push(filter.arrivalTime);
             }
 
             if (filter.status) {

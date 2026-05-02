@@ -2,6 +2,7 @@
    nhap-thong-tin.js  —  JS cho trang Nhập Thông Tin Hành Khách
    Requires: jQuery 3.x
    ═══════════════════════════════════════════════════════ */
+const BASE_API_URL = 'http://localhost:3000/api';
 
 $(function () {
 
@@ -179,7 +180,7 @@ $(function () {
   };
 
   /* ══ CONFIRM / VALIDATE ══ */
-  window.handleConfirm = function () {
+  window.handleConfirm = async function () {
     // Privacy check
     if (!$('#privacy-chk').is(':checked')) {
       showToast('error', 'Vui lòng đồng ý với chính sách bảo mật để tiếp tục.');
@@ -195,7 +196,7 @@ $(function () {
       if (!$(this).find('.pax-lastname').val().trim()) missing.push(`Họ (Hành khách ${paxNum})`);
     });
 
-    if (!$('#email-1').val().trim())                     missing.push('Địa chỉ email');
+    if (!$('#email-1').val().trim()) missing.push('Địa chỉ email');
 
     if (missing.length) {
       showToast('error', 'Vui lòng điền: ' + missing.join(', '));
@@ -225,8 +226,32 @@ $(function () {
     bookingData.contactInfo = contactInfo;
     sessionStorage.setItem('selectedFlightBooking', JSON.stringify(bookingData));
 
-    showToast('success', 'Thông tin đã được xác nhận! Đang chuyển tới trang xác nhận…');
-    window.BookingSPA.goToStep('shopping-cart');
+    // [SAGA STEP 1] Tạo Booking
+    try {
+      const flightId = bookingData.flight.id || bookingData.flight.flight_id;
+      const paxCount = passengerDetails.length;
+      const basePrice = bookingData.basePrice || 0;
+      const totalAmount = basePrice * paxCount; // Tạm tính tiền vé, sẽ cập nhật thêm nếu mua hành lý/bảo hiểm
+      const bookingDate = new Date().toISOString().slice(0, 10);
+
+      console.log(flightId, bookingDate, totalAmount);
+
+      const bookingRes = await fetch(`${BASE_API_URL}/booking`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ flightId, bookingDate, totalAmount })
+      }).then(r => r.json());
+
+      if (!bookingRes.success) showToast('error', bookingRes.message || 'Lỗi tạo đơn hàng');
+      
+      bookingData.bookingId = bookingRes.data.bookingId;
+      sessionStorage.setItem('selectedFlightBooking', JSON.stringify(bookingData));
+
+      showToast('success', 'Thông tin đã được xác nhận! Đang chuyển tới trang tiếp theo…');
+      window.BookingSPA.goToStep('shopping-cart');
+    } catch (error) {
+      showToast('error', error.message);
+    }
   };
 
   /* ══ TOAST ══ */

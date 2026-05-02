@@ -2,11 +2,11 @@ import BookingRepository from "./booking.repository.js";
 
 class BookingService {
 	static async createBooking(payload) {
-		const created = await BookingRepository.createBooking({
+		const insertId = await BookingRepository.createBooking({
 			...payload,
 			status: payload.status || "PENDING"
 		});
-		if (!created) {
+		if (!insertId) {
 			return {
 				ok: false,
 				statusCode: 500,
@@ -18,7 +18,7 @@ class BookingService {
 			ok: true,
 			statusCode: 201,
 			message: "Booking created successfully",
-			data: payload
+			data: { ...payload, id: insertId }
 		};
 	}
 

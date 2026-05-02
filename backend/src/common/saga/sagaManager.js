@@ -21,7 +21,7 @@ class SagaManager {
         eventBus.on(Events.SEAT_SELECTED, (data) => {
             const saga = this.sagaInstances.get(data.bookingId);
             if (saga) {
-                saga.handleSeatSelection(data);
+                saga.handleSeatSelection(data).catch(err => {});
             }
         });
 
@@ -29,7 +29,7 @@ class SagaManager {
         eventBus.on(Events.LOYALTY_EXCHANGE, (data) => {
             const saga = this.sagaInstances.get(data.bookingId);
             if (saga) {
-                saga.handleLoyaltyExchange(data);
+                saga.handleLoyaltyExchange(data).catch(err => {});
             }
         });
 
@@ -37,7 +37,7 @@ class SagaManager {
         eventBus.on(Events.PAYMENT_COMPLETED, (data) => {
             const saga = this.sagaInstances.get(data.bookingId);
             if (saga) {
-                saga.handlePaymentSuccess(data);
+                saga.handlePaymentSuccess(data).catch(err => {});
             }
         });
 
@@ -45,7 +45,7 @@ class SagaManager {
         eventBus.on(Events.PAYMENT_FAILED, (data) => {
             const saga = this.sagaInstances.get(data.bookingId);
             if (saga) {
-                saga.handlePaymentFailure(data);
+                saga.handlePaymentFailure(data).catch(err => {});
             }
         });
 
