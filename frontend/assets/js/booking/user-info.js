@@ -4,12 +4,12 @@
    ═══════════════════════════════════════════════════════ */
 const BASE_API_URL = 'http://localhost:3000/api';
 
-$(function () {
+window.initUserInfo = function () {
 
   /* ══ GENERATE PASSENGER CARDS ══ */
-  function renderPassengerForms(adultCount) {
+  function renderPassengerForms(totalPax) {
     let html = '';
-    for (let i = 1; i <= adultCount; i++) {
+    for (let i = 1; i <= totalPax; i++) {
       html += `
       <div class="form-card pax-card-dynamic" id="pax-card-${i}">
         <div class="form-card-header pax-header">
@@ -93,9 +93,28 @@ $(function () {
 
       // Đổ dữ liệu số lượng hành khách
       if (data.passengers) {
-        const totalPax = data.passengers.adult + data.passengers.child + data.passengers.infant;
+        const totalPax = (data.passengers.adult || 1) + (data.passengers.child || 0) + (data.passengers.infant || 0);
         $('#fb-pax').html(`${totalPax} <i class="fa-solid fa-user" style="font-size:12px;"></i>`);
-        renderPassengerForms(data.passengers.adult);
+        renderPassengerForms(totalPax);
+        
+        // [QUAN TRỌNG] Khôi phục dữ liệu hành khách nếu người dùng "Quay lại" từ giỏ hàng
+        if (data.passengerDetails && data.passengerDetails.length > 0) {
+          $('.users .pax-card-dynamic').each(function(index) {
+            const pax = data.passengerDetails[index];
+            if (pax) {
+              $(this).find('.pax-title-select').val(pax.title);
+              $(this).find('.pax-firstname').val(pax.firstName);
+              $(this).find('.pax-lastname').val(pax.lastName);
+              $(this).find('.pax-dob').val(pax.dob);
+            }
+          });
+        }
+        
+        // Khôi phục thông tin liên hệ
+        if (data.contactInfo) {
+          if (data.contactInfo.email) $('#email-1').val(data.contactInfo.email);
+          if (data.contactInfo.phone) $('input[type="tel"]').first().val(data.contactInfo.phone);
+        }
       }
     } catch (e) {
       console.error('Error parsing flight data from session:', e);
@@ -239,7 +258,7 @@ $(function () {
       const bookingRes = await fetch(`${BASE_API_URL}/booking`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ flightId, bookingDate, totalAmount })
+        body: JSON.stringify({ flightId, bookingDate, totalAmount, passengerDetails, contactInfo })
       }).then(r => r.json());
 
       if (!bookingRes.success) showToast('error', bookingRes.message || 'Lỗi tạo đơn hàng');
@@ -268,4 +287,4 @@ $(function () {
     }, 3500);
   }
 
-});
+};

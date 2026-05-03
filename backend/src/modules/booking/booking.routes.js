@@ -33,6 +33,12 @@ router.post("/:id/payment-completed", validateBookingIdParam, BookingController.
 // Step 4b: Notify payment failed
 router.post("/:id/payment-failed", validateBookingIdParam, BookingController.notifyPaymentFailed);
 
+// Cancel entire booking saga
+router.post("/:id/cancel", validateBookingIdParam, BookingController.cancelBookingSaga);
+
+// Rollback last saga step
+router.post("/:id/rollback-step", validateBookingIdParam, BookingController.rollbackLastSagaStep);
+
 // Get saga status
 router.get("/:id/saga-status", validateBookingIdParam, BookingController.getSagaStatus);
 

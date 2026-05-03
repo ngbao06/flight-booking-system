@@ -82,5 +82,74 @@
 <!-- Logic Script -->
 <script src="./../../assets/js/booking/BOOKING.js"></script>
 
+<!-- Script xử lý Rollback khi Điều hướng -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const BASE_API_URL = 'http://localhost:3000/api'; // Đổi lại port/domain nếu cần
+
+      // 1. Quay về màn hình chính (Bấm Logo BAirlines) -> Rollback toàn bộ Saga
+      $(document).on('click', '.topbar-brand a', async function(e) {
+          e.preventDefault();
+          const href = $(this).attr('href');
+          
+          const rawData = sessionStorage.getItem('selectedFlightBooking');
+          if (rawData) {
+              try {
+                  const data = JSON.parse(rawData);
+                  if (data.bookingId) {
+                      await fetch(`${BASE_API_URL}/booking/${data.bookingId}/cancel`, { method: 'POST' });
+                  }
+              } catch (err) { console.error('Lỗi khi huỷ booking:', err); }
+              sessionStorage.removeItem('selectedFlightBooking');
+          }
+          window.location.href = href; // Chuyển trang sau khi đã trigger API
+      });
+
+      // 2. Bấm nút Quay Lại (.btn-back) trên giao diện -> Xử lý theo từng trang
+      $(document).on('click', '.btn-back', async function() {
+          const currentStep = window.BookingSPA ? window.BookingSPA.currentStep : null;
+          const rawData = sessionStorage.getItem('selectedFlightBooking');
+          
+          if (rawData && currentStep) {
+              try {
+                  const data = JSON.parse(rawData);
+                  if (data.bookingId) {
+                      if (currentStep === 'shopping-cart') {
+                          // Đang ở shopping-cart bấm quay lại user-info: Hủy toàn bộ booking & nhả ghế (nếu có)
+                          await fetch(`${BASE_API_URL}/booking/${data.bookingId}/cancel`, { method: 'POST' });
+                          delete data.bookingId; // Xóa id để hàm Tiếp Tục tạo lại Booking mới
+                          delete data.seatSummary;
+                          sessionStorage.setItem('selectedFlightBooking', JSON.stringify(data));
+                      } else {
+                          // Ở các trang khác (seatmap, payment...): Rollback step gần nhất
+                          await fetch(`${BASE_API_URL}/booking/${data.bookingId}/rollback-step`, { method: 'POST' });
+                          if (currentStep === 'seatmap') {
+                              delete data.seatSummary;
+                              sessionStorage.setItem('selectedFlightBooking', JSON.stringify(data));
+                          }
+                      }
+                  }
+              } catch (err) { console.error('Lỗi khi rollback:', err); }
+          }
+      });
+
+      // 3. Bấm nút Back của trình duyệt -> Rollback Step
+      window.addEventListener('popstate', function() {
+          // Trình duyệt back khó bắt chính xác route, an toàn nhất là gọi rollback-step. 
+          // Backend sẽ tự phân tích và quyết định có hủy booking hay không.
+          const rawData = sessionStorage.getItem('selectedFlightBooking');
+          if (rawData) {
+              try {
+                  const data = JSON.parse(rawData);
+                  if (data.bookingId) {
+                      fetch(`${BASE_API_URL}/booking/${data.bookingId}/rollback-step`, { method: 'POST' })
+                          .catch(err => console.error('Lỗi khi rollback step:', err));
+                  }
+              } catch (err) {}
+          }
+      });
+  });
+</script>
+
 </body>
 </html>

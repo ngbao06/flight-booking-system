@@ -6,6 +6,7 @@ import SeatsRepository from '../../modules/seats/seats.repository.js';
 import LoyaltyRepository from '../../modules/loyalty/loyalty.repository.js';
 import AdminLogRepository from '../../modules/adminlogs/adminLogs.repository.js';
 import SagaManager from './sagaManager.js';
+import SagaLogsRepository from './sagaLogs.repository.js';
 
 class BookingSaga {
     constructor(bookingData) {
@@ -24,6 +25,10 @@ class BookingSaga {
         this.paymentId = null;
     }
 
+    async logTransaction(step, status, message, details = {}) {
+        await SagaLogsRepository.log(this.bookingId, step, status, message, details);
+    }
+
     // tạo booking
     async executeStep1_CreateBooking() {
         try {   
@@ -39,10 +44,13 @@ class BookingSaga {
                 message: 'Please select seats for your booking'
             });
 
+            await this.logTransaction('STEP_1_CREATE_BOOKING', 'SUCCESS', 'Booking created successfully');
+
             return true;
         } catch (error) {
             console.error(`[SAGA STEP 1] ❌ Error:`, error);
             this.status = 'FAILED';
+            await this.logTransaction('STEP_1_CREATE_BOOKING', 'FAILED', error.message);
             
             eventBus.emit(Events.SAGA_ERROR, {
                 bookingId: this.bookingId,
@@ -95,11 +103,14 @@ class BookingSaga {
                 message: 'Seats selected. Proceed to loyalty points exchange or payment'
             });
 
+            await this.logTransaction('STEP_2_SEAT_SELECTION', 'SUCCESS', 'Seats selected and reserved', { selectedSeats: this.selectedSeats });
+
         } catch (error) {
             console.error(`[SAGA STEP 2] ❌ Error:`, error);
             this.status = 'FAILED';
             
             // Compensation: Release reserved seats
+            await this.logTransaction('STEP_2_SEAT_SELECTION', 'FAILED', error.message);
             await this.compensateStep2_ReleaseSeat();
 
             eventBus.emit(Events.SAGA_ERROR, {
@@ -152,10 +163,13 @@ class BookingSaga {
                 message: 'Loyalty points applied. Proceed to payment'
             });
 
+            await this.logTransaction('STEP_3_LOYALTY_EXCHANGE', 'SUCCESS', `Loyalty points exchanged. Discount: ${this.loyaltyUsed}`, { pointsToExchange });
+
         } catch (error) {
             console.error(`[SAGA STEP 3] ❌ Error:`, error);
             this.status = 'FAILED';
 
+            await this.logTransaction('STEP_3_LOYALTY_EXCHANGE', 'FAILED', error.message);
             // Compensation: Refund loyalty points
             await this.compensateStep3_RefundLoyalty(loyaltyData.passengerId);
 
@@ -201,6 +215,7 @@ class BookingSaga {
             this.status = 'ISSUING_TICKET';
 
             console.log(`[SAGA STEP 4] ✅ Payment completed and booking confirmed`);
+            await this.logTransaction('STEP_4_PAYMENT', 'SUCCESS', 'Payment completed and booking confirmed', { paymentId });
 
             // Proceed to step 5: Issue ticket
             await this.executeStep5_IssueTicket();
@@ -209,6 +224,7 @@ class BookingSaga {
             console.error(`[SAGA STEP 4] ❌ Error:`, error);
             this.status = 'FAILED';
 
+            await this.logTransaction('STEP_4_PAYMENT', 'FAILED', error.message);
             // Compensation: Refund payment and loyalty
             // await this.compensateStep4_RefundPayment(paymentData.paymentId);
 
@@ -241,10 +257,12 @@ class BookingSaga {
             });
 
             console.log(`[SAGA STEP 4b] ✅ Saga rolled back due to payment failure`);
+            await this.logTransaction('STEP_4B_PAYMENT_FAILURE', 'FAILED', 'Payment failed, saga rolled back');
 
         } catch (error) {
             console.error(`[SAGA STEP 4b] ❌ Rollback error:`, error);
             
+            await this.logTransaction('STEP_4B_PAYMENT_FAILURE', 'FAILED', error.message);
             eventBus.emit(Events.SAGA_ERROR, {
                 bookingId: this.bookingId,
                 error: error.message,
@@ -265,19 +283,26 @@ class BookingSaga {
             // Create ticket for each selected seat
             for (let i = 0; i < this.selectedSeats.length; i++) {
                 const seatId = this.selectedSeats[i];
-                const ticketNumber = `TKT-${this.bookingId}-${i + 1}-${Date.now()}`;
+                
+                // Rút gọn ticket number để thỏa mãn điều kiện VARCHAR(20)
+                const shortTimestamp = Date.now().toString(36).toUpperCase();
+                const ticketNumber = `TK-${this.bookingId}-${i+1}-${shortTimestamp}`.substring(0, 20);
+
+                // Lấy thông tin hành khách thực tế từ bookingData (nếu front-end có truyền lên)
+                const passengers = this.bookingData.passengerDetails || [];
+                const passenger = passengers[i] || {};
 
                 const ticketCreated = await TicketsRepository.createTicket({
                     ticketNumber: ticketNumber,
                     bookingId: this.bookingId,
                     seatId: seatId,
-                    buyerId: this.userId,
-                    passengerLastname: `Passenger`,
-                    passengerFirstname: `${i + 1}`,
-                    passengerIdCard: 'TBD',
-                    issueDate: new Date().toISOString(),
-                    finalPrice: this.totalAmount / this.selectedSeats.length,
-                    status: 'ISSUED'
+                    buyerId: this.userId || null,
+                    passengerLastname: passenger.lastName || 'Passenger',
+                    passengerFirstname: passenger.firstName || `Pax ${i + 1}`,
+                    passengerIdCard: passenger.idCard || 'TBD', // Giới hạn VARCHAR(12)
+                    issueDate: new Date().toISOString().split('T')[0], // Đưa về đúng chuẩn DATE (YYYY-MM-DD)
+                    finalPrice: (this.totalAmount / this.selectedSeats.length) || 0,
+                    status: 'ACTIVE' // Cập nhật đúng ENUM('PENDING','ACTIVE','USED','EXPIRED')
                 });
 
                 if (!ticketCreated) {
@@ -291,6 +316,7 @@ class BookingSaga {
             this.status = 'LOGGING';
 
             console.log(`[SAGA STEP 5] ✅ ${tickets.length} ticket(s) issued`);
+            await this.logTransaction('STEP_5_ISSUE_TICKET', 'SUCCESS', `${tickets.length} ticket(s) issued`, { tickets });
 
             // Proceed to step 6: Log booking
             await this.executeStep6_LogBooking();
@@ -299,6 +325,7 @@ class BookingSaga {
             console.error(`[SAGA STEP 5] ❌ Error:`, error);
             this.status = 'FAILED';
 
+            await this.logTransaction('STEP_5_ISSUE_TICKET', 'FAILED', error.message);
             // Compensation: Cancel tickets
             await this.compensateStep5_CancelTickets();
 
@@ -317,27 +344,11 @@ class BookingSaga {
         try {
             console.log(`[SAGA STEP 6] Logging booking information`);
             
-            await AdminLogRepository.insertActivityLog({
-                action: 'BOOKING_COMPLETED',
-                module: 'BOOKING',
-                id: this.bookingId,
-                user_id: this.userId,
-                role: 'PASSENGER',
-                new_data: {
-                    bookingId: this.bookingId,
-                    flightId: this.flightId,
-                    totalAmount: this.totalAmount,
-                    loyaltyUsed: this.loyaltyUsed,
-                    seatsCount: this.selectedSeats.length,
-                    status: 'CONFIRMED',
-                    completedAt: new Date().toISOString()
-                }
-            });
-
             this.completedSteps.push('BOOKING_LOGGED');
             this.status = 'COMPLETED';
 
             console.log(`[SAGA STEP 6] ✅ Booking logged successfully`);
+            await this.logTransaction('STEP_6_LOG_BOOKING', 'SUCCESS', 'Booking logged successfully');
 
             // Emit completion event
             eventBus.emit(Events.SAGA_COMPLETED, {
@@ -355,6 +366,7 @@ class BookingSaga {
             console.error(`[SAGA STEP 6] ❌ Error:`, error);
             this.status = 'COMPLETED_WITH_LOG_ERROR';
 
+            await this.logTransaction('STEP_6_LOG_BOOKING', 'FAILED', error.message);
             // Even if logging fails, booking is still confirmed
             eventBus.emit(Events.SAGA_COMPLETED, {
                 bookingId: this.bookingId,
@@ -376,8 +388,10 @@ class BookingSaga {
             }
 
             console.log(`[COMPENSATION] ✅ Seats released`);
+            await this.logTransaction('COMPENSATE_SEAT_SELECTION', 'COMPENSATED', 'Seats released');
         } catch (error) {
             console.error(`[COMPENSATION ERROR] Failed to release seats:`, error);
+            await this.logTransaction('COMPENSATE_SEAT_SELECTION', 'FAILED', error.message);
         }
     }
 
@@ -392,8 +406,10 @@ class BookingSaga {
             }
 
             console.log(`[COMPENSATION] ✅ Loyalty points refunded`);
+            await this.logTransaction('COMPENSATE_LOYALTY', 'COMPENSATED', `Loyalty points refunded for passenger ${passengerId}`);
         } catch (error) {
             console.error(`[COMPENSATION ERROR] Failed to refund loyalty:`, error);
+            await this.logTransaction('COMPENSATE_LOYALTY', 'FAILED', error.message);
         }
     }
 
@@ -407,8 +423,10 @@ class BookingSaga {
             });
 
             console.log(`[COMPENSATION] ✅ Payment refunded`);
+            await this.logTransaction('COMPENSATE_PAYMENT', 'COMPENSATED', `Payment ${paymentId} refunded`);
         } catch (error) {
             console.error(`[COMPENSATION ERROR] Failed to refund payment:`, error);
+            await this.logTransaction('COMPENSATE_PAYMENT', 'FAILED', error.message);
         }
     }
 
@@ -421,13 +439,15 @@ class BookingSaga {
             
             for (const ticket of tickets) {
                 await TicketsRepository.updateTicket(ticket.id, {
-                    status: 'CANCELLED'
+                    status: 'EXPIRED' // Cập nhật cho phù hợp với ENUM của Tickets Schema
                 });
             }
 
             console.log(`[COMPENSATION] ✅ Tickets cancelled`);
+            await this.logTransaction('COMPENSATE_TICKET', 'COMPENSATED', 'Tickets cancelled');
         } catch (error) {
             console.error(`[COMPENSATION ERROR] Failed to cancel tickets:`, error);
+            await this.logTransaction('COMPENSATE_TICKET', 'FAILED', error.message);
         }
     }
 
@@ -435,6 +455,7 @@ class BookingSaga {
         try {
             console.log(`[ROLLBACK] Rolling back all steps for booking ${this.bookingId}`);
             
+            await this.logTransaction('ROLLBACK_ALL', 'STARTED', 'Rolling back all steps');
             // Execute compensations in reverse order
             if (this.completedSteps.includes('BOOKING_LOGGED')) {
                 // Mark log as rolled back (informational only)
@@ -462,9 +483,52 @@ class BookingSaga {
             });
 
             console.log(`[ROLLBACK] ✅ All steps rolled back successfully`);
+            await this.logTransaction('ROLLBACK_ALL', 'SUCCESS', 'All steps rolled back successfully');
 
         } catch (error) {
             console.error(`[ROLLBACK ERROR]`, error);
+            await this.logTransaction('ROLLBACK_ALL', 'FAILED', error.message);
+            throw error;
+        }
+    }
+
+    async rollbackLastStep() {
+        try {
+            // Nếu chỉ có bước tạo Booking ban đầu, thì rollback step đồng nghĩa với hủy toàn bộ booking
+            if (this.completedSteps.length === 1 && this.completedSteps[0] === 'BOOKING_CREATED') {
+                console.log(`[ROLLBACK STEP] Chỉ còn bước tạo Booking ban đầu. Tiến hành hủy toàn bộ Saga.`);
+                await this.rollbackAllSteps();
+                return;
+            }
+            if (this.completedSteps.length === 0) return;
+
+            const lastStep = this.completedSteps.pop();
+            console.log(`[ROLLBACK STEP] Reverting last step: ${lastStep} for booking ${this.bookingId}`);
+            await this.logTransaction('ROLLBACK_STEP', 'STARTED', `Rolling back step ${lastStep}`);
+
+            if (lastStep === 'BOOKING_LOGGED') {
+                // Bỏ qua vì chỉ là log
+            } else if (lastStep === 'TICKET_ISSUED') {
+                await this.compensateStep5_CancelTickets();
+                this.status = 'PAYMENT_COMPLETED';
+            } else if (lastStep === 'PAYMENT_COMPLETED') {
+                await this.compensateStep4_RefundPayment(this.paymentId);
+                this.status = 'AWAITING_PAYMENT';
+            } else if (lastStep === 'LOYALTY_EXCHANGED') {
+                await this.compensateStep3_RefundLoyalty(this.userId);
+                this.status = 'AWAITING_LOYALTY_OR_PAYMENT';
+            } else if (lastStep === 'SEATS_SELECTED') {
+                await this.compensateStep2_ReleaseSeat();
+                this.status = 'AWAITING_SEAT_SELECTION';
+                this.selectedSeats = [];
+            }
+
+            console.log(`[ROLLBACK STEP] ✅ Step ${lastStep} rolled back successfully`);
+            await this.logTransaction('ROLLBACK_STEP', 'SUCCESS', `Step ${lastStep} rolled back successfully`);
+
+        } catch (error) {
+            console.error(`[ROLLBACK STEP ERROR]`, error);
+            await this.logTransaction('ROLLBACK_STEP', 'FAILED', error.message);
             throw error;
         }
     }

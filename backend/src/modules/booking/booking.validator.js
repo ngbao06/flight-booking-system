@@ -26,7 +26,9 @@ const createBookingSchema = Joi.object({
 	flightId: Joi.number().integer().positive().required(),
 	bookingDate: Joi.date().iso().required(),
 	totalAmount: Joi.number().positive().required(),
-	status: Joi.string().trim().min(1).max(50)
+	status: Joi.string().trim().min(1).max(50),
+	passengerDetails: Joi.array().items(Joi.object()).optional(),
+	contactInfo: Joi.object().optional()
 });
 
 const updateBookingSchema = Joi.object({

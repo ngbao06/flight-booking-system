@@ -20,7 +20,7 @@ class BookingController {
 	 */
 	static async createBooking(req, res, next) {
 		try {
-			const { flightId, bookingDate, totalAmount } = req.body;
+			const { flightId, bookingDate, totalAmount, passengerDetails, contactInfo } = req.body;
 
 			// Validate required fields
 			if (!flightId || !bookingDate || !totalAmount) {
@@ -51,6 +51,8 @@ class BookingController {
 				bookingDate,
 				flightId,
 				totalAmount,
+				passengerDetails,
+				contactInfo,
 				createdAt: new Date().toISOString()
 			});
 
@@ -325,6 +327,55 @@ class BookingController {
 				}
 			});
 
+		} catch (error) {
+			return next(error);
+		}
+	}
+
+	/**
+	 * Hủy toàn bộ Booking Saga
+	 * POST /api/bookings/:id/cancel
+	 */
+	static async cancelBookingSaga(req, res, next) {
+		try {
+			const bookingId = Number(req.params.id);
+			const saga = SagaManager.getSagaInstance(bookingId);
+
+			if (saga) {
+				await saga.rollbackAllSteps();
+			} else {
+				// Dự phòng nếu Saga đã bị xoá khỏi bộ nhớ, cập nhật thẳng vào DB
+				await BookingService.updateBooking(bookingId, { status: 'FAILED' });
+			}
+
+			return sendResult(res, {
+				ok: true,
+				statusCode: 200,
+				message: "Booking cancelled successfully."
+			});
+		} catch (error) {
+			return next(error);
+		}
+	}
+
+	/**
+	 * Rollback step gần nhất của Saga
+	 * POST /api/bookings/:id/rollback-step
+	 */
+	static async rollbackLastSagaStep(req, res, next) {
+		try {
+			const bookingId = Number(req.params.id);
+			const saga = SagaManager.getSagaInstance(bookingId);
+
+			if (saga) {
+				await saga.rollbackLastStep();
+			}
+
+			return sendResult(res, {
+				ok: true,
+				statusCode: 200,
+				message: "Last step rolled back successfully."
+			});
 		} catch (error) {
 			return next(error);
 		}
