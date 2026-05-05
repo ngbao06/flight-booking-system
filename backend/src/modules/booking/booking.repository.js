@@ -27,7 +27,8 @@ class BookingRepository {
     // to-log
     static async updateBooking(id, booking) {
         const allowedFields = {
-            status: "status"
+            status: "status",
+            totalAmount: "total_amount"
         };
 
         const fields = [];
@@ -56,7 +57,7 @@ class BookingRepository {
             console.log(error.message);
             return false;
         }
-        return result.affectedRows > 0;
+        return result.affectedRows > 0 || result.changedRows === 0;
     }
 
     //

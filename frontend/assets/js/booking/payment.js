@@ -9,6 +9,18 @@ window.initPayment = function() {
     let countdownInterval;
     let timeLeft = 30;
 
+    const authFetch = (url, options = {}) => {
+        const headers = { ...(options.headers || {}) };
+        const token = localStorage.getItem('authToken');
+        if (token) headers.Authorization = `Bearer ${token}`;
+
+        return fetch(url, {
+            ...options,
+            headers,
+            credentials: 'include'
+        });
+    };
+
     // Tải và hiển thị thông tin đơn hàng từ SessionStorage
     loadBookingSummary();
 
@@ -55,13 +67,13 @@ window.initPayment = function() {
             if (!rawData) throw new Error("Không tìm thấy dữ liệu đơn hàng");
             
             const data = JSON.parse(rawData);
-            const amount = data.totalPrice;
+            const amount = calculatePayableAmount(data);
             const bookingId = data.bookingId;
             if (!bookingId) throw new Error("Chưa có Booking ID. Vui lòng thử lại từ bước đầu.");
 
             // [TẠO PAYMENT DB]
             const transactionId = "TXN-" + Date.now();
-            const paymentRes = await fetch(`${BASE_API_URL}/payments`, {
+            const paymentRes = await authFetch(`${BASE_API_URL}/payments`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -79,7 +91,7 @@ window.initPayment = function() {
             sessionStorage.setItem('currentTransactionId', transactionId);
 
             // [HIỂN THỊ MÃ QR]
-            const qrRes = await fetch(`${BASE_API_URL}/payments/generateQRCode`, {
+            const qrRes = await authFetch(`${BASE_API_URL}/payments/generateQRCode`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount: amount, content: transactionId })
@@ -104,27 +116,43 @@ window.initPayment = function() {
         const btn = $(this);
         clearInterval(countdownInterval); // Dừng đếm ngược
         btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span> Đang xác nhận...');
+        let voucherApplied = false;
         
         try {
             const data = JSON.parse(sessionStorage.getItem('selectedFlightBooking'));
             const bookingId = data.bookingId;
             const paymentId = sessionStorage.getItem('currentPaymentId');
             const transactionId = sessionStorage.getItem('currentTransactionId');
-            const amount = data.totalPrice;
+            const amount = calculatePayableAmount(data);
             const paymentMethod = $('.method-item.active').data('method') || 'vietqr';
+            const userVoucherId = data?.voucher?.userVoucherId ? Number(data.voucher.userVoucherId) : null;
+
+            if (userVoucherId) {
+                const useVoucherRes = await authFetch(`${BASE_API_URL}/vouchers/use`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userVoucherId })
+                }).then(r => r.json());
+
+                if (!useVoucherRes.success) {
+                    throw new Error(useVoucherRes.message || 'Không thể áp dụng voucher');
+                }
+
+                voucherApplied = true;
+            }
 
             // Cập nhật Database: Đổi Payments sang COMPLETED
-            await fetch(`${BASE_API_URL}/payments/${paymentId}`, {
+            await authFetch(`${BASE_API_URL}/payments/${paymentId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: 'SUCCEED' })
             });
 
             // [SAGA STEP 4] Báo Saga hoàn tất thanh toán để xuất vé
-            const confirmRes = await fetch(`${BASE_API_URL}/booking/${bookingId}/payment-completed`, {
+            const confirmRes = await authFetch(`${BASE_API_URL}/booking/${bookingId}/payment-completed`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ paymentId: parseInt(paymentId), transactionId, amount, paymentMethod })
+                body: JSON.stringify({ paymentId: parseInt(paymentId), transactionId, amount, paymentMethod, userVoucherId })
             }).then(r => r.json());
 
             if (!confirmRes.success) throw new Error(confirmRes.message);
@@ -135,6 +163,22 @@ window.initPayment = function() {
             alert("Chúc mừng! Chuyến bay của bạn đã được đặt vé thành công.");
             sessionStorage.removeItem('selectedFlightBooking');
         } catch (error) {
+            const rawData = sessionStorage.getItem('selectedFlightBooking');
+            const data = rawData ? JSON.parse(rawData) : null;
+            const userVoucherId = data?.voucher?.userVoucherId ? Number(data.voucher.userVoucherId) : null;
+
+            if (voucherApplied && userVoucherId) {
+                try {
+                    await authFetch(`${BASE_API_URL}/vouchers/restore`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userVoucherId })
+                    });
+                } catch (restoreError) {
+                    console.warn('Không thể hoàn voucher sau lỗi thanh toán:', restoreError);
+                }
+            }
+
             alert("Lỗi xác nhận: " + error.message);
             btn.prop('disabled', false).html('XÁC NHẬN LẠI <i class="fa-solid fa-rotate-right ms-2"></i>');
         }
@@ -169,7 +213,7 @@ window.initPayment = function() {
                 const bookingId = data.bookingId;
                 const paymentId = sessionStorage.getItem('currentPaymentId');
                 if (bookingId && paymentId) {
-                    fetch(`${BASE_API_URL}/booking/${bookingId}/payment-failed`, {
+                    authFetch(`${BASE_API_URL}/booking/${bookingId}/payment-failed`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -189,12 +233,44 @@ function loadBookingSummary() {
         const data = JSON.parse(rawData);
         const paxCount = (data.passengers?.adult || 1) + (data.passengers?.child || 0) + (data.passengers?.infant || 0);
         const basePrice = (data.basePrice || 0) * paxCount;
-        const extraFee = data.selectedServices?.totalExtraFee || 0;
-        const total = data.totalPrice || (basePrice + extraFee);
+        const extraFee = Number(data.selectedServices?.totalExtraFee || 0);
+        const fallbackSubtotal = basePrice + extraFee;
+        const subtotal = Number(data.totalBeforeVoucher || fallbackSubtotal);
+        const voucherDiscount = Number(data.voucherDiscount || 0);
+        const total = calculatePayableAmount(data);
 
         $('#summary-pax-label').text(`Giá vé (${paxCount} Hành khách)`);
         $('#summary-base-price').text(basePrice.toLocaleString('vi-VN') + ' ₫');
         $('#summary-extra-fee').text(extraFee > 0 ? `+ ${extraFee.toLocaleString('vi-VN')} ₫` : '0 ₫');
+
+        if ($('#summary-voucher-discount').length === 0) {
+            const discountRow = `
+                <div class="d-flex justify-content-between mb-3" id="summary-voucher-discount" style="font-size: 14.5px; display:none;">
+                    <span class="text-muted fw-bold">Giảm giá voucher</span>
+                    <span class="fw-bold" style="color:#16a34a;" id="summary-voucher-amount">0 ₫</span>
+                </div>
+            `;
+            $(discountRow).insertAfter('#summary-extra-fee').hide();
+        }
+
+        if (voucherDiscount > 0 && subtotal > 0) {
+            $('#summary-voucher-amount').text(`- ${voucherDiscount.toLocaleString('vi-VN')} ₫`);
+            $('#summary-voucher-discount').show();
+        } else {
+            $('#summary-voucher-discount').hide();
+        }
+
         $('#summary-total-price').text(total.toLocaleString('vi-VN') + ' ₫');
     }
+}
+
+function calculatePayableAmount(data = {}) {
+    const paxCount = (data.passengers?.adult || 1) + (data.passengers?.child || 0) + (data.passengers?.infant || 0);
+    const basePrice = Number(data.basePrice || 0) * paxCount;
+    const extraFee = Number(data.selectedServices?.totalExtraFee || 0);
+    const subtotal = Number(data.totalBeforeVoucher || (basePrice + extraFee));
+    const voucherDiscount = Number(data.voucherDiscount || 0);
+
+    const fallbackTotal = Math.max(0, subtotal - voucherDiscount);
+    return Math.max(0, Number(data.totalPrice ?? fallbackTotal));
 }

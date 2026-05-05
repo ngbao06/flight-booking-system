@@ -2,6 +2,29 @@ import LoyaltyRepository    from "./loyalty.repository.js";
 import eventBus, { Events } from "../../common/utils/eventsBus.js";
 
 class LoyaltyService {
+	static async me(userId) {
+		const loyalty = await LoyaltyRepository.getLoyaltyByPassenger(userId);
+
+		if (!loyalty) {
+			return {
+				ok: false,
+				statusCode: 404,
+				message: "Loyalty account not found"
+			};
+		}
+
+		return {
+			ok: true,
+			statusCode: 200,
+			message: "Loyalty account fetched successfully",
+			data: {
+				...loyalty,
+				loyalty_points: Number(loyalty.points ?? 0),
+				loyaltyPoints: Number(loyalty.points ?? 0)
+			}
+		};
+	}
+
 	static async exchangePoints(payload) {
 		const oldLoyalty = await LoyaltyRepository.getLoyaltyByPassenger(payload.passengerId);
 		const exchanged  = await LoyaltyRepository.exchangePoints(payload.passengerId, payload.amount);

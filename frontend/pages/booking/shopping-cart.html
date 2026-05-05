@@ -241,15 +241,23 @@
   </div>
 
   <!-- ════════════════════════════
-       5. PROMO / GIỜ GIÁ TỐT
+       PROMO / VOUCHER CTA
   ════════════════════════════ -->
-  <div class="promo-card">
-    <div class="promo-icon"><i class="fa-solid fa-tag"></i></div>
-    <div class="promo-text">
-      <strong>Giờ giá tốt!</strong>
-      Giờ mức ưu đãi này đến Thứ Năm, 30 tháng 4. 20:35
+  <div class="anc-section">
+    <div class="anc-item">
+      <div class="anc-item-info">
+        <div>
+          <div class="anc-item-title">Sử dụng khuyến mãi</div>
+          <div class="anc-item-desc">Áp dụng mã khuyến mãi hoặc đổi điểm Loyalty để nhận voucher. Chỉ chọn 1 voucher để sử dụng cho đơn hàng.</div>
+        </div>
+        <button class="anc-btn secondary" id="btn-open-vouchers">
+          <i class="fa-solid fa-ticket me-1"></i> CHỌN KHUYẾN MÃI
+        </button>
+      </div>
+      <div class="anc-item-img">
+        <div class="anc-img-placeholder">🎫</div>
+      </div>
     </div>
-    <div class="promo-amount">+ 130.000 VND</div>
   </div>
 
   <!-- ════════════════════════════
@@ -278,6 +286,7 @@
     <div class="sm-action-selected" style="flex:1; display:flex; flex-direction:column; justify-content:center;">
       <div style="font-size:13px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing: 0.5px;">Tổng số tiền</div>
       <div style="font-size:22px; font-weight:800; color:var(--primary); line-height:1; margin-top:2px;" id="summary-total">0 VND</div>
+      <div id="summary-voucher-line" style="display:none; font-size:12px; color:#16a34a; font-weight:600; margin-top:4px;"></div>
     </div>
     <div class="sm-action-btns">
       <button class="btn-back" onclick="if(window.BookingSPA) window.BookingSPA.goToStep('user-info');">

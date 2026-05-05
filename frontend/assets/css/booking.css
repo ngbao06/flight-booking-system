@@ -336,6 +336,17 @@
 
 /* ══ PAGE BODY & LAYOUT ══ */
 .page-body { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+.section-body {
+  background: linear-gradient(180deg, #fafdff 0%, #ffffff 100%);
+  border: 1px solid #e7f0f4;
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(0,104,133,.06);
+}
+.section-body > .sec-card:last-child,
+.section-body > .form-card:last-child,
+.section-body > .insurance-card:last-child {
+  margin-bottom: 0;
+}
 .notice-box { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 4px; margin-bottom: 24px; font-size: 13px; color: #78350f; line-height: 1.5; }
 .example-row { background: #fef3c7; padding: 12px; margin-top: 12px; border-radius: 4px; }
 
@@ -1284,6 +1295,101 @@
   transform: none;
 }
 
+/* ══ VOUCHER PAGE ══ */
+.voucher-page {
+  padding-bottom: 120px;
+}
+
+.voucher-tip {
+  background: linear-gradient(120deg, #f6fbfd 0%, #edf7fb 100%);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-size: 13px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.voucher-tip i {
+  color: var(--primary);
+  margin-top: 2px;
+}
+
+.voucher-card {
+  overflow: hidden;
+}
+
+.voucher-card .sec-body {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+.voucher-card .list-group-item {
+  border: 1px solid #e8eef3;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: var(--transition);
+}
+
+.voucher-card .list-group-item:hover {
+  border-color: #bfdde8;
+  box-shadow: 0 6px 20px rgba(0, 104, 133, .08);
+}
+
+.voucher-card .list-group-item input[type="radio"]:checked ~ div {
+  background: #f0f8fb;
+}
+
+.voucher-code {
+  color: var(--primary);
+  font-weight: 700;
+  background: linear-gradient(120deg, rgba(0,104,133,.08), rgba(0,104,133,.04));
+  padding: 2px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  letter-spacing: 0.5px;
+}
+
+.discount-badge {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #fff;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  display: inline-block;
+  margin-left: 8px;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, .25);
+}
+
+.loyalty-badge {
+  font-size: 13px;
+  color: var(--primary);
+  background: #e0f3f8;
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.loyalty-badge strong {
+  color: #004f66;
+  font-weight: 700;
+}
+
+.voucher-card .btn-redeem {
+  border-width: 1.5px;
+  font-weight: 700;
+}
+
+.voucher-action-bar {
+  border-top: 1px solid #d7e6ee;
+}
+
 /* ══ RESPONSIVE ══ */
 @media (max-width: 860px) {
   .sm-legend-panel { display: none; }
@@ -1297,6 +1403,7 @@
   .sm-seat { width: 22px; height: 22px; font-size: 9px; border-radius: 3px; }
   .sm-pax-chip { min-width: 140px; }
   .sm-action-inner { padding: 10px 14px; gap: 10px; }
+  .voucher-page { padding-bottom: 136px; }
 }
 
 /* Custom Payment Styles */

@@ -6,9 +6,13 @@ CREATE Trigger trg_after_insert_user
 AFTER INSERT ON Users
 FOR EACH ROW
 BEGIN
+    -- người dùng mới tặng 1k điểm và voucher giảm 26% (max 500k) cho chuyến bay đầu tiên
 	IF NEW.role = 'PASSENGER' THEN
-		INSERT INTO Loyalty (passenger_id)
-        VALUES (NEW.id);
+		INSERT INTO Loyalty (passenger_id, points)
+        VALUES (NEW.id, 1000);
+        
+        INSERT INTO UserVouchers(user_id, voucher_id)
+        VALUES (NEW.id, 1);
 	END IF;
 END//
 
@@ -55,6 +59,65 @@ BEGIN
     
     COMMIT;
 END //
+DELIMITER ;
+
+DELIMITER //
+
+-- đổi điểm lấy voucher
+CREATE PROCEDURE proc_redeem_voucher_with_points (
+    IN p_user_id INT,
+    IN p_voucher_id INT
+)
+BEGIN
+    DECLARE v_point_cost DECIMAL(15,2);
+    DECLARE v_curr_points DECIMAL(15,2);
+    DECLARE v_valid_to DATETIME;
+
+    START TRANSACTION;
+
+    -- 1. Lấy thông tin Voucher và lock dòng để tránh race condition
+    SELECT point_cost, valid_to 
+    INTO v_point_cost, v_valid_to
+    FROM Vouchers 
+    WHERE id = p_voucher_id AND is_deleted = 0
+    FOR UPDATE;
+
+    -- Kiểm tra Voucher tồn tại và còn hạn
+    IF v_point_cost IS NULL OR v_valid_to < NOW() THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Voucher is invalid or expired';
+    END IF;
+
+    -- 2. Kiểm tra và Lock điểm của User trong bảng Loyalty
+    SELECT points INTO v_curr_points
+    FROM Loyalty
+    WHERE passenger_id = p_user_id
+    FOR UPDATE;
+
+    IF v_curr_points IS NULL THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Passenger loyalty record not found';
+    END IF;
+
+    IF v_curr_points < v_point_cost THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Not enough points to redeem this voucher';
+    END IF;
+
+    -- 3. Thực thi trừ điểm
+    UPDATE Loyalty 
+    SET 
+        points = points - v_point_cost, 
+        points_used = points_used + v_point_cost
+    WHERE passenger_id = p_user_id;
+
+    -- 4. Cấp Voucher cho User
+    INSERT INTO UserVouchers (user_id, voucher_id, status)
+    VALUES (p_user_id, p_voucher_id, 'AVAILABLE');
+
+    COMMIT;
+END //
+
 DELIMITER ;
 
 -- trigger kiểm tra tự động nếu status booking đã hoàn thành thì kh cho cập nhật nữa

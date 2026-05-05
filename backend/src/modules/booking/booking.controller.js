@@ -203,7 +203,7 @@ class BookingController {
 	static async notifyPaymentCompleted(req, res, next) {
 		try {
 			const bookingId = Number(req.params.id);
-			const { paymentId, transactionId, amount, paymentMethod } = req.body;
+			const { paymentId, transactionId, amount, paymentMethod, userVoucherId } = req.body;
 
 			if (!paymentId || !transactionId || !amount) {
 				return sendResult(res, {
@@ -220,6 +220,7 @@ class BookingController {
 				transactionId,
 				amount,
 				paymentMethod,
+				userVoucherId,
 				completedAt: new Date().toISOString()
 			});
 

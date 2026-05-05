@@ -12,6 +12,7 @@ $(function() {
             'shopping-cart': { html: 'shopping-cart.html', js: '../../assets/js/booking/shopping-cart.js', init: 'initShoppingCart' },
             'seatmap': { html: 'seatmap.html', js: '../../assets/js/booking/seatmap.js', init: 'initSeatMap' },
             'meal': { html: 'meal.html', js: '../../assets/js/booking/meal.js', init: 'initMeal' },
+            'vouchers': { html: 'vouchers.html', js: '../../assets/js/booking/vouchers.js', init: 'initVouchers' },
             'payment': { html: 'payment.html', js: '../../assets/js/booking/payment.js', init: 'initPayment' }
         },
         goToStep: function(stepName) {

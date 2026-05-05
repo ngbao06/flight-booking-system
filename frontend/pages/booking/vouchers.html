@@ -1,0 +1,69 @@
+<!-- Vouchers SPA fragment -->
+
+<!-- ══ STEP INDICATOR ══ -->
+<div class="steps-bar">
+  <div class="steps-inner">
+    <div class="step-item done">
+      <div class="step-num"><i class="fa-solid fa-check" style="font-size:10px;"></i></div>
+      Chọn chuyến bay
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item done">
+      <div class="step-num"><i class="fa-solid fa-check" style="font-size:10px;"></i></div>
+      Nhập thông tin
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item active">
+      <div class="step-num">3</div>
+      Lựa chọn dịch vụ
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      Thanh toán
+    </div>
+  </div>
+</div>
+
+<!-- ══ HERO BANNER ══ -->
+<div class="hero-banner">
+  <div class="hero-title">
+    <i class="fa-solid fa-ticket me-2" style="opacity:.85;"></i>Khuyến mãi & Voucher
+  </div>
+  <div class="hero-sub">Chọn voucher phù hợp hoặc đổi điểm Loyalty để tối ưu chi phí chuyến đi.</div>
+</div>
+
+<div class="page-body section-body voucher-page">
+  <div class="voucher-tip">
+    <i class="fa-solid fa-circle-info"></i>
+    Mỗi đơn hàng chỉ áp dụng 1 voucher. Voucher được lưu tạm cho phiên đặt chỗ hiện tại.
+  </div>
+
+  <div class="sec-card voucher-card">
+    <div class="sec-card-header">
+      <div class="sec-title"><i class="fa-solid fa-ticket"></i> Danh sách voucher</div>
+    </div>
+    <div class="sec-body" id="vouchers-root">
+      <div id="vouchers-loading">Đang tải...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BOTTOM ACTION BAR ══ -->
+<div class="sm-action-bar voucher-action-bar">
+  <div class="sm-action-inner">
+    <div class="sm-action-selected" id="voucher-selected-text">
+      Chưa áp dụng voucher cho đơn hàng này.
+    </div>
+    <div class="sm-action-btns">
+      <button class="btn-back" id="voucher-back-btn">
+        <i class="fa-solid fa-arrow-left"></i> QUAY LẠI
+      </button>
+      <button class="btn-sm-confirm" id="voucher-continue-btn">
+        XONG <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Include client script is handled by BookingSPA (getScript), voucher logic in ../../assets/js/booking/vouchers.js -->

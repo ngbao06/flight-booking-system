@@ -152,6 +152,161 @@ $(function () {
         setTimeout(() => el.remove(), 3600);
     }
 
+    // ── Lotusmiles loyalty/voucher helpers ──
+    const lotusAuthFetch = (url, options = {}) => {
+        const headers = { ...(options.headers || {}) };
+        const token = localStorage.getItem('authToken');
+        if (token) headers.Authorization = `Bearer ${token}`;
+        return fetch(url, {
+            ...options,
+            headers,
+            credentials: 'include'
+        });
+    };
+
+    function lotusFormatDiscount(item = {}) {
+        const discountType = (item.discount_type || item.discountType || '').toUpperCase();
+        const discountValue = Number(item.discount_value ?? item.discountValue ?? 0);
+        if (discountType === 'PERCENT') {
+            const ratio = discountValue > 1 ? discountValue / 100 : discountValue;
+            return `${Math.round(ratio * 100)}%`;
+        }
+        return `${discountValue}`;
+    }
+
+    async function lotusFetchLoyaltyBalance() {
+        try {
+            const res = await lotusAuthFetch(`${BASE_API_URL}/loyalty/me`, { method: 'GET' });
+            const json = await res.json();
+            if (!json.success || !json.data) return 0;
+            const balance = json.data.loyalty_points || json.data.loyaltyPoints || 0;
+            return Number(balance);
+        } catch {
+            return 0;
+        }
+    }
+
+    async function lotusFetchMyVouchers() {
+        try {
+            const res = await lotusAuthFetch(`${BASE_API_URL}/vouchers/mine`, { method: 'GET' });
+            const json = await res.json();
+            if (!json.success) return [];
+            const data = json.data || [];
+            return Array.isArray(data) ? data : (data.items || data);
+        } catch {
+            return [];
+        }
+    }
+
+    async function lotusFetchRedeemableVouchers() {
+        try {
+            const res = await fetch(`${BASE_API_URL}/vouchers`, { credentials: 'include' });
+            const json = await res.json();
+            if (!json.success) return [];
+            const data = json.data || [];
+            const list = Array.isArray(data) ? data : (data.items || data);
+            return list.filter(v => Number(v.point_cost || 0) > 0 && !v.is_deleted);
+        } catch {
+            return [];
+        }
+    }
+
+    function renderLotusmilesLoyaltyPanel({ user, balance, myVouchers, redeemables }) {
+        const $root = $('#lotusmiles-loyalty-root');
+        if (!$root.length) return;
+
+        const ownedHtml = myVouchers.length
+            ? `<div class="lotus-list">${myVouchers.map(v => {
+                const code = v.code || v.voucher?.code || 'N/A';
+                const status = v.status || v.voucher_status || 'AVAILABLE';
+                const discount = lotusFormatDiscount(v.voucher || v);
+                return `
+                    <div class="lotus-item">
+                        <div>
+                            <div class="lotus-code">${code}</div>
+                            <div class="lotus-sub">Giảm: ${discount} • Trạng thái: ${status}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('')}</div>`
+            : '<div class="lotus-empty">Bạn chưa sở hữu voucher nào.</div>';
+
+        const redeemHtml = redeemables.length
+            ? `<div class="lotus-list">${redeemables.map(v => {
+                const cost = Number(v.point_cost || 0);
+                const disabled = balance < cost;
+                return `
+                    <div class="lotus-item">
+                        <div>
+                            <div class="lotus-code">${v.code || 'N/A'}</div>
+                            <div class="lotus-sub">Giảm: ${lotusFormatDiscount(v)} • Cần ${cost} điểm</div>
+                        </div>
+                        <button class="lotus-redeem-btn" data-id="${v.id}" data-cost="${cost}" ${disabled ? 'disabled' : ''}>
+                            ${disabled ? 'Không đủ điểm' : 'Đổi ngay'}
+                        </button>
+                    </div>
+                `;
+            }).join('')}</div>`
+            : '<div class="lotus-empty">Hiện chưa có voucher đổi bằng điểm.</div>';
+
+        $root.html(`
+            <div class="lotus-loyalty-top">
+                <div>
+                    <h2 style="margin:0;font-size:1.7rem;color:var(--navy);">Lotusmiles của ${user?.full_name || user?.username || 'bạn'}</h2>
+                    <div class="lotus-balance">Điểm hiện có: <strong>${balance}</strong></div>
+                </div>
+            </div>
+            <div class="lotus-grid">
+                <section class="lotus-block">
+                    <h3>Voucher đang sở hữu</h3>
+                    ${ownedHtml}
+                </section>
+                <section class="lotus-block">
+                    <h3>Voucher có thể đổi</h3>
+                    ${redeemHtml}
+                </section>
+            </div>
+        `);
+    }
+
+    async function initLotusmilesLoyaltyPanel() {
+        const $root = $('#lotusmiles-loyalty-root');
+        if (!$root.length) return;
+
+        $root.html('<div class="lotus-empty">Đang tải thông tin Loyalty...</div>');
+
+        try {
+            const meRes = await lotusAuthFetch(`${BASE_API_URL}/auth/me`);
+            const meJson = await meRes.json();
+
+            if (!meJson.success) {
+                $root.html(`
+                    <div class="lotus-empty">
+                        Vui lòng đăng nhập để xem điểm và đổi voucher.
+                        <div style="margin-top:10px;"><a href="#login" class="miles-card-link" data-url="pages/auth/login.html">Đăng nhập ngay <i class="fa-solid fa-arrow-right"></i></a></div>
+                    </div>
+                `);
+                return;
+            }
+
+            const user = meJson.data || {};
+            if (user.role !== 'PASSENGER') {
+                $root.html('<div class="lotus-empty">Chỉ tài khoản hành khách mới sử dụng tính năng đổi voucher bằng điểm.</div>');
+                return;
+            }
+
+            const [balance, myVouchers, redeemables] = await Promise.all([
+                lotusFetchLoyaltyBalance(),
+                lotusFetchMyVouchers(),
+                lotusFetchRedeemableVouchers()
+            ]);
+
+            renderLotusmilesLoyaltyPanel({ user, balance, myVouchers, redeemables });
+        } catch {
+            $root.html('<div class="lotus-empty">Không thể tải dữ liệu Loyalty. Vui lòng thử lại.</div>');
+        }
+    }
+
     // ══════════════════════════════════════════
     //  AIRPORT DATA
     // ══════════════════════════════════════════
@@ -998,7 +1153,40 @@ $(function () {
 
         updateAirportDisplay('from', fromAirport);
         updateAirportDisplay('to',   toAirport);
+
+        initLotusmilesLoyaltyPanel();
     }
+
+    $(document)
+        .off('click.app-lotus-redeem', '#lotusmiles-loyalty-root .lotus-redeem-btn')
+        .on('click.app-lotus-redeem', '#lotusmiles-loyalty-root .lotus-redeem-btn', async function () {
+            const voucherId = Number($(this).data('id'));
+            const pointCost = Number($(this).data('cost')) || 0;
+
+            const latestBalance = await lotusFetchLoyaltyBalance();
+            if (latestBalance < pointCost) {
+                alert('Điểm hiện tại không đủ để đổi voucher này.');
+                await initLotusmilesLoyaltyPanel();
+                return;
+            }
+
+            if (!confirm('Xác nhận đổi điểm lấy voucher này?')) return;
+
+            try {
+                const res = await lotusAuthFetch(`${BASE_API_URL}/vouchers/redeem`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ voucherId })
+                });
+                const json = await res.json();
+                if (!json.success) throw new Error(json.message || 'Đổi voucher thất bại');
+
+                alert('Đổi voucher thành công. Danh sách sẽ được cập nhật.');
+                await initLotusmilesLoyaltyPanel();
+            } catch (err) {
+                alert(err.message || 'Có lỗi khi đổi voucher');
+            }
+        });
 
     // ══════════════════════════════════════════
     //  SIDEBAR & NAVIGATION

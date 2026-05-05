@@ -190,14 +190,58 @@ window.initShoppingCart = function () {
     }
   }
 
+  function getVoucherMeta() {
+    const v = bookingData.voucher || null;
+    if (!v) return null;
+
+    const type = (v.discountType || v.discount_type || '').toUpperCase();
+    const value = Number(v.discountValue ?? v.discount_value ?? 0);
+    const maxDiscount = Number(v.maxDiscount ?? v.max_discount ?? 0);
+
+    if (!type || !Number.isFinite(value) || value <= 0) return null;
+
+    return {
+      code: v.code || '',
+      type,
+      value,
+      maxDiscount: Number.isFinite(maxDiscount) && maxDiscount > 0 ? maxDiscount : 0
+    };
+  }
+
+  function calcServiceFee() {
+    let fee = 0;
+    if (state.insurance) fee += PRICES.insurance;
+    if (state.baggage === 20) fee += PRICES.baggage20;
+    if (state.baggage === 30) fee += PRICES.baggage30;
+    fee += PRICES.seat;
+    return fee;
+  }
+
+  function calcVoucherDiscount(subtotal) {
+    const voucher = getVoucherMeta();
+    if (!voucher || subtotal <= 0) return 0;
+
+    let discount = 0;
+    if (voucher.type === 'PERCENT') {
+      const rate = voucher.value > 1 ? voucher.value / 100 : voucher.value;
+      discount = subtotal * rate;
+    } else {
+      discount = voucher.value;
+    }
+
+    if (voucher.maxDiscount > 0) {
+      discount = Math.min(discount, voucher.maxDiscount);
+    }
+
+    discount = Math.min(discount, subtotal);
+    return Math.max(0, Math.round(discount));
+  }
+
   /* ══ RENDER TỔNG TIỀN ══ */
   function calcTotal() {
-    let total = PRICES.baseTicket;
-    if (state.insurance) total += PRICES.insurance;
-    if (state.baggage === 20) total += PRICES.baggage20;
-    if (state.baggage === 30) total += PRICES.baggage30;
-    total += PRICES.seat;
-    return total;
+    const subtotal = PRICES.baseTicket + calcServiceFee();
+    const voucherDiscount = calcVoucherDiscount(subtotal);
+    return Math.max(0, subtotal - voucherDiscount);
   }
 
   function formatVND(n) {
@@ -205,9 +249,24 @@ window.initShoppingCart = function () {
   }
 
   function renderTotal() {
-    const total = calcTotal();
+    const serviceFee = calcServiceFee();
+    const subtotal = PRICES.baseTicket + serviceFee;
+    const voucherDiscount = calcVoucherDiscount(subtotal);
+    const total = Math.max(0, subtotal - voucherDiscount);
+
     $('#summary-total').text(formatVND(total));
     $('#fl-total').text(formatVND(PRICES.baseTicket));
+
+    const voucher = getVoucherMeta();
+    const $line = $('#summary-voucher-line');
+    if ($line.length) {
+      if (voucher && voucherDiscount > 0) {
+        $line.html(`Voucher <strong>${voucher.code}</strong>: -${formatVND(voucherDiscount)}`)
+          .show();
+      } else {
+        $line.hide();
+      }
+    }
   }
 
   /* ══ BẢO HIỂM ══ */
@@ -251,6 +310,16 @@ window.initShoppingCart = function () {
   /* ══ SUẤT ĂN ══ */
   $('#btn-meal').on('click', function () {
     $('#meal-options-container').slideToggle(300);
+  });
+
+  /* ══ MỞ TRANG VOUCHERS ══ */
+  $('#btn-open-vouchers').on('click', function () {
+    if (window.BookingSPA) {
+      window.BookingSPA.goToStep('vouchers');
+    } else {
+      // fallback: navigate to vouchers page
+      window.location.href = './vouchers.html';
+    }
   });
 
   $('input[name="meal_option"]').on('change', function() {
@@ -300,15 +369,22 @@ window.initShoppingCart = function () {
   /* ══ TIẾP TỤC ══ */
   $('#btn-continue').off('click').on('click', function () {
     showToast('success', 'Đang lưu giỏ hàng và chuyển trang…');
+
+    const serviceFee = calcServiceFee();
+    const subtotal = PRICES.baseTicket + serviceFee;
+    const voucherDiscount = calcVoucherDiscount(subtotal);
+    const finalTotal = Math.max(0, subtotal - voucherDiscount);
     
     bookingData.selectedServices = {
         insurance: state.insurance,
         baggage: state.baggage,
         meal: state.meal,
         special: state.special,
-        totalExtraFee: calcTotal() - PRICES.baseTicket
+      totalExtraFee: serviceFee
     };
-    bookingData.totalPrice = calcTotal();
+    bookingData.totalBeforeVoucher = subtotal;
+    bookingData.voucherDiscount = voucherDiscount;
+    bookingData.totalPrice = finalTotal;
     sessionStorage.setItem('selectedFlightBooking', JSON.stringify(bookingData));
 
     setTimeout(function () {

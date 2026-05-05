@@ -161,3 +161,27 @@ CREATE TABLE IF NOT EXISTS Tickets (
     INDEX idx_tickets_buyer     (buyer_id),
     INDEX idx_tickets_seat      (seat_id)
 );
+
+CREATE TABLE IF NOT EXISTS Vouchers (
+    id              INT             PRIMARY KEY AUTO_INCREMENT,
+    code            VARCHAR(50)     UNIQUE NOT NULL,
+    discount_type   ENUM('PERCENT', 'FIXED_AMOUNT') NOT NULL,
+    discount_value  DECIMAL(15,2)   NOT NULL,
+    max_discount    DECIMAL(15,2), -- Giới hạn tối đa nếu là giảm theo %
+    valid_from      DATETIME        NOT NULL,
+    valid_to        DATETIME        NOT NULL,
+    point_cost      DECIMAL(15,2)   DEFAULT 0, -- Số điểm cần để đổi
+    is_deleted      BOOLEAN         DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS UserVouchers (
+    id              INT             PRIMARY KEY AUTO_INCREMENT,
+    user_id         INT             NOT NULL,
+    voucher_id      INT             NOT NULL,
+    acquired_at     DATETIME        DEFAULT CURRENT_TIMESTAMP,
+    used_at         DATETIME        NULL,
+    status          ENUM('AVAILABLE', 'USED', 'EXPIRED') DEFAULT 'AVAILABLE',
+
+    CONSTRAINT fk_UV_User FOREIGN KEY (user_id) REFERENCES Users(id),
+    CONSTRAINT fk_UV_Voucher FOREIGN KEY (voucher_id) REFERENCES Vouchers(id)
+);

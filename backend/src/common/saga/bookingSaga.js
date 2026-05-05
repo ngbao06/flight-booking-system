@@ -4,6 +4,7 @@ import PaymentsRepository from '../../modules/payments/payments.repository.js';
 import TicketsRepository from '../../modules/tickets/tickets.repository.js';
 import SeatsRepository from '../../modules/seats/seats.repository.js';
 import LoyaltyRepository from '../../modules/loyalty/loyalty.repository.js';
+import VouchersRepository from '../../modules/vouchers/vouchers.repository.js';
 import AdminLogRepository from '../../modules/adminlogs/adminLogs.repository.js';
 import SagaManager from './sagaManager.js';
 import SagaLogsRepository from './sagaLogs.repository.js';
@@ -23,6 +24,7 @@ class BookingSaga {
         this.selectedSeats = [];
         this.loyaltyUsed = 0;
         this.paymentId = null;
+        this.usedVoucherId = null;
     }
 
     async logTransaction(step, status, message, details = {}) {
@@ -188,7 +190,7 @@ class BookingSaga {
         try {
             console.log(`[SAGA STEP 4] Processing payment success for booking ${this.bookingId}`);
             
-            const { paymentId, transactionId, amount, paymentMethod } = paymentData;
+            const { paymentId, transactionId, amount, paymentMethod, userVoucherId } = paymentData;
 
             // Verify payment exists and is confirmed
             const payment = await PaymentsRepository.getById(paymentId);
@@ -201,9 +203,17 @@ class BookingSaga {
                 throw new Error('Payment status is not completed');
             }
 
-            // Update booking status to CONFIRMED
+            // Số tiền thực trả (đã giảm voucher nếu có) là nguồn dữ liệu chuẩn để lưu Booking/Ticket
+            const paidAmount = Number(payment.amount ?? amount ?? this.totalAmount);
+            if (!Number.isFinite(paidAmount) || paidAmount <= 0) {
+                throw new Error('Invalid paid amount');
+            }
+            this.totalAmount = paidAmount;
+
+            // Update booking status + tổng tiền cuối cùng
             const updated = await BookingRepository.updateBooking(this.bookingId, {
-                status: 'SUCCEED'
+                status: 'SUCCEED',
+                totalAmount: paidAmount
             });
 
             if (!updated) {
@@ -211,6 +221,7 @@ class BookingSaga {
             }
 
             this.paymentId = paymentId;
+            this.usedVoucherId = userVoucherId || paymentData?.voucher?.userVoucherId || null;
             this.completedSteps.push('PAYMENT_COMPLETED');
             this.status = 'ISSUING_TICKET';
 
@@ -451,6 +462,25 @@ class BookingSaga {
         }
     }
 
+    async compensateVoucherRestore(userVoucherId) {
+        try {
+            if (!userVoucherId) return;
+
+            console.log(`[COMPENSATION] Restoring voucher ${userVoucherId} for booking ${this.bookingId}`);
+            const restored = await VouchersRepository.restoreUsedVoucher(this.bookingData.userId || this.userId || null, userVoucherId);
+
+            if (!restored.ok) {
+                throw new Error(restored.message || 'Failed to restore voucher');
+            }
+
+            console.log(`[COMPENSATION] ✅ Voucher restored`);
+            await this.logTransaction('COMPENSATE_VOUCHER', 'COMPENSATED', `Voucher ${userVoucherId} restored`, { userVoucherId });
+        } catch (error) {
+            console.error(`[COMPENSATION ERROR] Failed to restore voucher:`, error);
+            await this.logTransaction('COMPENSATE_VOUCHER', 'FAILED', error.message, { userVoucherId });
+        }
+    }
+
     async rollbackAllSteps() {
         try {
             console.log(`[ROLLBACK] Rolling back all steps for booking ${this.bookingId}`);
@@ -475,6 +505,10 @@ class BookingSaga {
 
             if (this.completedSteps.includes('SEATS_SELECTED')) {
                 await this.compensateStep2_ReleaseSeat();
+            }
+
+            if (this.usedVoucherId) {
+                await this.compensateVoucherRestore(this.usedVoucherId);
             }
 
             // Update booking status to CANCELLED

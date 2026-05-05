@@ -10,6 +10,15 @@ const sendResult = (res, result) => {
 };
 
 class LoyaltyController {
+	static async me(req, res, next) {
+		try {
+			const result = await LoyaltyService.me(req.user.id);
+			return sendResult(res, result);
+		} catch (error) {
+			return next(error);
+		}
+	}
+
 	static async exchangePoints(req, res, next) {
 		try {
 			const result = await LoyaltyService.exchangePoints(req.body);

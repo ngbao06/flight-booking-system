@@ -47,6 +47,8 @@ const truncateTables = async () => {
     await query('TRUNCATE TABLE Seats');
     await query('TRUNCATE TABLE Flights');
     await query('TRUNCATE TABLE Planes');
+    await query('TRUNCATE TABLE UserVouchers');
+    await query('TRUNCATE TABLE Vouchers');
     await query('TRUNCATE TABLE Loyalty');
     await query('TRUNCATE TABLE Airlines');
     await query('TRUNCATE TABLE Airports');
@@ -234,6 +236,13 @@ const passengerSeats = ['window', 'aisle', 'none'];
 const paymentMethods = ['BANKING', 'VISA', 'CREDIT_CARD'];
 const flightHotSlots = ['06:00:00', '11:30:00'];
 const flightRegularSlots = ['16:15:00', '20:20:00'];
+const voucherSeed = [
+    ['NGUOIMOI2026', 'PERCENT', 0.26, 500000, '2026-01-01', '2026-12-31', null],
+    ['5KPOINTS', 'PERCENT', 0.05, 50000, '2026-01-01', '2026-12-31', 5000],
+    ['10KPOINTS', 'PERCENT', 0.1, 100000, '2026-01-01', '2026-12-31', 10000],
+    ['20KPOINTS', 'PERCENT', 0.2, 200000, '2026-01-01', '2026-12-31', 20000],
+    ['MUAHE2026', 'PERCENT', 0.15, 200000, '2026-01-01', '2026-12-31', 3000]
+];
 
 const insertRow = async (sql, values) => {
     const [result] = await query(sql, values);
@@ -255,6 +264,19 @@ const seedUsers = async () => {
     }
 
     return insertedUsers;
+};
+
+const seedVouchers = async () => {
+    for (const voucher of voucherSeed) {
+        await insertRow(
+            `
+            INSERT INTO Vouchers (
+                code, discount_type, discount_value, max_discount, valid_from, valid_to, point_cost
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            `,
+            voucher
+        );
+    }
 };
 
 const seedLoyalty = async (users) => {
@@ -555,6 +577,9 @@ const main = async () => {
     await truncateTables();
 
     
+    console.log('seed vouchers');
+    await seedVouchers();
+
     console.log('seed users');
     const users = await seedUsers();
     
