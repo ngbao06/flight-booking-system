@@ -1,1 +1,811 @@
-review
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Trải Nghiệm Bay – BAirlines</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════════════════════════
+   RESET & VARIABLES  (mirror style.css)
+══════════════════════════════════════════════════ */
+:root {
+  --primary:       #006885;
+  --primary-hover: #33869D;
+  --primary-dark:  #004f66;
+  --primary-light: #e0f3f8;
+  --gold:          #DBA410;
+  --gold-light:    #F5E6C8;
+  --navy:          #002F5F;
+  --navy-light:    #E8EDF4;
+  --white:         #FFFFFF;
+  --bg:            #ffffff;
+  --text:          #1a2d35;
+  --muted:         #6b8a96;
+  --border:        #d6eaf0;
+  --radius:        14px;
+  --shadow:        0 4px 24px rgba(0,104,133,.10);
+  --shadow-sm:     0 2px 12px rgba(0,104,133,.10);
+  --shadow-md:     0 6px 32px rgba(0,104,133,.14);
+  --font-display:  'Playfair Display', Georgia, serif;
+  --font:          'Be Vietnam Pro', sans-serif;
+  --transition:    all .28s cubic-bezier(.4,0,.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 62.5%; }
+body { font-family: var(--font); color: var(--text); background: var(--bg); font-size: 1.5rem; line-height: 1.6; overflow-x: hidden; }
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+ul { list-style: none; }
+button { cursor: pointer; font-family: var(--font); }
+
+/* ══════════════════════════════════════════════════
+   HERO BANNER
+══════════════════════════════════════════════════ */
+.hero-banner {
+  position: relative;
+  height: 340px;
+  overflow: hidden;
+  background: #0a1f2e;
+}
+.hero-banner img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  opacity: .75;
+}
+.hero-banner-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, rgba(0,30,50,.82) 0%, rgba(0,20,40,.35) 55%, transparent 100%);
+}
+.hero-banner-content {
+  position: absolute;
+  top: 50%; left: 48px;
+  transform: translateY(-50%);
+  color: #fff;
+  max-width: 560px;
+}
+.hero-eyebrow {
+  font-size: 1.15rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(3.6rem, 5vw, 5.6rem);
+  font-weight: 900;
+  line-height: 1.08;
+  margin-bottom: 14px;
+  text-shadow: 0 2px 20px rgba(0,0,0,.3);
+}
+.hero-sub {
+  font-size: 1.8rem;
+  color: rgba(255,255,255,.80);
+  line-height: 1.7;
+}
+
+/* ══════════════════════════════════════════════════
+   SECTION SHARED
+══════════════════════════════════════════════════ */
+.section { padding: 52px 48px; }
+.section-white { background: #fff; }
+.section-gray  { background: #f5fafc; }
+
+.sec-label {
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+.sec-title {
+  font-family: var(--font-display);
+  font-size: clamp(3.2rem, 4vw, 4.4rem);
+  font-weight: 900;
+  color: var(--navy);
+  line-height: 1.12;
+  margin-bottom: 26px;
+}
+.sec-sub, .section p:not([class]) {
+  font-size: 1.7rem;
+  color: #334155;
+  line-height: 1.85;
+  margin-bottom: 22px;
+  font-weight: 400;
+}
+.sec-sub {
+  margin-bottom: 36px;
+  max-width: 800px;
+}
+.sec-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 1.5rem; font-weight: 700;
+  color: var(--primary);
+  transition: var(--transition);
+}
+.sec-link:hover { gap: 12px; color: var(--gold); }
+
+/* ══════════════════════════════════════════════════
+   SECTION 1 — CABIN CLASSES
+══════════════════════════════════════════════════ */
+.cabin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.cabin-card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  background: #fff;
+  border: 1px solid var(--border);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+.cabin-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+
+.cabin-img-wrap {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+  background: #d0eaf5;
+}
+.cabin-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+.cabin-card:hover .cabin-img-wrap img { transform: scale(1.06); }
+.cabin-img-wrap .cabin-badge {
+  position: absolute; top: 12px; left: 12px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 1.1rem; font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: .5px;
+}
+.cabin-body { padding: 20px 22px 24px; flex: 1; display: flex; flex-direction: column; }
+.cabin-icon {
+  width: 40px; height: 40px;
+  background: var(--primary-light);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--primary); font-size: 1.6rem;
+  margin-bottom: 12px;
+}
+.cabin-name {
+  font-size: 1.9rem; font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.cabin-desc {
+  font-size: 1.55rem; color: #334155;
+  line-height: 1.7; margin-bottom: 16px; flex: 1;
+}
+.cabin-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 1.4rem; font-weight: 700;
+  color: var(--primary);
+  transition: var(--transition);
+}
+.cabin-cta:hover { gap: 11px; color: var(--gold); }
+
+/* NEO chat bubble */
+.neo-bubble {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: rgba(219,164,16,.12);
+  border: 1.5px solid rgba(219,164,16,.4);
+  border-radius: 30px;
+  padding: 10px 22px;
+  color: var(--gold);
+  font-size: 1.35rem; font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 32px;
+}
+.neo-bubble:hover { background: rgba(219,164,16,.22); }
+.neo-dot {
+  width: 8px; height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,.4); }
+  50%      { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+}
+
+/* ══════════════════════════════════════════════════
+   PROMO BANNER
+══════════════════════════════════════════════════ */
+.promo-banner {
+  background: url('https://images.unsplash.com/photo-1695654397862-27e0c6f52d04?w=1600&q=80') center/cover no-repeat;
+  position: relative;
+  overflow: hidden;
+}
+.promo-banner::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, rgba(219,164,16,.55), rgba(0,104,133,.50));
+}
+.promo-inner {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 32px;
+  padding: 28px 48px; flex-wrap: wrap;
+}
+.promo-logo-wrap {
+  display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0;
+}
+.promo-logo-icon {
+  width: 52px; height: 52px;
+  background: var(--gold);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem; color: #fff;
+}
+.promo-logo-name {
+  font-family: var(--font-display);
+  font-size: 2.4rem; font-weight: 900;
+  color: #fff;
+}
+.promo-logo-sub { font-size: 1.1rem; color: rgba(255,255,255,.75); font-weight: 500; }
+.promo-text { flex: 1; min-width: 200px; }
+.promo-title {
+  font-family: var(--font-display);
+  font-size: 2.6rem; font-weight: 700;
+  color: #fff; margin-bottom: 4px;
+}
+.promo-desc { font-size: 1.6rem; color: rgba(255,255,255,.82); }
+.promo-btn {
+  background: var(--gold); color: #fff;
+  border: none; border-radius: 30px;
+  padding: 12px 28px;
+  font-size: 1.4rem; font-weight: 700;
+  flex-shrink: 0;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.promo-btn:hover { background: #b07d20; transform: translateY(-1px); }
+
+/* ══════════════════════════════════════════════════
+   SECTION 2 — DINING
+══════════════════════════════════════════════════ */
+.dining-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 52px;
+}
+
+.dining-photos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.dining-photo {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.dining-photo:first-child {
+  grid-column: 1 / -1;
+}
+.dining-photo img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+.dining-photo:first-child img { height: 100%; }
+.dining-photo:hover img { transform: scale(1.05); }
+
+/* ══════════════════════════════════════════════════
+   SECTION 3 — ENTERTAINMENT
+══════════════════════════════════════════════════ */
+.ent-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.ent-card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition);
+}
+.ent-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.ent-img-wrap {
+  position: relative; height: 170px; overflow: hidden;
+}
+.ent-img-wrap img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .5s ease;
+}
+.ent-card:hover .ent-img-wrap img { transform: scale(1.06); }
+.ent-img-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,40,70,.6) 0%, transparent 60%);
+}
+.ent-tag {
+  position: absolute; bottom: 12px; left: 14px;
+  display: flex; align-items: center; gap: 7px;
+  background: var(--primary);
+  color: #fff; font-size: 1.2rem; font-weight: 700;
+  padding: 5px 12px; border-radius: 20px;
+}
+.ent-body { padding: 18px 20px 22px; flex: 1; }
+.ent-name { font-size: 1.8rem; font-weight: 700; color: var(--navy); margin-bottom: 7px; }
+.ent-desc { font-size: 1.55rem; color: #334155; line-height: 1.7; }
+
+/* ══════════════════════════════════════════════════
+   SECTION 4 — SHOPPING
+══════════════════════════════════════════════════ */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+.shop-card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+.shop-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.shop-img-wrap { height: 160px; overflow: hidden; background: #eaf5fa; }
+.shop-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+.shop-card:hover .shop-img-wrap img { transform: scale(1.06); }
+.shop-body { padding: 18px 20px 20px; }
+.shop-name { font-size: 1.8rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.shop-desc { font-size: 1.55rem; color: #334155; line-height: 1.65; margin-bottom: 12px; }
+
+/* ══════════════════════════════════════════════════
+   SECTION 5 — FAQ
+══════════════════════════════════════════════════ */
+.faq-tabs {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.faq-tab {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-size: 1.3rem; font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.faq-tab.active,
+.faq-tab:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.faq-list { display: flex; flex-direction: column; gap: 10px; }
+.faq-item {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: var(--transition);
+}
+.faq-item.open { border-color: var(--primary); box-shadow: var(--shadow-sm); }
+
+.faq-question {
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 18px 22px;
+  background: none; border: none;
+  font-size: 1.65rem; font-weight: 600; color: var(--text);
+  text-align: left; cursor: pointer;
+  transition: var(--transition);
+  line-height: 1.4;
+}
+.faq-question:hover { color: var(--primary); }
+.faq-item.open .faq-question { color: var(--primary); }
+
+.faq-chevron {
+  flex-shrink: 0;
+  font-size: 1.2rem; color: var(--muted);
+  transition: transform .3s ease;
+}
+.faq-item.open .faq-chevron { transform: rotate(180deg); color: var(--primary); }
+
+.faq-answer {
+  max-height: 0; overflow: hidden;
+  transition: max-height .4s ease, padding .3s ease;
+  font-size: 1.55rem; color: #334155; line-height: 1.8;
+  padding: 0 22px;
+  border-top: 0px solid var(--border);
+}
+.faq-item.open .faq-answer {
+  max-height: 300px;
+  padding: 0 22px 18px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.faq-pagination {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 28px;
+}
+.faq-page-btn {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-size: 1.3rem; font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex; align-items: center; justify-content: center;
+}
+.faq-page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.faq-page-btn:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
+.faq-page-info { font-size: 1.3rem; color: var(--muted); margin-left: 8px; }
+
+/* ══════════════════════════════════════════════════
+   FADE-UP ANIMATION
+══════════════════════════════════════════════════ */
+.anim { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.anim.visible { opacity: 1; transform: translateY(0); }
+.anim-d1 { transition-delay: .08s; }
+.anim-d2 { transition-delay: .16s; }
+.anim-d3 { transition-delay: .24s; }
+.anim-d4 { transition-delay: .32s; }
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════ */
+@media (max-width: 960px) {
+  .cabin-grid { grid-template-columns: 1fr; }
+  .ent-grid   { grid-template-columns: 1fr; }
+  .shop-grid  { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: repeat(2, 1fr); }
+  .dining-layout { grid-template-columns: 1fr; gap: 28px; }
+}
+@media (max-width: 640px) {
+  .section { padding: 36px 20px; }
+  .hero-banner { height: 260px; }
+  .hero-banner-content { left: 20px; }
+  .shop-grid  { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .dining-photos { grid-template-columns: 1fr; }
+  .dining-photo:first-child { grid-column: auto; }
+  .promo-inner { padding: 24px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+   HERO
+══════════════════════════════════════════════ -->
+<section class="hero-banner">
+  <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600&q=80" alt="Dịch vụ trên không"/>
+  <div class="hero-banner-overlay"></div>
+  <div class="hero-banner-content">
+    <p class="hero-eyebrow">Dịch vụ trên không</p>
+    <h1 class="hero-title">Sải cánh cùng<br>đẳng cấp Việt Nam</h1>
+    <p class="hero-sub">Trải nghiệm hành trình bay đẳng cấp với tiện nghi sang trọng, ẩm thực tinh tế và giải trí phong phú — tất cả dành riêng cho bạn.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+   1. CABIN CLASSES
+══════════════════════════════════════════════ -->
+<section class="section section-white">
+  <p class="sec-label">MỖI HÀNH TRÌNH, MỘT TRẢI NGHIỆM KHÔNG GIAN</p>
+  <h2 class="sec-title">Dịch vụ &amp; tiện nghi trên không</h2>
+  <p class="sec-sub">Từ hạng Thương Gia sang trọng đến Phổ thông tiện lợi, BAirlines luôn mang đến trải nghiệm chu đáo trên từng chuyến bay.</p>
+
+  <div class="cabin-grid">
+    <!-- Hạng Thương Gia -->
+    <div class="cabin-card anim anim-d1">
+      <div class="cabin-img-wrap">
+        <img src="/frontend/assets/images/tnb1.png" alt="Hạng Thương Gia"/>
+        <span class="cabin-badge">First</span>
+      </div>
+      <div class="cabin-body">
+        <div class="cabin-icon"><i class="fa-solid fa-gem"></i></div>
+        <h3 class="cabin-name">Hạng Nhất</h3>
+        <p class="cabin-desc">Ghế phẳng 180°, ẩm thực fine dining, dịch vụ cá nhân hóa tận tâm và không gian riêng biệt trên mọi hành trình.</p>
+        <a href="#" class="cabin-cta">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+
+    <!-- Hạng Phổ thông đặc biệt -->
+    <div class="cabin-card anim anim-d2">
+      <div class="cabin-img-wrap">
+        <img src="/frontend/assets/images/tnb2.png" alt="Hạng Phổ thông đặc biệt"/>
+        <span class="cabin-badge">Business</span>
+      </div>
+      <div class="cabin-body">
+        <div class="cabin-icon"><i class="fa-solid fa-star"></i></div>
+        <h3 class="cabin-name">Hạng Thương Gia</h3>
+        <p class="cabin-desc">Khoảng cách ghế rộng hơn, tiện nghi vượt trội và dịch vụ ăn uống nâng cao — lý tưởng cho chuyến đi trung bình.</p>
+        <a href="#" class="cabin-cta">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+
+    <!-- Hạng Phổ thông -->
+    <div class="cabin-card anim anim-d3">
+      <div class="cabin-img-wrap">
+        <img src="/frontend/assets/images/tnb3.png" alt="Hạng Phổ thông"/>
+        <span class="cabin-badge">Economy</span>
+      </div>
+      <div class="cabin-body">
+        <div class="cabin-icon"><i class="fa-solid fa-plane"></i></div>
+        <h3 class="cabin-name">Hạng Phổ thông</h3>
+        <p class="cabin-desc">Dịch vụ chu đáo, ghế thoải mái và giá cả hợp lý — trải nghiệm bay đáng nhớ dành cho mọi hành khách.</p>
+        <a href="#" class="cabin-cta">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+   PROMO BANNER
+══════════════════════════════════════════════ -->
+<div class="promo-banner">
+  <div class="promo-inner">
+    <div class="promo-logo-wrap">
+      <div class="promo-logo-icon"><i class="fa-solid fa-plane-departure"></i></div>
+      <div>
+        <div class="promo-logo-name">BAirlines</div>
+        <div class="promo-logo-sub">Sải cánh cùng Việt Nam</div>
+      </div>
+    </div>
+    <div class="promo-text">
+      <h3 class="promo-title">Nhà — Dù ở đâu bạn cũng được chào đón</h3>
+      <p class="promo-desc">Chương trình hội viên LotusSmiles — Tích điểm, đổi ưu đãi, bay cao hơn mỗi ngày.</p>
+    </div>
+    <button class="promo-btn">Đăng ký ngay</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+   2. DINING
+══════════════════════════════════════════════ -->
+<section class="section section-gray justify-content-center">
+  
+  <div class="dining-layout align-items-center">
+    <div class="dining-text">
+        <p class="sec-label" style="color:#DBA410;">ẨM THỰC PHONG PHÚ TRÊN KHÔNG</p>
+        <h2 class="sec-title">Ẩm thực trên máy bay</h2>
+        <p>Từ những hương vị đậm đà của ẩm thực Việt đến những món ăn tinh tế mang phong cách quốc tế, BAirlines mang đến bữa ăn đáng nhớ trên từng chuyến bay.</p>
+        <p>Hạng Thương Gia thưởng thức thực đơn gourmet được thiết kế bởi các đầu bếp danh tiếng. Hạng Phổ thông phục vụ đầy đủ suất ăn nóng đa dạng, được chuẩn bị từ nguyên liệu tươi chọn lọc.</p>
+        <p>Các chuyến bay quốc tế dài còn có thêm bữa ăn nhẹ giữa hành trình và đồ uống miễn phí phong phú cho tất cả hạng ghế.</p>
+        <a href="#" class="sec-link mt-16" style="margin-top:20px;">Xem thực đơn chi tiết <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="dining-photos">
+      <div class="dining-photo">
+        <img src="/frontend/assets/images/tnb4.png" alt="Ẩm thực trên máy bay"/>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+   3. ENTERTAINMENT
+══════════════════════════════════════════════ -->
+<section class="section section-white">
+  <p class="sec-label">TRẢI NGHIỆM GIẢI TRÍ ĐA DẠNG</p>
+  <h2 class="sec-title">Giải trí & Kết nối trên máy bay</h2>
+  <p class="sec-sub">Hệ thống giải trí hiện đại, kết nối internet tốc độ cao và kho nội dung phong phú để mỗi chuyến bay trở thành thời gian thư giãn tuyệt vời.</p>
+
+  <div class="ent-grid">
+    <div class="ent-card anim anim-d1">
+      <div class="ent-img-wrap">
+        <img src="https://images.unsplash.com/photo-1578022761797-b8636ac1773c?w=600&q=80" alt="LotusStart"/>
+        <div class="ent-img-overlay"></div>
+        <span class="ent-tag"><i class="fa-solid fa-tv"></i> LotusStart</span>
+      </div>
+      <div class="ent-body">
+        <h4 class="ent-name">Chương trình giải trí LotusStart</h4>
+        <p class="ent-desc">Hơn 1.000 bộ phim, 500 album nhạc và 50 trò chơi trên màn hình cá nhân HD — giải trí suốt hành trình.</p>
+      </div>
+    </div>
+
+    <div class="ent-card anim anim-d2">
+      <div class="ent-img-wrap">
+        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&q=80" alt="Internet"/>
+        <div class="ent-img-overlay"></div>
+        <span class="ent-tag"><i class="fa-solid fa-wifi"></i> Internet</span>
+      </div>
+      <div class="ent-body">
+        <h4 class="ent-name">Dịch vụ kết nối Internet</h4>
+        <p class="ent-desc">Wi-Fi tốc độ cao trên hầu hết chuyến bay thân rộng. Hạng Thương Gia miễn phí, Phổ thông mua gói linh hoạt.</p>
+      </div>
+    </div>
+
+    <div class="ent-card anim anim-d3">
+      <div class="ent-img-wrap">
+        <img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?w=600&q=80" alt="Heritage"/>
+        <div class="ent-img-overlay"></div>
+        <span class="ent-tag"><i class="fa-solid fa-book-open"></i> Heritage</span>
+      </div>
+      <div class="ent-body">
+        <h4 class="ent-name">Ứng dụng đọc báo PressReader</h4>
+        <p class="ent-desc">Tạp chí Heritage độc quyền cùng hàng nghìn đầu báo quốc tế qua ứng dụng PressReader miễn phí.</p>
+      </div>
+    </div>
+
+    <div class="ent-card anim anim-d4">
+      <div class="ent-img-wrap">
+        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=80" alt="FPT Play"/>
+        <div class="ent-img-overlay"></div>
+        <span class="ent-tag"><i class="fa-solid fa-play-circle"></i> FPT Play</span>
+      </div>
+      <div class="ent-body">
+        <h4 class="ent-name">Chương trình giải trí FPT Play</h4>
+        <p class="ent-desc">Xem trực tiếp thể thao, phim và chương trình truyền hình Việt Nam yêu thích ngay trên ghế ngồi của bạn.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+   4. SHOPPING
+══════════════════════════════════════════════ -->
+<section class="section section-gray">
+  <p class="sec-label">MUA SẮM TRÊN MÂY</p>
+  <h2 class="sec-title">Mua sắm trên máy bay</h2>
+  <p class="sec-sub">Khám phá bộ sưu tập hàng miễn thuế, đặc sản Việt Nam và quà lưu niệm cao cấp ngay trong chuyến bay.</p>
+
+  <div class="shop-grid">
+    <div class="shop-card anim anim-d1">
+      <div class="shop-img-wrap">
+        <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500&q=80" alt="LotusDeli"/>
+      </div>
+      <div class="shop-body">
+        <h4 class="shop-name">LotusDeli</h4>
+        <p class="shop-desc">Hàng miễn thuế và sản phẩm đặc trưng Việt Nam chất lượng cao, đặt hàng ngay trên chuyến bay.</p>
+        <a href="#" class="sec-link">Xem sản phẩm <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+    <div class="shop-card anim anim-d2">
+      <div class="shop-img-wrap">
+        <img src="https://images.unsplash.com/photo-1549439602-43ebca2327af?w=500&q=80" alt="Quà lưu niệm"/>
+      </div>
+      <div class="shop-body">
+        <h4 class="shop-name">Quà Lưu Niệm Việt Nam</h4>
+        <p class="shop-desc">Bộ sưu tập quà tặng thủ công mỹ nghệ và đặc sản vùng miền tinh chọn từ khắp Việt Nam.</p>
+        <a href="#" class="sec-link">Xem sản phẩm <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+    <div class="shop-card anim anim-d3">
+      <div class="shop-img-wrap">
+        <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&q=80" alt="Mỹ phẩm"/>
+      </div>
+      <div class="shop-body">
+        <h4 class="shop-name">Mỹ Phẩm &amp; Chăm Sóc</h4>
+        <p class="shop-desc">Nước hoa, mỹ phẩm và sản phẩm chăm sóc da cao cấp từ các thương hiệu quốc tế nổi tiếng.</p>
+        <a href="#" class="sec-link">Xem sản phẩm <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+   5. FAQ
+══════════════════════════════════════════════ -->
+<section class="section section-white">
+  <p class="sec-label">NHỮNG CÂU HỎI THƯỜNG GẶP</p>
+  <h2 class="sec-title">Câu hỏi thường gặp</h2>
+
+  <div class="faq-tabs">
+    <button class="faq-tab active">Tất cả về trải nghiệm</button>
+    <button class="faq-tab">Suất ăn đặc biệt</button>
+    <button class="faq-tab">Giải trí trên máy bay</button>
+    <button class="faq-tab">Mua sắm</button>
+  </div>
+
+  <div class="faq-list">
+    <div class="faq-item open">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span>Thiết bị giải trí trên không khác nhau giữa các hạng ghế như thế nào?</span>
+        <i class="fa-solid fa-chevron-down faq-chevron"></i>
+      </button>
+      <div class="faq-answer">Hạng Thương Gia được trang bị màn hình cảm ứng 15.4 inch, tai nghe chống ồn chủ động cao cấp và nội dung phim độc quyền. Hạng Phổ thông đặc biệt có màn hình 13.3 inch. Hạng Phổ thông trang bị màn hình 10.1 inch với hệ thống LotusStart đầy đủ.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span>Dịch vụ kết nối internet trên chuyến bay của BAirlines được cung cấp như thế nào?</span>
+        <i class="fa-solid fa-chevron-down faq-chevron"></i>
+      </button>
+      <div class="faq-answer">BAirlines cung cấp Wi-Fi tốc độ cao trên hầu hết các máy bay thân rộng. Hành khách Hạng Thương Gia được sử dụng miễn phí toàn bộ chuyến bay. Hạng Phổ thông có thể mua các gói internet linh hoạt theo thời gian hoặc dung lượng ngay trên hệ thống giải trí.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span>Chương trình giải trí LotusStart thường cung cấp các thể loại gì?</span>
+        <i class="fa-solid fa-chevron-down faq-chevron"></i>
+      </button>
+      <div class="faq-answer">LotusStart bao gồm hơn 1.000 bộ phim quốc tế và Việt Nam, 500 album nhạc từ nhiều thể loại, 50+ trò chơi giải trí và kênh thiếu nhi. Nội dung được cập nhật theo từng mùa với các phim mới nhất và chương trình đặc sắc của BAirlines.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span>Tôi muốn đặt bữa ăn qua ứng dụng PressReader thì phải làm gì?</span>
+        <i class="fa-solid fa-chevron-down faq-chevron"></i>
+      </button>
+      <div class="faq-answer">PressReader là ứng dụng đọc báo và tạp chí điện tử — không phải công cụ đặt bữa ăn. Để đặt suất ăn đặc biệt (chay, halal, ít muối…), quý khách vui lòng liên hệ tổng đài hoặc thực hiện trên ứng dụng BAirlines ít nhất 24 giờ trước giờ khởi hành.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span>Chương trình giải trí trên máy bay có khác nhau giữa các hạng ghế không?</span>
+        <i class="fa-solid fa-chevron-down faq-chevron"></i>
+      </button>
+      <div class="faq-answer">Kho nội dung LotusStart như nhau trên tất cả các hạng, nhưng chất lượng màn hình và tai nghe khác nhau. Hạng Thương Gia có thêm kênh nhạc Hi-Fi lossless, phim 4K và chương trình độc quyền không có ở hạng khác.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+   JAVASCRIPT
+══════════════════════════════════════════════ -->
+<script>
+/* ── FAQ TOGGLE ──────────────────────────────────── */
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  // close all
+  document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+  // open clicked if was closed
+  if (!isOpen) item.classList.add('open');
+}
+
+/* ── FAQ TABS ────────────────────────────────────── */
+document.querySelectorAll('.faq-tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.faq-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+/* ── FAQ PAGINATION ──────────────────────────────── */
+document.querySelectorAll('.faq-page-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.faq-page-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const info = document.querySelector('.faq-page-info');
+    if (info) info.textContent = `Trang ${this.textContent} / 3`;
+  });
+});
+
+
+/* ── SCROLL ANIMATION ────────────────────────────── */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.anim').forEach(el => observer.observe(el));
+
+/* ── SPA INTEGRATION HELPER ──────────────────────── */
+// Nếu load qua SPA (app.js inject innerHTML), gọi hàm này:
+window.initTraiNghiemBay = function() {
+  document.querySelectorAll('.anim').forEach(el => {
+    el.classList.remove('visible');
+    observer.observe(el);
+  });
+};
+</script>
+
+</body>
+</html>

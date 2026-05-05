@@ -1,294 +1,388 @@
+<!-- ════════════════════════════════════════
+   Dịch vụ bổ trợ — SPA Fragment
+   Load vào #booking-content (hoặc #page-content)
+   Requires: Bootstrap 5, style.css, jQuery
+════════════════════════════════════════ -->
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dịch vụ bổ trợ - BAirlines</title>
-    <!-- CSS Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <style>
-        /* Nhập font từ style.css của người dùng */
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+<style>
+  /* ── Breadcrumb ── */
+  .inner-page-header {
+    padding: 36px 40px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
 
-        :root {
-            --primary:       #006885; /* Theo style.css */
-            --primary-hover: #33869D;
-            --primary-dark:  #004f66;
-            --gold:          #DBA410;
-            --navy:          #002F5F;
-            --white:         #FFFFFF;
-            --bg-light:      #F4F8F9;
-            --text:          #1a2d35;
-        }
+  .breadcrumb-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.3rem;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
 
-        body {
-            font-family: 'Be Vietnam Pro', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-        }
+  .breadcrumb-wrap a {
+    color: var(--muted);
+    transition: var(--transition);
+  }
 
-        /* Banner Header giống Vietnam Airlines */
-        .header-banner {
-            background: linear-gradient(rgba(0, 47, 95, 0.6), rgba(0, 47, 95, 0.6)), 
-                        url('https://www.vietnamairlines.com/~/media/Images/HeroBanner/Desktop/AdditionalService/Hero-Desktop-AdditionalService.jpg');
-            background-size: cover;
-            background-position: center;
-            height: 350px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            text-align: center;
-        }
+  .breadcrumb-wrap a:hover { color: var(--primary); }
 
-        .header-banner h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3.5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+  .breadcrumb-wrap .bc-sep { font-size: 1rem; color: var(--border); }
 
-        /* Container & Grid */
-        .services-container {
-            max-width: 1200px;
-            margin: -60px auto 80px;
-            padding: 0 20px;
-        }
+  .breadcrumb-wrap .bc-active { color: var(--primary); font-weight: 600; }
 
-        /* Filter Tabs */
-        .category-tab {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 40px;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 3vw, 3.4rem);
+    font-weight: 900;
+    color: var(--text);
+    letter-spacing: -.3px;
+    line-height: 1.1;
+  }
 
-        .tab-item {
-            cursor: pointer;
-            padding: 8px 16px;
-            font-weight: 600;
-            color: var(--navy);
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-        }
+  /* ── Service Grid ── */
+  .services-section {
+    padding: 36px 40px 56px;
+    background: var(--bg);
+  }
 
-        .tab-item.active {
-            color: var(--primary);
-            border-bottom-color: var(--gold);
-        }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
 
-        /* Service Cards */
-        .service-card {
-            background: var(--white);
-            border: none;
-            border-radius: 0; /* Theo phong cách chuyên nghiệp */
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+  @media (max-width: 900px) {
+    .services-grid { grid-template-columns: repeat(2, 1fr); }
+    .services-section { padding: 28px 20px 44px; }
+    .inner-page-header { padding: 28px 20px 20px; }
+  }
 
-        .service-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
-        }
+  @media (max-width: 576px) {
+    .services-grid { grid-template-columns: 1fr; }
+  }
 
-        .service-img {
-            height: 220px;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
+  /* ── Service Card ── */
+  .service-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition);
+    cursor: pointer;
+  }
 
-        .service-body {
-            padding: 30px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
+  .service-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+    border-color: var(--primary-hover);
+  }
 
-        .service-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: var(--navy);
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
+  .service-card-img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    background: var(--primary-light);
+  }
 
-        .service-text {
-            font-size: 1rem;
-            color: #556b73;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
+  /* Placeholder gradient khi ảnh chưa load */
+  .service-card-img-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.2rem;
+    color: var(--primary);
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--navy-light) 100%);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
 
-        /* Nút giống style.css của bạn */
-        .btn-service {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 12px 28px;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            align-self: flex-start;
-            margin-top: auto;
-            transition: all 0.3s;
-            /* text-decoration: none; */
-        }
+  .service-card-body {
+    padding: 20px 22px 22px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
 
-        .btn-service:hover {
-            background-color: var(--primary-hover);
-            color: white;
-            box-shadow: 0 4px 10px rgba(0,104,133,0.3);
-        }
+  .service-card-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header-banner h1 { font-size: 2.2rem; }
-            .category-tab { flex-wrap: wrap; gap: 10px; }
-            .tab-item { font-size: 0.8rem; }
-        }
-    </style>
-</head>
-<body>
+  .service-card-desc {
+    font-size: 1.3rem;
+    color: var(--muted);
+    line-height: 1.6;
+    flex: 1;
+    margin-bottom: 16px;
+  }
 
-    <!-- Banner chính -->
-    <div class="header-banner">
-        <h1>Dịch vụ bổ trợ</h1>
-    </div>
+  .service-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary);
+    transition: var(--transition);
+    width: fit-content;
+  }
 
-    <!-- Nội dung dịch vụ -->
-    <div class="services-container">
-        
-        <!-- Tabs lọc (giống UI ảnh mẫu) -->
-        <div class="category-tab">
-            <div class="tab-item active" onclick="filterServices('all', this)">Tất cả</div>
-            <div class="tab-item" onclick="filterServices('hanh-ly', this)">Hành lý</div>
-            <div class="tab-item" onclick="filterServices('cho-ngoi', this)">Chỗ ngồi</div>
-            <div class="tab-item" onclick="filterServices('am-thuc', this)">Ẩm thực</div>
-            <div class="tab-item" onclick="filterServices('uu-tien', this)">Ưu tiên</div>
-        </div>
+  .service-card-link i {
+    font-size: 1.1rem;
+    transition: transform .22s ease;
+  }
 
-        <!-- Grid dịch vụ -->
-        <div class="row g-4" id="services-grid">
-            
-            <!-- Dịch vụ 1 -->
-            <div class="col-md-4 service-item hanh-ly">
-                <div class="service-card">
-                    <div class="service-img" style="background-image: url('https://images.unsplash.com/photo-1581553680321-4fffae59fccd?auto=format&fit=crop&w=800&q=80');"></div>
-                    <div class="service-body">
-                        <h3 class="service-title">Hành lý trả trước</h3>
-                        <p class="service-text">Tiết kiệm thời gian và chi phí bằng cách mua thêm hành lý trực tuyến trước chuyến bay.</p>
-                        <a href="#" class="btn-service">Mua ngay</a>
-                    </div>
-                </div>
-            </div>
+  .service-card-link:hover {
+    color: var(--primary-dark);
+  }
 
-            <!-- Dịch vụ 2 -->
-            <div class="col-md-4 service-item cho-ngoi">
-                <div class="service-card">
-                    <div class="service-img" style="background-image: url('https://images.unsplash.com/photo-1540339832862-474599807836?auto=format&fit=crop&w=800&q=80');"></div>
-                    <div class="service-body">
-                        <h3 class="service-title">Chọn chỗ ngồi</h3>
-                        <p class="service-text">Chọn chỗ ngồi yêu thích để tận hưởng tầm nhìn đẹp hoặc sự thoải mái tối đa suốt hành trình.</p>
-                        <a href="#" class="btn-service">Chọn chỗ</a>
-                    </div>
-                </div>
-            </div>
+  .service-card-link:hover i {
+    transform: translateX(4px);
+  }
 
-            <!-- Dịch vụ 3 -->
-            <div class="col-md-4 service-item am-thuc">
-                <div class="service-card">
-                    <div class="service-img" style="background-image: url('https://images.unsplash.com/photo-1555243621-789938030999?auto=format&fit=crop&w=800&q=80');"></div>
-                    <div class="service-body">
-                        <h3 class="service-title">Suất ăn đặc biệt</h3>
-                        <p class="service-text">Thưởng thức hương vị ẩm thực phong phú với các thực đơn đa dạng phù hợp với sở thích.</p>
-                        <a href="#" class="btn-service">Khám phá</a>
-                    </div>
-                </div>
-            </div>
+  /* Staggered animation */
+  .service-card {
+    opacity: 0;
+    transform: translateY(22px);
+    animation: svc-fadein .55s ease both;
+  }
 
-            <!-- Dịch vụ 4 -->
-            <div class="col-md-4 service-item uu-tien">
-                <div class="service-card">
-                    <div class="service-img" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80');"></div>
-                    <div class="service-body">
-                        <h3 class="service-title">Lotus Lounge</h3>
-                        <p class="service-text">Thư giãn trong không gian yên tĩnh và sang trọng tại phòng chờ bông sen trước giờ khởi hành.</p>
-                        <a href="#" class="btn-service">Tìm hiểu thêm</a>
-                    </div>
-                </div>
-            </div>
+  @keyframes svc-fadein {
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-            <!-- Dịch vụ 5 -->
-            <div class="col-md-4 service-item uu-tien">
-                <div class="service-card">
-                    <div class="service-img" style="background-image: url('https://images.unsplash.com/photo-1506013391225-bc07f81e5517?auto=format&fit=crop&w=800&q=80');"></div>
-                    <div class="service-body">
-                        <h3 class="service-title">Nâng hạng dịch vụ</h3>
-                        <p class="service-text">Nâng tầm chuyến bay của bạn với dịch vụ hạng Thương gia để tận hưởng ưu tiên đặc biệt.</p>
-                        <a href="#" class="btn-service">Nâng hạng</a>
-                    </div>
-                </div>
-            </div>
+  .service-card:nth-child(1)  { animation-delay: .05s; }
+  .service-card:nth-child(2)  { animation-delay: .10s; }
+  .service-card:nth-child(3)  { animation-delay: .15s; }
+  .service-card:nth-child(4)  { animation-delay: .20s; }
+  .service-card:nth-child(5)  { animation-delay: .25s; }
+  .service-card:nth-child(6)  { animation-delay: .30s; }
+  .service-card:nth-child(7)  { animation-delay: .35s; }
+  .service-card:nth-child(8)  { animation-delay: .40s; }
+  .service-card:nth-child(9)  { animation-delay: .45s; }
+  .service-card:nth-child(10) { animation-delay: .50s; }
+  .service-card:nth-child(11) { animation-delay: .55s; }
+</style>
 
-            <!-- Dịch vụ 6 -->
-            <div class="col-md-4 service-item">
-                <div class="service-card">
-                    <div class="service-img" style="background-image: url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80');"></div>
-                    <div class="service-body">
-                        <h3 class="service-title">Bảo hiểm du lịch</h3>
-                        <p class="service-text">An tâm tuyệt đối trong mỗi hành trình với các gói bảo hiểm du lịch toàn diện từ đối tác uy tín.</p>
-                        <a href="#" class="btn-service">Đăng ký</a>
-                    </div>
-                </div>
-            </div>
+<!-- ── Breadcrumb + Tiêu đề ── -->
+<div class="inner-page-header">
+  <div class="breadcrumb-wrap">
+    <a href="#">Trang chủ</a>
+    <span class="bc-sep"><i class="bi bi-chevron-right"></i></span>
+    <span class="bc-active">Dịch vụ bổ trợ</span>
+  </div>
+  <h1 class="page-title">Dịch vụ bổ trợ</h1>
+</div>
 
-        </div>
-    </div>
+<!-- ── Grid dịch vụ ── -->
+<section class="services-section mx-5">
+  <div class="services-grid mx-5" id="services-grid">
 
-    <!-- JS Xử lý lọc -->
-    <script>
-        function filterServices(category, element) {
-            const items = document.querySelectorAll('.service-item');
-            const tabs = document.querySelectorAll('.tab-item');
+    <!-- 1. Sản phẩm kết hợp máy bay và tàu -->
+    <article class="service-card" data-service="combo-train">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv1.jpeg" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">Sản phẩm kết hợp máy bay và tàu</h2>
+        <p class="service-card-desc">Dễ dàng đặt vé máy bay kết hợp với vé tàu để di chuyển đến các thành phố lớn.</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
 
-            // Cập nhật tab active
-            tabs.forEach(tab => tab.classList.remove('active'));
-            element.classList.add('active');
+    <!-- 2. Mua thêm hành lý ký gửi -->
+    <article class="service-card" data-service="extra-baggage">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv2.jpeg" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">Mua thêm hành lý ký gửi</h2>
+        <p class="service-card-desc">Nếu hành lý ký gửi của hành khách vượt quá Quy định, hành khách có thể chọn mua thêm hành lý trả trước hoặc hành lý tính cước tại sân bay.</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
 
-            // Lọc các item
-            items.forEach(item => {
-                if (category === 'all') {
-                    item.style.display = 'block';
-                    // Animation nhẹ khi hiện lại
-                    item.style.opacity = '1';
-                } else {
-                    if (item.classList.contains(category)) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                }
-            });
-        }
-    </script>
+    <!-- 3. Đặt trước sản phẩm LotusDeli -->
+    <article class="service-card" data-service="lotus-deli">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv3.jpeg" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">Đặt trước sản phẩm LotusDeli</h2>
+        <p class="service-card-desc">Với dịch vụ đặt trước sản phẩm LotusDeli, hành khách có thể thoải mái lựa chọn sản phẩm phù hợp với khẩu vị của mình.</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
 
-</body>
-</html>
+    <!-- 4. Giữ giá tốt -->
+    <article class="service-card" data-service="hold-price">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv4.jpeg" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">Giữ giá tốt</h2>
+        <p class="service-card-desc">Với chức năng "Giữ giá tốt", hành khách có thể giữ mức giá vé khi chưa có thời gian để hoàn thiện kế hoạch cho chuyến đi của mình, chỉ với một chi phí nhỏ.</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 5. Sky Sofa -->
+    <article class="service-card" data-service="sky-sofa">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv5.jpeg" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">Sky Sofa</h2>
+        <p class="service-card-desc">Hãy lựa chọn dịch vụ Sky Sofa bao gồm 2 ghế liền canh nhau trong khoang Phổ thông để tận hưởng chuyến bay thoải mái cùng Vietnam Airlines.</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 6. E-voucher -->
+    <article class="service-card" data-service="evoucher">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv6.png" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">E-voucher</h2>
+        <p class="service-card-desc">Hình thức thanh toán bằng E-voucher (Phiếu quà tặng) giúp hành khách dễ dàng đặt mua các sản phẩm, dịch vụ của Vietnam Airlines hoặc gửi E-voucher làm quà tặng cho người thân và bạn bè.</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 7. Chọn trước chỗ ngồi -->
+    <article class="service-card" data-service="seat-selection">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv7.jpeg" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">Chọn trước chỗ ngồi</h2>
+        <p class="service-card-desc">Hãy chọn trước chỗ ngồi để có được vị trí ưng ý nhất và tận hưởng trải nghiệm bay thoải mái cùng Vietnam Airlines!</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 8. Nâng hạng -->
+    <article class="service-card" data-service="upgrade">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv8.jpeg" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">Nâng hạng</h2>
+        <p class="service-card-desc">Hành khách sau khi mua vé có thể nâng hạng về một cách dễ dàng để trải nghiệm nhiều tiện ích và dịch vụ đẳng cấp.</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 9. Bảo hiểm du lịch TripCARE -->
+    <article class="service-card" data-service="tripcare">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv9.jpeg" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">Bảo hiểm du lịch TripCARE</h2>
+        <p class="service-card-desc">TripCARE là sản phẩm Bảo hiểm Du lịch toàn diện dành cho hành khách của Vietnam Airlines trên các chuyến bay nội địa và quốc tế.</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 10. Đặt khách sạn -->
+    <article class="service-card" data-service="hotel">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv10.jpeg" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">Đặt khách sạn</h2>
+        <p class="service-card-desc">Dịch vụ đặt phòng khách sạn Vietnam Airlines hợp tác cùng Booking.com, cung cấp dịch vụ lưu trú thuận tiện cho hành khách.</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 11. Bảo hiểm du lịch Travel Ready -->
+    <article class="service-card" data-service="travel-ready">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv11.jpeg" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">Bảo hiểm du lịch Travel Ready</h2>
+        <p class="service-card-desc">Travel Ready là bảo hiểm du lịch toàn diện dành cho hành khách của Vietnam Airlines áp dụng cho các hành trình một chiều/khứ hồi khởi hành từ Singapore.</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 12. Gói cước Viettel -->
+    <article class="service-card" data-service="viettel">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv12.png" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">Gói cước Viettel</h2>
+        <p class="service-card-desc">Với dịch vụ chuyển vùng quốc tế của Viettel, hành khách đi nước ngoài sẽ tiếp tục duy trì liên lạc với số điện thoại nội địa để nghe gọi, gửi nhận tin nhắn và dùng mobile data như bình thường.</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 13. Dịch vụ quá cảnh -->
+    <article class="service-card" data-service="transit">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv13.jpeg" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">Dịch vụ quá cảnh</h2>
+        <p class="service-card-desc">Hành khách nối chuyến tại sân bay Nội Bài hoặc Tân Sơn Nhất (Việt Nam) sẽ có cơ hội tận hưởng những dịch vụ tham quan, du lịch trong thời gian quá cảnh.</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 14. Phòng khách thương gia Lotusmiles -->
+    <article class="service-card" data-service="lounge">
+      <div class="service-card-img-placeholder">
+        <img src="/frontend/assets/images/dv14.jpeg" alt="">
+      </div>
+      <div class="service-card-body">
+        <h2 class="service-card-title">Phòng khách thương gia Lotusmiles</h2>
+        <p class="service-card-desc">Phòng khách thương gia Lotusmiles là nền tảng đặt phòng chờ trực tuyến giúp hành khách tận hưởng không gian thư giãn đẳng cấp tại hơn 1400 sân bay toàn cầu.</p>
+        <a href="#" class="service-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+  </div><!-- /.services-grid -->
+</section>
+
+<script>
+(function () {
+  'use strict';
+
+  function initAdditionalServices() {
+    // Click vào card → có thể hook vào BookingSPA hoặc navigate
+    $('#services-grid').on('click', '.service-card', function () {
+      var service = $(this).data('service');
+      // Placeholder: log hoặc điều hướng tùy logic SPA của bạn
+      console.log('[AdditionalServices] Clicked:', service);
+      // Ví dụ nếu muốn navigate SPA:
+      // if (window.BookingSPA) window.BookingSPA.goToStep(service);
+    });
+
+    // Prevent link click từ bubble lên card click
+    $('#services-grid').on('click', '.service-card-link', function (e) {
+      e.stopPropagation();
+    });
+  }
+
+  // Tự khởi tạo khi fragment được load
+  initAdditionalServices();
+
+  // Expose để BOOKING.js có thể gọi qua route.init nếu cần
+  window.initAdditionalServices = initAdditionalServices;
+})();
+</script>

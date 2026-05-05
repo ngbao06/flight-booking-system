@@ -1,1 +1,484 @@
-help
+<style>
+/* =========================================
+   CUSTOM CSS CHO TRANG TRUNG TÂM TRỢ GIÚP
+   (Kế thừa các biến CSS từ style.css gốc)
+========================================= */
+.hc-page {
+    font-family: var(--font);
+    color: var(--text);
+    padding: 30px 0 60px 0;
+}
+
+.hc-breadcrumb {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+}
+.hc-breadcrumb span {
+    margin: 0 5px;
+}
+
+.hc-main-title {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+}
+
+.hc-subtitle {
+    font-size: 14.5px;
+    color: var(--muted);
+    margin-bottom: 40px;
+}
+
+.hc-section-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 48px;
+}
+
+/* --- Card Chủ Đề --- */
+.hc-topic-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    height: 100%;
+    background: #fff;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+.hc-topic-card:hover {
+    box-shadow: var(--shadow-sm);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+.hc-topic-icon {
+    font-size: 32px;
+    color: var(--primary);
+    margin-bottom: 16px;
+    font-weight: 300;
+}
+.hc-topic-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+}
+.hc-topic-desc {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    line-height: 1.5;
+    flex-grow: 1;
+}
+.hc-topic-link {
+    font-size: 12.5px;
+    color: var(--primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: var(--transition);
+}
+.hc-topic-link:hover {
+    color: var(--primary-hover);
+}
+
+/* --- Card Hướng Dẫn --- */
+.hc-guide-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 180px;
+    display: flex;
+    align-items: flex-end;
+    padding: 20px;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--navy); /* Fallback */
+}
+.hc-guide-card::before {
+    content: ''; 
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,47,95,0.9), rgba(0,47,95,0.2));
+    z-index: 1;
+}
+.hc-guide-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+}
+.hc-guide-title {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+.hc-guide-btns {
+    display: flex;
+    gap: 10px;
+}
+.hc-btn-outline {
+    border: 1px solid rgba(255,255,255,0.6);
+    color: #fff;
+    background: transparent;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+.hc-btn-outline:hover {
+    background: #fff;
+    color: var(--navy);
+}
+
+/* --- Card Liên Hệ --- */
+.hc-contact-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    height: 100%;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+.hc-contact-icon-wrapper {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+}
+.hc-contact-icon {
+    font-size: 26px;
+    color: var(--primary);
+}
+.hc-contact-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 12px;
+}
+.hc-contact-text {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    line-height: 1.5;
+    flex-grow: 1;
+}
+.hc-contact-list {
+    list-style: none; padding: 0; margin: 0;
+    font-size: 13.5px; color: var(--text);
+}
+.hc-contact-list li {
+    margin-bottom: 10px;
+    display: flex; gap: 10px; align-items: flex-start;
+}
+.hc-contact-list i {
+    margin-top: 3px;
+    color: var(--primary);
+    font-size: 14px;
+}
+.hc-btn-primary {
+    background: var(--primary); color: #fff; border: none; 
+    padding: 10px 24px; border-radius: 30px;
+    font-size: 13px; font-weight: 600; transition: var(--transition);
+    display: inline-block; text-align: center;
+}
+.hc-btn-primary:hover {
+    background: var(--primary-hover);
+    color: #fff;
+}
+
+/* --- Feedback Section --- */
+.hc-feedback-section {
+    margin-top: 48px;
+}
+.hc-feedback-top {
+    display: flex; justify-content: space-between; align-items: center; 
+    margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
+}
+.hc-rating-box {
+    text-align: center;
+    background: var(--primary-light);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 20px;
+}
+.hc-rating-title {
+    font-size: 15px; font-weight: 600; color: var(--navy); margin-bottom: 20px;
+}
+.hc-faces {
+    display: flex; justify-content: center; gap: 24px; font-size: 42px; color: #a0b2b8; cursor: pointer;
+}
+.hc-faces i {
+    transition: transform 0.2s, color 0.2s;
+}
+.hc-faces i:hover {
+    transform: scale(1.15);
+    color: var(--primary-hover);
+}
+.hc-faces i.active {
+    color: var(--primary);
+    transform: scale(1.15);
+}
+.hc-rating-note {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 16px;
+}
+</style>
+
+<div class="container hc-page anim">
+    <!-- Breadcrumb -->
+    <div class="hc-breadcrumb">
+        Trang chủ <span>></span> Trung tâm trợ giúp
+    </div>
+
+    <!-- Header -->
+    <h1 class="hc-main-title">Trung tâm trợ giúp</h1>
+    <p class="hc-subtitle">Hãy cùng Vietnam Airlines giải đáp các vướng mắc thường gặp.</p>
+
+    <!-- SECTION 1: Chủ đề cần hỗ trợ -->
+    <h2 class="hc-section-title">Chủ đề cần hỗ trợ</h2>
+    <div class="row g-4 mb-5">
+        <!-- Card 1 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="hc-topic-card">
+                <i class="fa-regular fa-calendar-check hc-topic-icon"></i>
+                <div class="hc-topic-title">Thông tin lịch bay</div>
+                <div class="hc-topic-desc">Tra cứu thông tin chuyến bay, xem lịch sử chuyến bay và tìm hiểu mạng đường bay của Vietnam Airlines.</div>
+                <a href="javascript:void(0)" class="hc-topic-link">Xem chi tiết</a>
+            </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="hc-topic-card">
+                <i class="fa-solid fa-money-check-dollar hc-topic-icon"></i>
+                <div class="hc-topic-title">Mua vé, Thanh toán & Xuất hóa đơn</div>
+                <div class="hc-topic-desc">Hỗ trợ hành khách các vấn đề thường gặp khi mua vé qua website/app Vietnam Airlines.</div>
+                <a href="javascript:void(0)" class="hc-topic-link">Xem chi tiết</a>
+            </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="hc-topic-card">
+                <i class="fa-solid fa-briefcase-medical hc-topic-icon"></i>
+                <div class="hc-topic-title">Dịch vụ bổ trợ & Dịch vụ đặc biệt</div>
+                <div class="hc-topic-desc">Hướng dẫn mua, hoàn, đổi các dịch vụ bổ trợ và dịch vụ đặc biệt của Vietnam Airlines.</div>
+                <a href="javascript:void(0)" class="hc-topic-link">Xem chi tiết</a>
+            </div>
+        </div>
+        <!-- Card 4 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="hc-topic-card">
+                <i class="fa-solid fa-suitcase-rolling hc-topic-icon"></i>
+                <div class="hc-topic-title">Hành lý</div>
+                <div class="hc-topic-desc">Tìm hiểu thông tin hỗ trợ cho các vấn đề về hành lý như hành lý miễn cước, hành lý nối chuyến, thất lạc hành lý, v.v.</div>
+                <a href="javascript:void(0)" class="hc-topic-link">Xem chi tiết</a>
+            </div>
+        </div>
+        <!-- Card 5 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="hc-topic-card">
+                <i class="fa-regular fa-id-card hc-topic-icon"></i>
+                <div class="hc-topic-title">Làm thủ tục & Giấy tờ tùy thân</div>
+                <div class="hc-topic-desc">Cập nhật quy định mới nhất về giấy tờ tùy thân và làm thủ tục cho chuyến bay.</div>
+                <a href="javascript:void(0)" class="hc-topic-link">Xem chi tiết</a>
+            </div>
+        </div>
+        <!-- Card 6 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="hc-topic-card">
+                <i class="fa-solid fa-arrow-right-arrow-left hc-topic-icon"></i>
+                <div class="hc-topic-title">Đổi vé</div>
+                <div class="hc-topic-desc">Hướng dẫn hành khách chủ động đổi vé tự nguyện theo điều kiện giá vé và đổi chuyến không tự nguyện khi Vietnam Airlines thay đổi lịch bay.</div>
+                <a href="javascript:void(0)" class="hc-topic-link">Xem chi tiết</a>
+            </div>
+        </div>
+        <!-- Card 7 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="hc-topic-card">
+                <i class="fa-solid fa-money-bill-transfer hc-topic-icon"></i>
+                <div class="hc-topic-title">Hoàn vé</div>
+                <div class="hc-topic-desc">Tổng hợp thông tin trợ giúp hoàn vé, điều kiện hoàn và mức phí.</div>
+                <a href="javascript:void(0)" class="hc-topic-link">Xem chi tiết</a>
+            </div>
+        </div>
+        <!-- Card 8 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="hc-topic-card">
+                <i class="fa-brands fa-pagelines hc-topic-icon"></i>
+                <div class="hc-topic-title">Chương trình Lotusmiles</div>
+                <div class="hc-topic-desc">Tìm hiểu các tình huống Câu hỏi thường gặp liên quan đến chương trình khách hàng thân thiết của Vietnam Airlines.</div>
+                <a href="javascript:void(0)" class="hc-topic-link">Xem chi tiết</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: Hướng dẫn thao tác -->
+    <h2 class="hc-section-title">Hướng dẫn thao tác</h2>
+    <div class="row g-4 mb-5">
+        <!-- Guide 1 -->
+        <div class="col-md-4">
+            <div class="hc-guide-card" style="background-image: url('/frontend/assets/images/help1.avif');">
+                <div class="hc-guide-content">
+                    <div class="hc-guide-title">Đổi vé</div>
+                    <div class="hc-guide-btns">
+                        <button class="hc-btn-outline">Xem video</button>
+                        <button class="hc-btn-outline">Đọc thêm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Guide 2 -->
+        <div class="col-md-4">
+            <div class="hc-guide-card" style="background-image: url('/frontend/assets/images/help2.avif');">
+                <div class="hc-guide-content">
+                    <div class="hc-guide-title">Hoàn vé</div>
+                    <div class="hc-guide-btns">
+                        <button class="hc-btn-outline">Xem video</button>
+                        <button class="hc-btn-outline">Đọc thêm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Guide 3 -->
+        <div class="col-md-4">
+            <div class="hc-guide-card" style="background-image: url('/frontend/assets/images/help3.avif');">
+                <div class="hc-guide-content">
+                    <div class="hc-guide-title">Đổi chuyến không tự nguyện</div>
+                    <div class="hc-guide-btns">
+                        <button class="hc-btn-outline">Xem video</button>
+                        <button class="hc-btn-outline">Đọc thêm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: Liên hệ với chúng tôi -->
+    <h2 class="hc-section-title">Liên hệ với chúng tôi</h2>
+    <div class="row g-4">
+        <!-- NEO Chat -->
+        <div class="col-lg-6">
+            <div class="hc-contact-card justify-content-center">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="hc-contact-icon-wrapper" style="background: var(--gold-light);">
+                        <i class="fa-solid fa-robot" style="color: var(--gold); font-size: 24px;"></i>
+                    </div>
+                    <div class="ms-3">
+                        <div class="hc-contact-title mb-1">Trò chuyện với NEO</div>
+                    </div>
+                </div>
+                <div class="hc-contact-text">
+                    NEO là trợ lý ảo thông minh. Được thiết kế để hỗ trợ người dùng giải quyết các vấn đề thường gặp, giúp tiết kiệm thời gian và nâng cao trải nghiệm.
+                </div>
+                <div>
+                    <a href="javascript:void(0)" class="hc-btn-primary">Trò chuyện ngay với NEO</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Call Center -->
+        <div class="col-lg-6">
+            <div class="hc-contact-card">
+                <div class="hc-contact-title">Trung tâm CSKH tại Việt Nam</div>
+                <ul class="hc-contact-list mt-2">
+                    <li><i class="fa-regular fa-clock"></i> Liên hệ hoạt động 24/7</li>
+                    <li><i class="fa-solid fa-phone"></i> Gọi trong lãnh thổ Việt Nam: <strong>1900 1100</strong></li>
+                    <li><i class="fa-solid fa-globe"></i> Gọi từ nước ngoài về Việt Nam: <strong>+84 24 38320320</strong></li>
+                    <li><i class="fa-regular fa-envelope"></i> Gửi góp ý và thắc mắc của bạn về: <br><strong>onlinesupport@vietnamairlines.com</strong></li>
+                    <li><i class="fa-solid fa-headphones-simple"></i> Hỗ trợ Lotusmiles: <strong>vip.lotusmiles@vietnamairlines.com</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Chi nhánh -->
+        <div class="col-lg-6">
+            <div class="hc-contact-card d-flex flex-row align-items-center justify-content-between py-4">
+                <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-phone-volume hc-contact-icon me-3"></i>
+                    <div class="hc-contact-title mb-0">Liên hệ văn phòng chi nhánh</div>
+                </div>
+                <a href="javascript:void(0)" class="hc-topic-link">Xem chi tiết ></a>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="col-lg-6">
+            <div class="hc-contact-card d-flex flex-row align-items-center justify-content-between py-4">
+                <div class="d-flex align-items-center">
+                    <i class="fa-regular fa-comment-dots hc-contact-icon me-3"></i>
+                    <div class="hc-contact-title mb-0">Câu hỏi thường gặp</div>
+                </div>
+                <a href="javascript:void(0)" class="hc-topic-link">Xem chi tiết ></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: Góp ý dịch vụ -->
+    <div class="hc-feedback-section">
+        <div class="hc-feedback-top">
+            <div>
+                <h2 class="hc-section-title mt-0 mb-2">Góp ý dịch vụ</h2>
+                <div class="hc-contact-text mb-0" style="max-width: 700px;">
+                    Vietnam Airlines luôn trân trọng mọi ý kiến đóng góp của Quý khách hàng. Hãy chia sẻ các vấn đề để sản phẩm dịch vụ của chúng tôi có thể cải thiện tốt hơn!
+                </div>
+            </div>
+            <a href="javascript:void(0)" class="hc-btn-primary">Góp ý dịch vụ</a>
+        </div>
+
+        <div class="hc-rating-box">
+            <div class="hc-rating-title">Quý khách có hài lòng với thông tin đã tìm được?</div>
+            <div class="hc-faces" id="feedback-faces">
+                <i class="fa-regular fa-face-angry" data-val="1"></i>
+                <i class="fa-regular fa-face-frown" data-val="2"></i>
+                <i class="fa-regular fa-face-meh" data-val="3"></i>
+                <i class="fa-regular fa-face-smile" data-val="4"></i>
+                <i class="fa-regular fa-face-laugh-beam" data-val="5"></i>
+            </div>
+            <div class="mt-4">
+                <button class="hc-btn-primary" id="btnSubmitFeedback" style="display: none;">Gửi ý kiến</button>
+            </div>
+        </div>
+        <div class="hc-rating-note">
+            Nếu Quý khách cần phản hồi từ Vietnam Airlines, vui lòng điền thông tin tại mục <a href="#" class="hc-topic-link text-decoration-none">Góp ý dịch vụ</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Xử lý Javascript cho riêng UI trang Help Center khi load vào SPA
+    $(document).ready(function() {
+        // Xử lý nút đánh giá mức độ hài lòng
+        $('#feedback-faces i').on('click', function() {
+            // Xóa class active ở tất cả
+            $('#feedback-faces i').removeClass('fa-solid active').addClass('fa-regular');
+            
+            // Thêm class active cho item được click và đổi sang icon solid cho nổi bật
+            $(this).removeClass('fa-regular').addClass('fa-solid active');
+            
+            // Hiện nút Gửi ý kiến
+            $('#btnSubmitFeedback').fadeIn();
+        });
+
+        // Xử lý gửi ý kiến demo
+        $('#btnSubmitFeedback').on('click', function() {
+            const val = $('#feedback-faces i.active').data('val');
+            if(val) {
+                // Có thể thay bằng custom Toast function của hệ thống bạn: showToast('Cảm ơn bạn đã đánh giá!', 'success');
+                alert('Cảm ơn bạn đã đánh giá mức ' + val + ' sao. Vietnam Airlines luôn ghi nhận ý kiến của bạn!');
+                
+                // Reset lại sau khi gửi
+                $('#feedback-faces i').removeClass('fa-solid active').addClass('fa-regular');
+                $(this).fadeOut();
+            }
+        });
+    });
+</script>

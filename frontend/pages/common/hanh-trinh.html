@@ -1,0 +1,314 @@
+<!-- ════════════════════════════════════════
+   Hành lý — SPA Fragment
+   Load vào #page-content qua app.js → loadPage()
+   Requires: Bootstrap 5 Icons, style.css, jQuery
+════════════════════════════════════════ -->
+
+<style>
+  /* ── Breadcrumb & Header ── */
+  .inner-page-header {
+    padding: 36px 40px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  .breadcrumb-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.3rem;
+    color: var(--muted);
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .breadcrumb-wrap a {
+    color: var(--muted);
+    transition: var(--transition);
+  }
+
+  .breadcrumb-wrap a:hover { color: var(--primary); }
+
+  .breadcrumb-wrap .bc-sep {
+    font-size: 1rem;
+    color: var(--border);
+  }
+
+  .breadcrumb-wrap .bc-active {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 3vw, 3.4rem);
+    font-weight: 900;
+    color: var(--text);
+    letter-spacing: -.3px;
+    line-height: 1.1;
+  }
+
+  /* ── Baggage Grid ── */
+  .baggage-section {
+    padding: 36px 40px 60px;
+    background: var(--bg);
+  }
+
+  .baggage-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  @media (max-width: 900px) {
+    .baggage-grid { grid-template-columns: repeat(2, 1fr); }
+    .baggage-section { padding: 28px 20px 44px; }
+    .inner-page-header { padding: 28px 20px 20px; }
+  }
+
+  @media (max-width: 576px) {
+    .baggage-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Baggage Card ── */
+  .baggage-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition);
+    cursor: pointer;
+
+    /* stagger animation */
+    opacity: 0;
+    transform: translateY(22px);
+    animation: bag-fadein .55s ease both;
+  }
+
+  .baggage-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+    border-color: var(--primary-hover);
+  }
+
+  @keyframes bag-fadein {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .baggage-card:nth-child(1) { animation-delay: .05s; }
+  .baggage-card:nth-child(2) { animation-delay: .10s; }
+  .baggage-card:nth-child(3) { animation-delay: .15s; }
+  .baggage-card:nth-child(4) { animation-delay: .20s; }
+  .baggage-card:nth-child(5) { animation-delay: .25s; }
+  .baggage-card:nth-child(6) { animation-delay: .30s; }
+  .baggage-card:nth-child(7) { animation-delay: .35s; }
+
+  /* ── Card image placeholder ── */
+  .baggage-card-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.4rem;
+    color: var(--primary);
+    flex-shrink: 0;
+    overflow: hidden;
+    object-fit: cover;
+  }
+
+  .baggage-card-thumb.thumb-lookup   { background: linear-gradient(135deg, #d4eef7 0%, #b6dff0 100%); }
+  .baggage-card-thumb.thumb-cabin    { background: linear-gradient(135deg, #dff0d4 0%, #c8e8b5 100%); }
+  .baggage-card-thumb.thumb-free     { background: linear-gradient(135deg, #d4e7f7 0%, #b8d4f0 100%); }
+  .baggage-card-thumb.thumb-extra    { background: linear-gradient(135deg, #f7ead4 0%, #f0d8b5 100%); }
+  .baggage-card-thumb.thumb-special  { background: linear-gradient(135deg, #e8d4f7 0%, #d6b8f0 100%); }
+  .baggage-card-thumb.thumb-restrict { background: linear-gradient(135deg, #f7d4d4 0%, #f0b5b5 100%); }
+  .baggage-card-thumb.thumb-issue    { background: linear-gradient(135deg, #d4f0e8 0%, #b5e8d6 100%); }
+
+  /* ── Card body ── */
+  .baggage-card-body {
+    padding: 20px 22px 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .baggage-card-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .baggage-card-desc {
+    font-size: 1.3rem;
+    color: var(--muted);
+    line-height: 1.65;
+    flex: 1;
+    margin-bottom: 18px;
+  }
+
+  .baggage-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary);
+    transition: var(--transition);
+    width: fit-content;
+    text-decoration: none;
+  }
+
+  .baggage-card-link i {
+    font-size: 1.1rem;
+    transition: transform .22s ease;
+  }
+
+  .baggage-card-link:hover { color: var(--primary-dark); }
+  .baggage-card-link:hover i { transform: translateX(4px); }
+</style>
+
+<!-- ── Breadcrumb + Tiêu đề ── -->
+<div class="inner-page-header">
+  <div class="breadcrumb-wrap">
+    <a href="#index" data-url="pages/common/home.html">Trang chủ</a>
+    <span class="bc-sep"><i class="bi bi-chevron-right"></i></span>
+    <a href="#hanh-trinh" data-url="pages/common/hanh-trinh.html">Thông tin hành trình</a>
+    <span class="bc-sep"><i class="bi bi-chevron-right"></i></span>
+    <span class="bc-active">Hành lý</span>
+  </div>
+  <h1 class="page-title">Hành lý</h1>
+</div>
+
+<!-- ── Grid hành lý ── -->
+<section class="baggage-section mx-5">
+  <div class="baggage-grid mx-5" id="baggage-grid">
+
+    <!-- 1. Tra cứu thông tin hành lý -->
+    <article class="baggage-card" data-page="baggage-lookup">
+      <div class="baggage-card-thumb thumb-lookup">
+        <img src="/frontend/assets/images/ht1.jpeg" alt="">
+      </div>
+      <div class="baggage-card-body">
+        <h2 class="baggage-card-title">Tra cứu thông tin hành lý</h2>
+        <p class="baggage-card-desc">Tra cứu thông tin hành lý để biết tổng quan chính sách hành lý của Vietnam Airlines từ hành lý miễn cước đến các loại hành lý trả phí và hành lý đặc biệt khác.</p>
+        <a href="#" class="baggage-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 2. Hành lý xách tay -->
+    <article class="baggage-card" data-page="baggage-cabin">
+      <div class="baggage-card-thumb thumb-cabin">
+        <img src="/frontend/assets/images/ht2.jpeg" alt="">
+      </div>
+      <div class="baggage-card-body">
+        <h2 class="baggage-card-title">Hành lý xách tay</h2>
+        <p class="baggage-card-desc">Tìm hiểu các quy định, tiêu chuẩn về số kiện, trọng lượng và kích thước áp dụng cho hành lý xách tay miễn cước.</p>
+        <a href="#" class="baggage-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 3. Hành lý ký gửi miễn cước -->
+    <article class="baggage-card" data-page="baggage-free-checked">
+      <div class="baggage-card-thumb thumb-free">
+        <img src="/frontend/assets/images/ht3.jpeg" alt="">
+      </div>
+      <div class="baggage-card-body">
+        <h2 class="baggage-card-title">Hành lý ký gửi miễn cước</h2>
+        <p class="baggage-card-desc">Tìm hiểu các quy định, tiêu chuẩn về số kiện, trọng lượng và kích thước áp dụng cho hành lý ký gửi miễn cước.</p>
+        <a href="#" class="baggage-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 4. Mua thêm hành lý ký gửi -->
+    <article class="baggage-card" data-page="baggage-extra">
+      <div class="baggage-card-thumb thumb-extra">
+        <img src="/frontend/assets/images/ht4.jpeg" alt="">
+      </div>
+      <div class="baggage-card-body">
+        <h2 class="baggage-card-title">Mua thêm hành lý ký gửi</h2>
+        <p class="baggage-card-desc">Nếu hành lý ký gửi của hành khách vượt quá Quy định, hành khách có thể chọn mua thêm hành lý ký gửi qua hình thức Hành lý trả trước hoặc Hành lý tính cước tại sân bay.</p>
+        <a href="#" class="baggage-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 5. Hành lý đặc biệt -->
+    <article class="baggage-card" data-page="baggage-special">
+      <div class="baggage-card-thumb thumb-special">
+        <img src="/frontend/assets/images/ht5.jpeg" alt="">
+      </div>
+      <div class="baggage-card-body">
+        <h2 class="baggage-card-title">Hành lý đặc biệt</h2>
+        <p class="baggage-card-desc">Một số hành lý được vận chuyển đặc biệt như: dụng cụ thể thao, xe nôi, xe lăn, hành lý cồng kềnh, xe đạp và vật phẩm có giá trị đặt trên ghế hành khách, v.v.</p>
+        <a href="#" class="baggage-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 6. Hành lý hạn chế vận chuyển -->
+    <article class="baggage-card" data-page="baggage-restricted">
+      <div class="baggage-card-thumb thumb-restrict">
+        <img src="/frontend/assets/images/ht6.jpeg" alt="">
+      </div>
+      <div class="baggage-card-body">
+        <h2 class="baggage-card-title">Hành lý hạn chế vận chuyển</h2>
+        <p class="baggage-card-desc">Để đảm bảo an toàn cho hành khách, một số vật phẩm nguy hiểm bị cấm vận chuyển hoặc vận chuyển có điều kiện.</p>
+        <a href="#" class="baggage-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+    <!-- 7. Gặp vấn đề với hành lý -->
+    <article class="baggage-card" data-page="baggage-issues">
+      <div class="baggage-card-thumb thumb-issue">
+        <img src="/frontend/assets/images/ht7.jpeg" alt="">
+      </div>
+      <div class="baggage-card-body">
+        <h2 class="baggage-card-title">Gặp vấn đề với hành lý</h2>
+        <p class="baggage-card-desc">Vietnam Airlines luôn nỗ lực trợ giúp hành khách khi gặp vấn đề với hành lý như đến chậm, thất lạc, hư hỏng hoặc bỏ quên.</p>
+        <a href="#" class="baggage-card-link">Xem thêm <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </article>
+
+  </div><!-- /.baggage-grid -->
+</section>
+
+<script>
+(function () {
+  'use strict';
+
+  function initBaggage() {
+    // Breadcrumb SPA navigation — khớp với pattern loadPage() trong app.js
+    $('#page-content').on('click.baggage', '.breadcrumb-wrap a[data-url]', function (e) {
+      e.preventDefault();
+      const url  = $(this).data('url');
+      const hash = $(this).attr('href');
+      if (url && typeof loadPage === 'function') {
+        if (hash) window.location.hash = hash;
+        loadPage(url, '#page-content');
+      }
+    });
+
+    // Card click
+    $('#baggage-grid').on('click.baggage', '.baggage-card', function () {
+      const page = $(this).data('page');
+      console.log('[Baggage] Clicked:', page);
+      // Nếu muốn navigate SPA:
+      // if (typeof loadPage === 'function') loadPage(`pages/baggage/${page}.html`, '#page-content');
+    });
+
+    // Ngăn link "Xem thêm" bubble lên card click
+    $('#baggage-grid').on('click.baggage', '.baggage-card-link', function (e) {
+      e.stopPropagation();
+    });
+  }
+
+  // Tự khởi tạo ngay khi fragment được inject vào DOM
+  initBaggage();
+
+  // Expose để app.js gọi qua initDynamicScripts() nếu cần
+  window.initBaggage = initBaggage;
+})();
+</script>
