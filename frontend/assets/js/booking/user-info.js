@@ -2,7 +2,7 @@
    nhap-thong-tin.js  —  JS cho trang Nhập Thông Tin Hành Khách
    Requires: jQuery 3.x
    ═══════════════════════════════════════════════════════ */
-const BASE_API_URL = 'http://localhost:3000/api';
+const BASE_API_URL = 'http://localhost:5000/api';
 
 window.initUserInfo = function () {
 

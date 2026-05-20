@@ -92,7 +92,7 @@ function initSeatMap() {
     }
 
     try {
-      const BASE = (typeof BASE_API_URL !== 'undefined') ? BASE_API_URL : 'http://localhost:3000/api';
+      const BASE = (typeof BASE_API_URL !== 'undefined') ? BASE_API_URL : 'http://localhost:5000/api';
       const url = `${BASE}/seats?flightId=${state.flightId}&limit=300`;
       let payload;
 
@@ -587,35 +587,51 @@ function initSeatMap() {
 
     /* Confirm button */
     $(document).on('click.seatmap', '#sm-confirm-btn:not(:disabled)', async function () {
-      /* Persist selections to sessionStorage */
-      const rawData = sessionStorage.getItem('selectedFlightBooking');
-      let bookingData = rawData ? JSON.parse(rawData) : {};
-      
-      bookingData.selectedSeats = state.selectedSeats;
-      bookingData.seatSummary   = buildSeatSummary();
-      
-      const bookingId = bookingData.bookingId;
-      const seatIds = Object.values(state.selectedSeats).map(s => parseInt(s.seatId));
+      const btn = $(this);
+      btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Đang xác nhận...');
 
-      if (bookingId && seatIds.length > 0) {
-        try {
-          const BASE = (typeof BASE_API_URL !== 'undefined') ? BASE_API_URL : 'http://localhost:3000/api';
+      try {
+        const BASE = (typeof BASE_API_URL !== 'undefined') ? BASE_API_URL : 'http://localhost:5000/api';
+
+        /* Persist selections to sessionStorage */
+        const rawData = sessionStorage.getItem('selectedFlightBooking');
+        let bookingData = rawData ? JSON.parse(rawData) : {};
+
+        bookingData.selectedSeats = state.selectedSeats;
+        bookingData.seatSummary   = buildSeatSummary();
+
+        const bookingId = bookingData.bookingId;
+        const seatIds = Object.values(state.selectedSeats).map(s => parseInt(s.seatId));
+
+        if (bookingId && seatIds.length > 0) {
+          // 1. Validate seats còn available không trước khi reserve
+          const validationOk = await validateSeatsAvailability(seatIds);
+          if (!validationOk) {
+            showToast('error', 'Ghế đã được user khác chọn. Vui lòng chọn lại.');
+            // Refresh seat map để hiển thị state mới
+            await fetchSeats();
+            btn.prop('disabled', false).html('XÁC NHẬN <i class="fa-solid fa-arrow-right"></i>');
+            return;
+          }
+
+          // 2. Reserve seats nếu validation thành công
           const seatRes = await fetch(`${BASE}/booking/${bookingId}/select-seats`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ seatIds })
           }).then(r => r.json());
 
-          if (!seatRes.success) throw new Error(seatRes.message || 'Lỗi khóa ghế');
-        } catch (error) {
-          alert('Lỗi khi khóa ghế: ' + error.message);
-          return; // Dừng lại không chuyển trang nếu khóa ghế thất bại
+          if (!seatRes.success) {
+            throw new Error(seatRes.message || 'Lỗi khóa ghế');
+          }
         }
+
+        sessionStorage.setItem('selectedFlightBooking', JSON.stringify(bookingData));
+        if (window.BookingSPA) window.BookingSPA.goToStep('shopping-cart');
+      } catch (error) {
+        showToast('error', 'Lỗi khi xác nhận ghế: ' + error.message);
+        btn.prop('disabled', false).html('XÁC NHẬN <i class="fa-solid fa-arrow-right"></i>');
       }
-
-      sessionStorage.setItem('selectedFlightBooking', JSON.stringify(bookingData));
-
-      if (window.BookingSPA) window.BookingSPA.goToStep('shopping-cart');
     });
   }
 
@@ -630,6 +646,39 @@ function initSeatMap() {
         price:         sel ? sel.price  : 0,
       };
     });
+  }
+
+  /* Validate xem các ghế được chọn còn available không (check từ server) */
+  async function validateSeatsAvailability(seatIds) {
+    if (!state.flightId || !seatIds || seatIds.length === 0) {
+      return true; // Assume OK nếu không có seatId
+    }
+
+    try {
+      const BASE = (typeof BASE_API_URL !== 'undefined') ? BASE_API_URL : 'http://localhost:5000/api';
+      const response = await fetch(`${BASE}/seats?flightId=${state.flightId}&limit=500`);
+      const data = await response.json();
+
+      const seatsFromServer = data.data || [];
+      const seatMap = {};
+      seatsFromServer.forEach(s => {
+        seatMap[s.id] = s.status;
+      });
+
+      // Check xem tất cả selected seats còn AVAILABLE không
+      for (let seatId of seatIds) {
+        const status = seatMap[seatId];
+        if (status && status !== 'AVAILABLE') {
+          console.warn(`Seat ${seatId} is no longer available (status: ${status})`);
+          return false;
+        }
+      }
+      return true;
+    } catch (err) {
+      console.error('Error validating seats:', err);
+      // Nếu validation API fail, vẫn cho tiếp tục (assume OK)
+      return true;
+    }
   }
 
   /* ─────────────────────────────────────────
@@ -647,6 +696,20 @@ function initSeatMap() {
     return String(str)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;')
       .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function escAttr(str) { return escHtml(str); }
+
+  function showToast(type, msg) {
+    const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+    const cls   = type === 'info' ? '' : type;
+    const $el = $(`
+      <div class="toast-msg ${cls}" style="position:fixed;bottom:20px;right:20px;background:${type==='error'?'#dc2626':'#16a34a'};color:#fff;padding:12px 16px;border-radius:8px;font-size:13px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+        <span>${icons[type] || 'ℹ️'}</span>
+        <span style="margin-left:8px;">${msg}</span>
+      </div>`);
+    $('body').append($el);
+    setTimeout(() => $el.fadeOut(300, function () { $(this).remove(); }), 3500);
   }
 
   function escAttr(str) { return escHtml(str); }

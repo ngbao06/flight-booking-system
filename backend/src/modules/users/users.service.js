@@ -1,5 +1,6 @@
 import UsersRepository from "./users.repository.js";
 import eventBus, { Events } from "../../common/utils/eventsBus.js";
+import { sendWelcomeEmail } from "../../common/utils/mail.js";
 import bcrypt from "bcrypt";
 
 
@@ -64,6 +65,15 @@ class UsersService {
 				message: "Failed to create user profile"
 			}
 		}
+
+		// Gửi mail chúc mừng đăng ký nếu có email
+		// try {
+		// 	if (profile.contact && profile.contact.email) {
+		// 		await sendWelcomeEmail({ to: profile.contact.email, username: profile.full_name || username });
+		// 	}
+		// } catch (err) {
+		// 	console.warn('Failed to send welcome email:', err?.message || err);
+		// }
 
 		// Lưu activity_logs các sự kiện cập nhật bảng
 		eventBus.emit(Events.CREATE_EVENT, {

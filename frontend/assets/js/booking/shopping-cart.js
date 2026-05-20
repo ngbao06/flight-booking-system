@@ -368,6 +368,12 @@ window.initShoppingCart = function () {
 
   /* ══ TIẾP TỤC ══ */
   $('#btn-continue').off('click').on('click', function () {
+    // Kiểm tra bắt buộc: phải chọn ghế
+    if (!state.seat) {
+      showToast('error', 'Vui lòng chọn ghế trước khi tiếp tục.');
+      return;
+    }
+
     showToast('success', 'Đang lưu giỏ hàng và chuyển trang…');
 
     const serviceFee = calcServiceFee();

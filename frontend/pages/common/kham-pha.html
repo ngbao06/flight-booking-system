@@ -1,1 +1,384 @@
-khám phá
+<style>
+/* =========================================
+   CUSTOM CSS CHO TRANG TỔNG HỢP ƯU ĐÃI
+========================================= */
+.offers-page {
+    padding: 40px 15px 80px 15px;
+    font-family: var(--font);
+    color: var(--text);
+    max-width: 1140px;
+    margin: 0 auto;
+}
+
+.offers-main-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+}
+
+/* Tabs */
+.offers-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--border);
+}
+.offers-tab {
+    background: transparent;
+    border: none;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 10px 0;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: var(--transition);
+    text-transform: uppercase;
+}
+.offers-tab:hover { color: var(--primary); }
+.offers-tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+/* Common Card Style */
+.offer-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    transition: var(--transition);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.offer-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+    border-color: var(--primary-light);
+}
+.offer-img {
+    height: 160px;
+    width: 100%;
+    object-fit: cover;
+}
+.offer-body {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.offer-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.offer-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+.offer-btn {
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 24px;
+    border-radius: 30px;
+    font-size: 12.5px;
+    font-weight: 700;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none;
+    align-self: flex-start;
+    transition: var(--transition);
+    border: border none;
+}
+.offer-btn:hover {
+    background: var(--primary-hover);
+    color: #fff;
+}
+
+/* Feature Block (Ưu đãi đặt xe) */
+.feature-block {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden;
+}
+.feature-block-content {
+    padding: 40px;
+}
+.feature-block-img {
+    height: 100%;
+    min-height: 250px;
+    object-fit: cover;
+    width: 100%;
+}
+
+/* Benefit Items */
+.benefit-item {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 16px;
+    background: #fff;
+    transition: var(--transition);
+}
+.benefit-item:hover { border-color: var(--primary); }
+.benefit-icon {
+    font-size: 28px;
+    color: var(--text);
+    opacity: 0.8;
+}
+.benefit-text h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+.benefit-text p {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+}
+
+/* Newsletter Clean Section */
+.newsletter-clean {
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+.nl-left h3 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+.nl-left p {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+    max-width: 400px;
+}
+.nl-form {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    flex: 1;
+    justify-content: flex-end;
+}
+.nl-form input {
+    border: 1px solid var(--border);
+    padding: 10px 16px;
+    border-radius: 30px;
+    font-size: 13px;
+    outline: none;
+    min-width: 220px;
+}
+.nl-form input:focus { border-color: var(--primary); }
+</style>
+
+<div class="offers-page anim">
+
+    <!-- 1. TỔNG HỢP ƯU ĐÃI -->
+    <h2 class="offers-main-title text-center mt-4">Tổng hợp ưu đãi</h2>
+    <div class="offers-tabs">
+        <button class="offers-tab active" data-target="chuyen-bay">Chuyến bay</button>
+        <button class="offers-tab" data-target="khach-san">Khách sạn & hơn thế nữa</button>
+    </div>
+    
+    <div id="tab-chuyen-bay" class="row g-4 mb-5 offer-content-pane">
+        <div class="col-md-6">
+            <div class="offer-card">
+                <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80" alt="Early Bird" class="offer-img">
+                <div class="offer-body">
+                    <div class="offer-title">Mua vé sớm, giá tốt hơn</div>
+                    <div class="offer-desc">Lên kế hoạch sớm để hưởng mức giá ưu đãi nhất cho các hành trình bay cùng Vietnam Airlines. Tận hưởng kỳ nghỉ trọn vẹn.</div>
+                    <a href="javascript:void(0)" class="offer-btn">Tìm hiểu</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="offer-card">
+                <img src="https://images.unsplash.com/photo-1542296332-2e4473faf563?w=600&q=80" alt="Summer Offer" class="offer-img">
+                <div class="offer-body">
+                    <div class="offer-title">Chào hè rực rỡ cùng Vietnam Airlines</div>
+                    <div class="offer-desc">Ưu đãi giảm giá vé lên đến 15% cho các đường bay nội địa và quốc tế trong mùa hè này. Đặt vé ngay hôm nay!</div>
+                    <a href="javascript:void(0)" class="offer-btn">Tìm hiểu</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. ƯU ĐÃI THANH TOÁN -->
+    <h2 class="offers-main-title text-center mt-5 pt-3">ƯU ĐÃI THANH TOÁN</h2>
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4 col-md-6">
+            <div class="offer-card">
+                <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80" class="offer-img" alt="MoMo">
+                <div class="offer-body">
+                    <div class="offer-title">Thanh toán vé máy bay qua MoMo giảm ngay 100K</div>
+                    <div class="offer-desc">Áp dụng cho giao dịch từ 2.000.000 VNĐ.</div>
+                    <a href="javascript:void(0)" class="offer-btn mt-auto">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="offer-card">
+                <img src="https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=600&q=80" class="offer-img" alt="VNPay">
+                <div class="offer-body">
+                    <div class="offer-title">Mở ví VNPay - Bay khắp muôn nơi</div>
+                    <div class="offer-desc">Nhập mã VNPAYVNA giảm 5% (tối đa 200K) khi thanh toán QR.</div>
+                    <a href="javascript:void(0)" class="offer-btn mt-auto">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="offer-card">
+                <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&q=80" class="offer-img" alt="Bank">
+                <div class="offer-body">
+                    <div class="offer-title">Đặc quyền thẻ tín dụng JCB/Visa</div>
+                    <div class="offer-desc">Hoàn tiền lên đến 500K khi mua vé khứ hồi quốc tế.</div>
+                    <a href="javascript:void(0)" class="offer-btn mt-auto">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. ƯU ĐÃI ĐẶT XE -->
+    <h2 class="offers-main-title text-center mt-5 pt-3">ƯU ĐÃI ĐẶT XE</h2>
+    <div class="feature-block mb-5">
+        <div class="row g-0">
+            <div class="col-md-5">
+                <div class="feature-block-content h-100 d-flex flex-column justify-content-center">
+                    <h3 class="offer-title fs-4 mb-3">Giảm 20% khi đặt xe Grab ra/vào sân bay</h3>
+                    <p class="offer-desc mb-4">Hành khách của Vietnam Airlines sẽ nhận được ưu đãi giảm giá chuyến xe GrabCar khi nhập mã thẻ lên máy bay (Boarding pass) trên ứng dụng Grab.</p>
+                    <a href="javascript:void(0)" class="offer-btn">Tìm hiểu thêm</a>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80" alt="Grab Car" class="feature-block-img">
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. ƯU ĐÃI ĐỘC QUYỀN -->
+    <h2 class="offers-main-title text-center mt-5 pt-3">ƯU ĐÃI ĐỘC QUYỀN</h2>
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4 col-md-6">
+            <div class="offer-card">
+                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&q=80" class="offer-img" alt="Vinpearl">
+                <div class="offer-body">
+                    <div class="offer-title">Kỳ nghỉ trọn vẹn cùng Vinpearl</div>
+                    <div class="offer-desc">Ưu đãi lên đến 30% giá phòng khi xuất trình thẻ bay Vietnam Airlines.</div>
+                    <a href="javascript:void(0)" class="offer-btn mt-auto">Khám phá</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="offer-card">
+                <img src="https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=600&q=80" class="offer-img" alt="Sun World">
+                <div class="offer-body">
+                    <div class="offer-title">Vui chơi cực đã tại Sun World</div>
+                    <div class="offer-desc">Giảm ngay 15% vé cáp treo và công viên giải trí.</div>
+                    <a href="javascript:void(0)" class="offer-btn mt-auto">Khám phá</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="offer-card">
+                <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80" class="offer-img" alt="Lounge">
+                <div class="offer-body">
+                    <div class="offer-title">Trải nghiệm phòng chờ Thương gia</div>
+                    <div class="offer-desc">Mua voucher sử dụng phòng chờ Bông Sen với giá ưu đãi đặc biệt mua trước qua website.</div>
+                    <a href="javascript:void(0)" class="offer-btn mt-auto">Khám phá</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. CÁC QUYỀN LỢI KHI SỬ DỤNG ƯU ĐÃI ONLINE -->
+    <h2 class="offers-main-title text-center mt-5 pt-4">CÁC QUYỀN LỢI KHI SỬ DỤNG ƯU ĐÃI ONLINE</h2>
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-10">
+            <div class="benefit-item">
+                <i class="fa-solid fa-piggy-bank benefit-icon"></i>
+                <div class="benefit-text">
+                    <h4>Tiết kiệm chi phí</h4>
+                    <p>Nhận ngay giá tốt nhất và các voucher độc quyền chỉ có khi giao dịch trực tuyến trên website/app.</p>
+                </div>
+            </div>
+            <div class="benefit-item">
+                <i class="fa-solid fa-headset benefit-icon"></i>
+                <div class="benefit-text">
+                    <h4>Hỗ trợ 24/7</h4>
+                    <p>Đội ngũ tổng đài và trợ lý ảo NEO luôn sẵn sàng giải đáp mọi thắc mắc của bạn bất cứ lúc nào.</p>
+                </div>
+            </div>
+            <div class="benefit-item">
+                <i class="fa-solid fa-shield-halved benefit-icon"></i>
+                <div class="benefit-text">
+                    <h4>Bảo mật thông tin</h4>
+                    <p>Hệ thống thanh toán đạt chuẩn quốc tế PCI-DSS, bảo vệ tuyệt đối dữ liệu cá nhân của hành khách.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. ĐĂNG KÝ E-NEWSLETTER -->
+    <div class="newsletter-clean">
+        <div class="nl-left">
+            <h3>Đăng ký E-Newsletter</h3>
+            <p>Đăng ký nhận thông tin ngay hôm nay để không bỏ lỡ các bản tin ưu đãi từ Vietnam Airlines.</p>
+        </div>
+        <form class="nl-form" onsubmit="event.preventDefault(); alert('Cảm ơn bạn đã đăng ký!');">
+            <input type="text" placeholder="Họ và tên" required>
+            <input type="email" placeholder="Địa chỉ email" required>
+            <button type="submit" class="offer-btn" style="border: none;">Đăng ký</button>
+        </form>
+    </div>
+
+</div>
+
+<script>
+    // Xử lý chuyển tab cho phần TỔNG HỢP ƯU ĐÃI (Nếu sau này bạn có thêm tab khách sạn)
+    $(document).ready(function() {
+        $('.offers-tab').on('click', function() {
+            // Đổi state nút
+            $('.offers-tab').removeClass('active');
+            $(this).addClass('active');
+            
+            // Xử lý logic ẩn/hiện content (Mẫu này có 1 pane để minh họa)
+            const target = $(this).data('target');
+            if (target === 'khach-san') {
+                // Ví dụ nếu có div #tab-khach-san thì toggle class d-none
+                // $('#tab-chuyen-bay').addClass('d-none');
+                // $('#tab-khach-san').removeClass('d-none');
+                
+                // Tạm thời show alert demo
+                $('#tab-chuyen-bay').fadeTo(200, 0.5).fadeTo(200, 1);
+            } else {
+                $('#tab-chuyen-bay').fadeTo(200, 0.5).fadeTo(200, 1);
+            }
+        });
+    });
+</script>

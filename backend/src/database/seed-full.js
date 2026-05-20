@@ -249,6 +249,11 @@ const insertRow = async (sql, values) => {
     return result;
 };
 
+const hasExistingSeedData = async () => {
+    const [rows] = await query('SELECT COUNT(*) AS total FROM Users');
+    return Number(rows?.[0]?.total || 0) > 0;
+};
+
 const seedUsers = async () => {
     const insertedUsers = [];
 
@@ -574,6 +579,12 @@ const seedBookingsPaymentsTickets = async (flightRecords, users) => {
 
 const main = async () => {
     await connectMongo();
+
+    if (await hasExistingSeedData()) {
+        console.log('Seed skipped: existing data detected');
+        return;
+    }
+
     await truncateTables();
 
     

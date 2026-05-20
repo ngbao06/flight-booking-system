@@ -14,7 +14,7 @@
  *   - DOMContentLoaded của mua-ve.js được tích hợp vào luồng init() / loadMuaVePage().
  */
 
-const BASE_API_URL = `http://localhost:3000/api`;
+const BASE_API_URL = `http://localhost:5000/api`;
 
 $(function () {
     'use strict';
@@ -559,6 +559,8 @@ $(function () {
                     : '';
                 renderVNAirlinesCards(sortFlights(flights, currentSort));
             } else {
+
+                loadPageStyle('assets/css/booking.css');
                 // Đang ở trang chủ: lưu data rồi chuyển sang trang mua-ve
                 window.flightSearchData = { from, to, date,
                     adult: paxCounts.adult, child: paxCounts.child, infant: paxCounts.infant,
@@ -1276,7 +1278,7 @@ $(function () {
         const origBtn = $button.html();
 
         const data = {
-            username:  $form.find('input[name="email"]').val(),
+            username:  $form.find('input[name="username"]').val(),
             email:     $form.find('input[name="email"]').val(),
             password:  $form.find('input[name="password"]').val(),
             full_name: $form.find('input[name="fullname"]').val(),
@@ -1395,8 +1397,8 @@ $(function () {
 
     async function init() {
         await loadAirports();
-        await loadComponent('/../../frontend/components/sidebar.html', $sidebarContainer);
-        await loadComponent('/../../frontend/components/footer.html',  $footerContainer);
+        await loadComponent('/components/sidebar.html', $sidebarContainer);
+        await loadComponent('/components/footer.html',  $footerContainer);
 
         updateAuthUI();
         setupNavigation();

@@ -1,6 +1,6 @@
 import pool from '../config/mysql.config.js';
 import { connectMongo, getMongo } from './mongodb/conn.js';
-import redisClient from '../config/redis.config.js';
+import { connectRedis } from '../config/redis.config.js';
 
 export const connectDatabases = async () => {
     try {
@@ -8,6 +8,7 @@ export const connectDatabases = async () => {
         console.log('MySQL connected');
 
         await connectMongo();
+        await connectRedis();
 
         console.log('All databases connected');
 

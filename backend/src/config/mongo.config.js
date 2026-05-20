@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env' });
 
-const uri = process.env.MONGO_URI;
-const dbName = process.env.MONGO_DB_NAME;
+const uri = process.env.MONGO_URI || 'mongodb://mongo:27017';
+const dbName = process.env.MONGO_DB_NAME || 'flight_booking';
 
 const configMongo = mongoose.connect(uri, {dbName: dbName })
 .then(() => {

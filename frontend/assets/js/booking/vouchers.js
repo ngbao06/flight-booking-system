@@ -1,5 +1,5 @@
 window.initVouchers = function() {
-  const BASE = (typeof BASE_API_URL !== 'undefined') ? BASE_API_URL : 'http://localhost:3000/api';
+  const BASE = (typeof BASE_API_URL !== 'undefined') ? BASE_API_URL : 'http://localhost:5000/api';
   const $root = $('#vouchers-root');
   const $selectedText = $('#voucher-selected-text');
 

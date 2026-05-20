@@ -66,3 +66,27 @@ export const sendVerificationEmail = async ({ to, username, code }) => {
         `
     });
 }
+
+export const sendWelcomeEmail = async ({ to, username }) => {
+    const transporter = createTransporter();
+    const displayName = username || to || 'Khách hàng';
+
+    if (!transporter) {
+        console.info(`Welcome email for ${displayName} not sent (SMTP not configured).`);
+        return;
+    }
+
+    await transporter.sendMail({
+        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+        to,
+        subject: "Chúc mừng - Tài khoản đã được tạo",
+        text: `Chào ${displayName},\n\nTài khoản của bạn đã được tạo thành công. Cảm ơn bạn đã đăng ký!`,
+        html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px;">
+                <h2 style="color: #006885;">Chúc mừng ${displayName}!</h2>
+                <p>Tài khoản của bạn đã được tạo thành công. Cảm ơn bạn đã đăng ký và hy vọng bạn có trải nghiệm tốt cùng chúng tôi.</p>
+                <p style="font-size:12px;color:#777;margin-top:16px;">Nếu bạn chưa yêu cầu việc này, vui lòng liên hệ bộ phận hỗ trợ.</p>
+            </div>
+        `
+    });
+}

@@ -1,7 +1,7 @@
 /*
  * initPayment - Khởi tạo logic cho bước thanh toán
  */
-// const BASE_API_URL = 'http://localhost:3000/api';
+// const BASE_API_URL = 'http://localhost:5000/api';
 
 window.initPayment = function() {
     console.log("Thanh toán đã sẵn sàng.");

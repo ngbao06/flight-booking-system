@@ -1,6 +1,6 @@
 $(function () {
     window.AdminPages = window.AdminPages || {};
-    const API_BASE_URL = 'http://localhost:3000';
+    const API_BASE_URL = 'http://localhost:5000';
 
     const pageMeta = {
         'dashboard.html': { title: 'Dashboard', breadcrumb: '/ Trang chủ', icon: 'fa-chart-pie' },
